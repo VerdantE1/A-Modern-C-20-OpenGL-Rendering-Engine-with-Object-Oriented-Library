@@ -6,12 +6,34 @@
 #include <sstream>
 
 
+static void GLClearError()
+{
+    while (glGetError() != GL_NO_ERROR);
+}
+
+static bool GLLogCall(const char* function, const char* file, int line)
+{
+    while (GLenum error = glGetError())
+    {
+        std::cerr << "[OpenGL Error] (" << error << "): " << "in "
+			<< function << " " << file << ":" << line << std::endl;
+        return false;
+    }
+    return true;
+}
+
+#define ASSERT(X) if (!(X)) __debugbreak(); // Accept one predicate expression X and break if it is false
+#define GLCall(X) GLClearError();\
+    X;\
+    ASSERT(GLLogCall(#X,__FILE__,__LINE__));\
+
+
 struct ShaderProgramSource
 {
     std::string vertexShader;
     std::string fragmentShader;
 };
-;
+
 
 static unsigned int CompileShader(unsigned int type, const std::string& source)
 {
@@ -198,19 +220,31 @@ int main(void)
 
 	// Define the vertices for a triangle
     GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+        -0.5f, -0.5f, 0.0f,  //0
+         0.5f, -0.5f, 0.0f,  //1
+         0.5f, 0.5f, 0.0f,   //2
+        -0.5f, 0.5f,  0.0f   //3
+	};
+
+    unsigned int indices[] = {
+        0, 1, 2, // First triangle
+        2, 3, 0  // Second triangle
 	};
 
 
-    GLuint VBOidx;
-	glGenBuffers(1, &VBOidx);  // Generate(Construct) a buffer object in GPU memory
-	glBindBuffer(GL_ARRAY_BUFFER, VBOidx); // Bind (Active) the buffer object which should be process for GL machine to the GL_ARRAY_BUFFER target
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //(Initialize) Copy the vertex data to the buffer object in GPU memory
+    GLuint vbo;
+    GLCall(glGenBuffers(1, &vbo));  // Generate(Construct) a buffer object in GPU memory
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, vbo)); // Bind (Active) the buffer object which should be process for GL machine to the GL_ARRAY_BUFFER target
+    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW)); //(Initialize) Copy the vertex data to the buffer object in GPU memory
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0); // Define the vertex attribute pointer for the vertex data
-	glEnableVertexAttribArray(0); // Enable the vertex attribute array at index 0 即0号顶点属性槽【状态】 Buffer里面存在顶点属性，我们仅启用顶点属性槽0
+    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0)); // Define the vertex attribute pointer for the vertex data
+    GLCall(glEnableVertexAttribArray(0)); // Enable the vertex attribute array at index 0 
+
+
+	GLuint ibo;
+    GLCall(glGenBuffers(1, &ibo));  // Generate(Construct) a buffer object in GPU memory
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo)); // Bind (Active) the buffer object which should be process for GL machine to the Vertex array indices target
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW)); //(Initialize) Copy the vertex data to the buffer object in GPU memory
 
 
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
@@ -218,29 +252,32 @@ int main(void)
 	//std::cout << source.fragmentShader << std::endl;
 
 	unsigned int shader = CreateShader(source.vertexShader, source.fragmentShader);
-	glUseProgram(shader);
+	GLCall(glUseProgram(shader));
 
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
-		glDrawArrays(GL_TRIANGLES, 0, 3); // Draw the triangle using the vertex data in the VBO
+
+		//glDrawArrays(GL_TRIANGLES, 0, 3); // Draw the triangle using the vertex data in the VBO
+		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0)); // Draw the triangles using the vertex indices in the IBO
+
 
 
         /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        GLCall(glfwSwapBuffers(window));
 
         /* Poll for and process events */
-        glfwPollEvents();
+        GLCall(glfwPollEvents());
     }
 
    
     //======================================================================
     
-    glfwTerminate();
+    GLCall(glfwTerminate());
     return 0;
 }
 
