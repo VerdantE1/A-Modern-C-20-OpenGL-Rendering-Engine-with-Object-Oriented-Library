@@ -4,28 +4,10 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "Utility.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
-
-static void GLClearError()
-{
-    while (glGetError() != GL_NO_ERROR);
-}
-
-static bool GLLogCall(const char* function, const char* file, int line)
-{
-    while (GLenum error = glGetError())
-    {
-        std::cerr << "[OpenGL Error] (" << error << "): " << "in "
-			<< function << " " << file << ":" << line << std::endl;
-        return false;
-    }
-    return true;
-}
-
-#define ASSERT(X) if (!(X)) __debugbreak(); // Accept one predicate expression X and break if it is false
-#define GLCall(X) GLClearError();\
-    X;\
-    ASSERT(GLLogCall(#X,__FILE__,__LINE__));\
 
 
 struct ShaderProgramSource
@@ -182,6 +164,7 @@ static unsigned int CreateShader(const std::string& vertexShader, const std::str
 }
 
 
+
 int main(void)
 {
     GLFWwindow* window;
@@ -190,6 +173,9 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Use the core profile of OpenGL
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
@@ -199,10 +185,12 @@ int main(void)
         return -1;
     }
 
+	
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+   glfwSwapInterval(1);// Enable vsync (vertical synchronization) to limit the frame rate to the monitor's refresh rate
 
     /* Initialize the GLEW library*/
     if (glewInit() != GLEW_OK)
@@ -231,28 +219,33 @@ int main(void)
         2, 3, 0  // Second triangle
 	};
 
+    
 
-    GLuint vbo;
-    GLCall(glGenBuffers(1, &vbo));  // Generate(Construct) a buffer object in GPU memory
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, vbo)); // Bind (Active) the buffer object which should be process for GL machine to the GL_ARRAY_BUFFER target
-    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW)); //(Initialize) Copy the vertex data to the buffer object in GPU memory
-
-    GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0)); // Define the vertex attribute pointer for the vertex data
-    GLCall(glEnableVertexAttribArray(0)); // Enable the vertex attribute array at index 0 
+    GLuint vao;
+    GLCall(glGenVertexArrays(1, &vao)); // Generate a Vertex Array Object (VAO) to store the vertex attribute state
+    GLCall(glBindVertexArray(vao)); // Bind the VAO to the current context
 
 
-	GLuint ibo;
-    GLCall(glGenBuffers(1, &ibo));  // Generate(Construct) a buffer object in GPU memory
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo)); // Bind (Active) the buffer object which should be process for GL machine to the Vertex array indices target
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW)); //(Initialize) Copy the vertex data to the buffer object in GPU memory
+    VertexBuffer vb(vertices, sizeof(vertices));
+    IndexBuffer ib(indices, sizeof(indices) / sizeof(unsigned int));
+    
+   
 
 
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-	//std::cout << source.vertexShader << std::endl;
-	//std::cout << source.fragmentShader << std::endl;
 
 	unsigned int shader = CreateShader(source.vertexShader, source.fragmentShader);
 	GLCall(glUseProgram(shader));
+
+	GLCall(int location = glGetUniformLocation(shader, "u_Color")); // Get the location of the uniform variable in the shader program
+    ASSERT(location != -1); // Ensure the uniform variable exists in the shader program
+
+
+    
+    float r = 0.0f;
+	float increment = 0.01f; // Increment value for the red color component
+	
+
 
 
     /* Loop until the user closes the window */
@@ -261,17 +254,33 @@ int main(void)
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
+        /*Set Shader*/
+		GLCall(glUseProgram(shader));
+        GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
 
-		//glDrawArrays(GL_TRIANGLES, 0, 3); // Draw the triangle using the vertex data in the VBO
+		
+		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0)); // Define the vertex attribute pointer for the vertex data
+		GLCall(glEnableVertexAttribArray(0)); // Enable the vertex attribute array at index 0 
+
+
+
 		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0)); // Draw the triangles using the vertex indices in the IBO
+		//glDrawArrays(GL_TRIANGLES, 0, 3); // Draw the triangle using the vertex data in the VBO
 
-
+        if (r > 1.0f)
+            increment = -increment; // Reverse the increment direction if r exceeds 1.0f
+        else if (r < 0.0f)
+            increment = -increment;
+        r += increment;
 
         /* Swap front and back buffers */
         GLCall(glfwSwapBuffers(window));
 
         /* Poll for and process events */
         GLCall(glfwPollEvents());
+
+
+
     }
 
    

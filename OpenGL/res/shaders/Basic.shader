@@ -10,7 +10,9 @@ void main()
 #shader fragment 
 #version 330 core
 layout (location = 0) out vec4 color; 
+
+uniform vec4 u_Color; // uniform变量可以在CPU端设置一次，然后在GPU端的所有片段着色器中使用。
 void main()
 {
-	color = vec4(1.0, 0.3 ,0.8 , 1.0);
+	color = u_Color; //将uniform变量u_Color的值赋给输出颜色变量color。
 };
