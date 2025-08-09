@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\Application.cpp" />
@@ -172,11 +173,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Render.h" />
+    <ClInclude Include="src\include\Shader.h" />
     <ClInclude Include="src\include\VertexBufferLayout.h" />
     <ClInclude Include="src\include\Resource.h" />
     <ClInclude Include="src\include\Utility.h" />
     <ClInclude Include="src\include\VertexArray.h" />
     <ClInclude Include="src\include\VertexBuffer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\Basic.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

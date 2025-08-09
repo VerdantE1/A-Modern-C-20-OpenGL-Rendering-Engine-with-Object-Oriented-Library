@@ -1,7 +1,7 @@
 #pragma once
 #include <GL/glew.h>
 #include <iostream>
-
+#include <type_traits>
 /* For General */
 #define ASSERT(X) if (!(X)) __debugbreak(); // Accept one predicate expression X and break if it is false
 #define GLCall(X) GLClearError();\
