@@ -5,8 +5,7 @@
 #include <string>
 #include <sstream>
 #include "Utility.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
+#include <Render.h>
 
 
 
@@ -220,16 +219,17 @@ int main(void)
 	};
 
     
-
-    GLuint vao;
-    GLCall(glGenVertexArrays(1, &vao)); // Generate a Vertex Array Object (VAO) to store the vertex attribute state
-    GLCall(glBindVertexArray(vao)); // Bind the VAO to the current context
-
-
+   
+ 
+    
+    
+    VertexArray va;
     VertexBuffer vb(vertices, sizeof(vertices));
+    VertexBufferLayout layout({(float) 3});
+
     IndexBuffer ib(indices, sizeof(indices) / sizeof(unsigned int));
     
-   
+    va.LinkBufferAndLayout(vb, layout);
 
 
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
@@ -259,9 +259,6 @@ int main(void)
         GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
 
 		
-		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0)); // Define the vertex attribute pointer for the vertex data
-		GLCall(glEnableVertexAttribArray(0)); // Enable the vertex attribute array at index 0 
-
 
 
 		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0)); // Draw the triangles using the vertex indices in the IBO
