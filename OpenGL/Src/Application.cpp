@@ -4,13 +4,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include "Utility.h"
-#include <Render.h>
-
-template<typename... Args> static void BindAll(const Args&...  args);
-template<typename... Args> static void UnbindAll(const Args&...  args);
-template <typename T> constexpr bool has_unbind_v = requires(T t) { t.Unbind(); };
-template <typename T> constexpr bool has_bind_v = requires (T t) { t.Bind(); };
+#include <Utility.h>
+#include <Renderer.h>
 
 
 int main(void)
@@ -56,10 +51,11 @@ int main(void)
 
 	// Define the vertices for a triangle
     GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f,  //0
-         0.5f, -0.5f, 0.0f,  //1
-         0.5f, 0.5f, 0.0f,   //2
-        -0.5f, 0.5f,  0.0f   //3
+     //---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
 	};
 
     unsigned int indices[] = {
@@ -67,13 +63,12 @@ int main(void)
         2, 3, 0  // Second triangle
 	};
 
-    
    
  
     /* Vertex Define*/
     VertexArray va;                                 //VAO
     VertexBuffer vb(vertices, sizeof(vertices));    //VBO
-    VertexBufferLayout layout({(float) 3});         //Layout
+    VertexBufferLayout layout({(float) 3,(float)3,(float)2});         //Layout
     va.LinkBufferAndLayout(vb, layout);             //vb interpreted by var layout
   
     /* Index Define */
@@ -81,31 +76,42 @@ int main(void)
 
     /* Shader Define*/
     Shader shader("res/shaders/Basic.shader");
-    
 
-    
+    /* Texture Define*/
+    Texture texture_1("res/textures/Texture1.jpg");
+    texture_1.Bind(); //Bind ourTexture in 0 slot
+    shader.SetUniform1i("u_Texture1", texture_1.GetAssignedSlot());  //We need let shader know where we bind ourtexture
+
+
+    Texture texture_2("res/textures/Texture2.jpg");
+    texture_2.Bind(); //Bind ourTexture in 1 slot
+    shader.SetUniform1i("u_Texture2", texture_2.GetAssignedSlot());  //We need let shader know where we bind ourtexture
+
+
+
+
+
+
     /* Initializing */
     UnbindAll(va, vb, ib, shader);
 
+    Renderer renderer;
+
+
+
     /* User Setting -Color */
     float r = 0.0f;
-	float increment = 0.01f; // Increment value for the red color component
-	
-
-    
-
+    float increment = 0.01f; // Increment value for the red color component
+  
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        GLCall(glClear(GL_COLOR_BUFFER_BIT));   
-
-        BindAll(va, vb, ib, shader);
         
+        renderer.Clear();
+        renderer.Draw(va, ib, shader);
 
-
-
-		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0)); // Draw the triangles using the vertex indices in the IBO
+		
 		//glDrawArrays(GL_TRIANGLES, 0, 3); // Draw the triangle using the vertex data in the VBO
         shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
         if (r > 1.0f)
@@ -133,31 +139,3 @@ int main(void)
 
 
 
-template<typename... Args>
-static void UnbindAll(const Args&...  args)  
-{
-    static int idx = 0;
-    auto lambda = [&](const auto& a) {
-        if constexpr (has_unbind_v<decltype(a)>)
-            a.Unbind();
-        else
-            std::cout << "Warning! " << idx << "parameter don't have Unbind Member!" << std::endl;      
-        };
-    (lambda(args),...);
-
-}
-
-
-template<typename... Args>
-static void BindAll(const Args&...  args)
-{
-	static int idx = 0;
-	auto lambda = [&](const auto& a) {
-		if constexpr (has_unbind_v<decltype(a)>)
-			a.Bind();
-		else
-			std::cout << "Warning! " << idx << "parameter don't have Bind Member!" << std::endl;
-		};
-	(lambda(args), ...);
-
-}

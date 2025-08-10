@@ -1,5 +1,7 @@
 #pragma once
-
+/*
+* Resource means the OpenGl give you a resource,So the m_id is the handle given by OpenGl
+*/
 class Resource
 {
 public:
@@ -21,6 +23,7 @@ public:
 	unsigned int GetID() const { return m_id; } // Returns the resource ID
 	virtual void Bind() const = 0; // Bind the resource to the current context
 	virtual void Unbind() const = 0; // Unbind the resource from the current context
+	
 	
 	
 protected:

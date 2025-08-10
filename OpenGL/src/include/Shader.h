@@ -23,8 +23,8 @@ public:
 	Shader(const std::string& flle_path);
 	~Shader();
 
-	void Bind() const;
-	void Unbind() const;
+	void Bind() const override;
+	void Unbind() const override;
 
 	// Set uniform values
 	void SetUniform1i(const std::string& name, int value);
