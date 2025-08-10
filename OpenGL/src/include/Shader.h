@@ -6,6 +6,7 @@
 #include <string>
 #include <Resource.h>
 #include <Utility.h>
+#include <unordered_map>
 
 struct ShaderProgramSource
 {
@@ -39,5 +40,5 @@ private:
 	int GetUniformLocation(const std::string& name) const;
 	
 
-	
+	mutable std::unordered_map<std::string, int> m_UniformLocationCache;
 };

@@ -7,8 +7,10 @@
 #include "Utility.h"
 #include <Render.h>
 
+template<typename... Args> static void BindAll(const Args&...  args);
 template<typename... Args> static void UnbindAll(const Args&...  args);
 template <typename T> constexpr bool has_unbind_v = requires(T t) { t.Unbind(); };
+template <typename T> constexpr bool has_bind_v = requires (T t) { t.Bind(); };
 
 
 int main(void)
@@ -83,10 +85,6 @@ int main(void)
 
     
     /* Initializing */
-    /*va.Unbind();
-    vb.Unbind();
-    ib.Unbind();
-    shader.Unbind();*/
     UnbindAll(va, vb, ib, shader);
 
     /* User Setting -Color */
@@ -102,10 +100,7 @@ int main(void)
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));   
 
-        va.Bind();
-        vb.Bind();
-        ib.Bind();
-        shader.Bind();
+        BindAll(va, vb, ib, shader);
         
 
 
@@ -149,5 +144,20 @@ static void UnbindAll(const Args&...  args)
             std::cout << "Warning! " << idx << "parameter don't have Unbind Member!" << std::endl;      
         };
     (lambda(args),...);
+
+}
+
+
+template<typename... Args>
+static void BindAll(const Args&...  args)
+{
+	static int idx = 0;
+	auto lambda = [&](const auto& a) {
+		if constexpr (has_unbind_v<decltype(a)>)
+			a.Bind();
+		else
+			std::cout << "Warning! " << idx << "parameter don't have Bind Member!" << std::endl;
+		};
+	(lambda(args), ...);
 
 }

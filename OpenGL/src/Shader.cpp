@@ -3,8 +3,10 @@
 #include <fstream>
 #include <sstream>
 
+
 Shader::Shader(const std::string& file_path):m_FilePath(file_path)
 {
+	
 	ShaderProgramSource source = ParseShaderSource(file_path);
 	m_id = CreateShader(source.vertexShader, source.fragmentShader); //Create and Compile 
 
@@ -187,9 +189,14 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 
 int Shader::GetUniformLocation(const std::string& name) const
 {
+	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+		return m_UniformLocationCache[name];
+
 	GLCall(unsigned int location =	glGetUniformLocation(m_id, name.c_str())); 
 	if (location == -1)
 		std::cout << "Warning: uniform " << name << " doesn't exist!" << std::endl;
+	
+	m_UniformLocationCache[name] = location;
 	return location;
 }
 
