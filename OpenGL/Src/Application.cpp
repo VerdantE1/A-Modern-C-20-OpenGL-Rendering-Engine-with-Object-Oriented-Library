@@ -87,8 +87,8 @@ int main(void)
     texture_2.Bind(); //Bind ourTexture in 1 slot
     shader.SetUniform1i("u_Texture2", texture_2.GetAssignedSlot());  //We need let shader know where we bind ourtexture
 
-
-
+    
+    
 
 
 
@@ -96,7 +96,7 @@ int main(void)
     UnbindAll(va, vb, ib, shader);
 
     Renderer renderer;
-
+    
 
 
     /* User Setting -Color */

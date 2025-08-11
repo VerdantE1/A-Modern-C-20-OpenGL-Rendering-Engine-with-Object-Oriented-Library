@@ -34,7 +34,7 @@ void main()
 	//vec4 texColor = texture(u_Texture1,TexCoord);
 	vec4 texColor = mix(texture(u_Texture1, TexCoord), texture(u_Texture2, TexCoord), 0.5);
 	color = texColor * u_Color; //将uniform变量u_Color的值赋给输出颜色变量color。
-
+	
 };
 
 
