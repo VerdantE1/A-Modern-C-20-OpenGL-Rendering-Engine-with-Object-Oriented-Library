@@ -2,10 +2,10 @@
 #version 430
 layout (location = 0) in vec3 position; //从位于Buffer里的顶点属性槽0读取数据。
 layout (location = 1) in vec3 color;
-
+uniform mat4 u_MVP;
 void main(void)
 {
-	gl_Position = vec4(position.x,position.y,position.z ,1.0);
+	gl_Position = u_MVP * vec4(position.x,position.y,position.z ,1.0);
 }
 
 

@@ -5,7 +5,9 @@
 #include "Matrix.h"
 #include "./2D/IsoscelesTriangle.h"
 #include "DrawDemo.h"
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 void DrawDemo(GLFWwindow* window)
 {
     // 顶点和索引数据
@@ -289,11 +291,28 @@ void DrawCube(GLFWwindow* window)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+
+    // 在渲染前设置MVP
+    glm::mat4 model = model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)); // 摄像机后退3单位
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f),(float)640 / (float)480, 0.1f, 100.0f);
+    glm::mat4 mvp = projection * view * model;
+
+
     // 加载编译shader（自行实现或用你自己的Shader类）
     // 假设你有Shader shader("Cube.vert", "Cube.frag");
     Shader shader("res/shaders/Cube.shader");
     shader.Bind();
 
+
+
+    // 传uniform到shader
+    int mvpLoc = glGetUniformLocation(shader.GetID(), "u_MVP");
+    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+
+
+
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // 线框模式
     glEnable(GL_DEPTH_TEST);
 
     // 设置视口，建议窗口resize时也调用
