@@ -7,6 +7,8 @@
 #include <Resource.h>
 #include <Utility.h>
 #include <unordered_map>
+#include <glm/ext/matrix_float4x4.hpp>
+
 
 struct ShaderProgramSource
 {
@@ -20,6 +22,7 @@ struct ShaderProgramSource
 class Shader :public Resource
 {
 public:
+	Shader() = default;
 	Shader(const std::string& flle_path);
 	~Shader();
 
@@ -30,6 +33,8 @@ public:
 	void SetUniform1i(const std::string& name, int value);
 	void SetUniform1f(const std::string& name, float value);
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
+	void SetUniformMat4fv(const std::string& name, const glm::mat4& matrix);
+
 
 private:
 	std::string m_FilePath;

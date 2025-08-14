@@ -12,6 +12,7 @@ Binding the VBO will make it the current active buffer for the OpenGl Context.Un
 class VertexBuffer : public Resource
 {
 public:
+	VertexBuffer() = default;
 	VertexBuffer(const void* data, unsigned int size);
 	~VertexBuffer() override;
 

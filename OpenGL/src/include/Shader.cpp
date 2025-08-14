@@ -4,6 +4,7 @@
 #include <sstream>
 
 
+
 Shader::Shader(const std::string& file_path):m_FilePath(file_path)
 {
 	
@@ -43,6 +44,13 @@ void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2,
 {
 	GLCall(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
 }
+
+void Shader::SetUniformMat4fv(const std::string& name, const glm::mat4& matrix)
+{
+	int location = GetUniformLocation(name);
+	glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
+}
+
 
 ShaderProgramSource Shader::ParseShaderSource(const std::string filepath)
 {

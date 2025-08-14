@@ -13,7 +13,7 @@ private:
 	unsigned int m_AssignedSlot = -1; //This Slot AssignedSlot by Renderer
 
 public:
-
+	Texture() = default;
 	Texture(const std::string& filepath);
 	~Texture();
 

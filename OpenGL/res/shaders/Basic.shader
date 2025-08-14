@@ -28,12 +28,19 @@ uniform vec4 u_Color;
 uniform sampler2D u_Texture1; 
 uniform sampler2D u_Texture2; 
 
+uniform bool u_UseTexture; //是否使用纹理
 
 void main()
 {
 	//vec4 texColor = texture(u_Texture1,TexCoord);
-	vec4 texColor = mix(texture(u_Texture1, TexCoord), texture(u_Texture2, TexCoord), 0.5);
-	color = texColor * u_Color; //将uniform变量u_Color的值赋给输出颜色变量color。
+	if(u_UseTexture)
+	{
+		vec4 texColor = mix(texture(u_Texture1, TexCoord), texture(u_Texture2, TexCoord), 0.5);
+		color = texColor * u_Color; //将uniform变量u_Color的值赋给输出颜色变量color。
+	}
+	else 
+		color = u_Color; //如果不使用纹理，则直接使用u_Color的值。
+
 	
 };
 
