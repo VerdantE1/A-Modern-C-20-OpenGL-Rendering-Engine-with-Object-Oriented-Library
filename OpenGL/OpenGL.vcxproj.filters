@@ -57,6 +57,9 @@
     <ClCompile Include="src\DrawDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\include\Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Resource.h">
@@ -959,6 +962,9 @@
     <ClInclude Include="src\include\Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\include\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
@@ -1380,11 +1386,14 @@
     <None Include="doc\VertexBuffer.md" />
     <None Include="doc\Shader开发规范.md" />
     <None Include="doc\Shaper使用说明.md" />
-    <None Include="res\shaders\Basic_notex.shader" />
     <None Include="res\shaders\OnePoint.shader" />
     <None Include="doc\VertexArray使用说明.md" />
     <None Include="res\shaders\Triangle.shader" />
     <None Include="res\shaders\AnimationTriangle.shader" />
+    <None Include="res\shaders\TriangleRotate.shader" />
+    <None Include="res\shaders\Cube.shader" />
+    <None Include="res\shaders\vertShader.shader" />
+    <None Include="res\shaders\fragShader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\textures1.jpg">

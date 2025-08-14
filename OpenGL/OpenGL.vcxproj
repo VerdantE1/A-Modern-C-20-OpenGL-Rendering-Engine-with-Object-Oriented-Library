@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\DrawDemo.cpp" />
+    <ClCompile Include="src\include\Utils.cpp" />
     <ClCompile Include="src\include\Texture.cpp" />
     <ClCompile Include="src\include\Texture.h" />
     <ClCompile Include="src\include\Renderer.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="src\include\Renderer.h" />
     <ClInclude Include="src\include\Shader.h" />
     <ClInclude Include="src\include\Shaper.h" />
+    <ClInclude Include="src\include\Utils.h" />
     <ClInclude Include="src\include\VertexBufferLayout.h" />
     <ClInclude Include="src\include\Resource.h" />
     <ClInclude Include="src\include\Utility.h" />
@@ -488,9 +490,12 @@
     <None Include="PROJECT_DOC.md" />
     <None Include="res\shaders\AnimationTriangle.shader" />
     <None Include="res\shaders\Basic.shader" />
-    <None Include="res\shaders\Basic_notex.shader" />
+    <None Include="res\shaders\Cube.shader" />
+    <None Include="res\shaders\fragShader.shader" />
     <None Include="res\shaders\OnePoint.shader" />
     <None Include="res\shaders\Triangle.shader" />
+    <None Include="res\shaders\TriangleRotate.shader" />
+    <None Include="res\shaders\vertShader.shader" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />
