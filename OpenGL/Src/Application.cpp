@@ -32,12 +32,9 @@ int main(void)
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 
 
-    while (!glfwWindowShouldClose(window))
-    {
-        DrawCube(window);
-        GLCall(glfwSwapBuffers(window));
-        GLCall(glfwPollEvents());
-    }
+
+    DrawMultiCube(window);
+
 
     //DrawDemo(window);
    
