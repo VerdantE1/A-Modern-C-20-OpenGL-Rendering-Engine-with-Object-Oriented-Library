@@ -551,7 +551,7 @@ void DrawCube_And_Pyramid(GLFWwindow* window, bool enbaleAnimation)
 
 
     Renderer renderer;
-    renderer.SetPolygonMode(true).SetDepthTest(true); //启动线框模式和深度测试
+    renderer.SetPolygonMode(false).SetDepthTest(true); //启动线框模式和深度测试
 
     while (!glfwWindowShouldClose(window))
     {

@@ -11,6 +11,7 @@ class Renderer;
 
 class Shaper {
 public:
+    //verticesSizeÊÇ×Ö½ÚÊý£¬
     Shaper(const void* vertices,unsigned int verticesSize, const unsigned int* indices, unsigned int indicesSize, std::vector<VertexBufferLayout::SupportedTypes> acnt_vec)
         : vb(vertices, verticesSize), ib(indices,indicesSize),layout(acnt_vec)
     {

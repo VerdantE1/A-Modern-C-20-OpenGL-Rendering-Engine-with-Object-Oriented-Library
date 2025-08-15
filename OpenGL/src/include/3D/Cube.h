@@ -33,7 +33,7 @@ class Cube :public Shaper {
 
 public:
 	Cube():
-		Shaper(vertices, sizeof(vertices)/sizeof(vertices[0]), indices, sizeof(indices) / sizeof(unsigned int), {(float)3})
+		Shaper(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(unsigned int), {(float)3})
 	{
 		va.LinkBufferAndLayout(vb, layout);
 	}
