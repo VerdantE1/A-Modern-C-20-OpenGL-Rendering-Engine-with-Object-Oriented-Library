@@ -52,8 +52,13 @@ int main(void)
 
 	//DrawCube_And_Pyramid(window);
 
-
-	displaySoloar(window, glfwGetTime());
+        //========================‰÷»æ=====================================================
+    while (!glfwWindowShouldClose(window))
+    {
+        displaySoloar(window, glfwGetTime());
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
 
     std::cout << "Loop exited. Terminating." << std::endl;
     glfwTerminate();
