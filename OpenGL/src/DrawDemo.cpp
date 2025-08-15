@@ -244,15 +244,15 @@ void DrawCube(GLFWwindow* window)
     // 红色立方体顶点数据（每个顶点：位置x,y,z，颜色r,g,b，纹理u,v）
     GLfloat vertices[] = {
         // 前面
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
         // 后面
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
     };
 
     // 立方体索引数据（每个面两个三角形，共12个三角形）
@@ -272,108 +272,46 @@ void DrawCube(GLFWwindow* window)
     };
 
 
-    // 创建VAO、VBO、EBO
-    unsigned int VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    VertexArray va;
+    VertexBuffer vb(vertices, sizeof(vertices));
+    IndexBuffer ib(indices, sizeof(indices) / sizeof(unsigned int));
+    VertexBufferLayout layout({ (float)3 });
+	va.LinkBufferAndLayout(vb, layout);
 
-    // 绑定并上传数据
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // 设置顶点属性
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    Shader shader("res/shaders/Cube.shader");
+    shader.Bind();
+    
+	// 获取窗口的宽度和高度
+    int width, height;
+    GLCall(glfwGetFramebufferSize(window, &width, &height));
+    float aspect = (float)width / (float)height;
 
 
     // 在渲染前设置MVP
-    glm::mat4 model = model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)); // 摄像机后退3单位
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f),(float)640 / (float)480, 0.1f, 100.0f);
-    glm::mat4 mvp = projection * view * model;
+    glm::mat4 model = model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,-5.0f));
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, -3.0f)); // 摄像机后退3单位
+    glm::mat4 mv= view * model;
 
-
-    // 加载编译shader（自行实现或用你自己的Shader类）
-    // 假设你有Shader shader("Cube.vert", "Cube.frag");
-    Shader shader("res/shaders/Cube.shader");
-    shader.Bind();
+    glm::mat4 projection = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
 
 
 
-    // 传uniform到shader
-    int mvpLoc = glGetUniformLocation(shader.GetID(), "u_MVP");
-    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+    shader.SetUniformMat4fv("mv_matrix", mv);
+	shader.SetUniformMat4fv("proj_matrix", projection);
 
 
-
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // 线框模式
-    glEnable(GL_DEPTH_TEST);
-
-    // 设置视口，建议窗口resize时也调用
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height);
+    Renderer renderer;
+	renderer.SetPolygonMode(true).SetDepthTest(true); //启动线框模式和深度测试
 
     while (!glfwWindowShouldClose(window))
     {
+        renderer.Clear();
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        shader.Bind();
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        renderer.Draw(va,ib,shader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    // 后续可直接用这些数据创建VAO/VBO/IBO并渲染
- //   VertexArray va;
-
-    //VertexBuffer vb(vertices, sizeof(vertices));
- //   VertexBufferLayout layout({ (float)3});
- //   va.LinkBufferAndLayout(vb, layout);
- //   IndexBuffer ib(indices, sizeof(indices) / sizeof(unsigned int));
-
- //   /*上述是通用逻辑,顶点和index是通用的，就是颜色是固定红色*/
- //   
-
- //   Shader shader("res/shaders/Cube.shader");
-
- //   // 构建透视矩阵
-    //int width, height;
-    //glfwGetFramebufferSize(window, &width, &height); // 获取窗口的宽度和高度
-    //float aspect = (float)width / (float)height;
-    //glm::mat4 pMat= glm::perspective(1.0f, aspect, 0.1f, 1000.0f); // 1.0472f是60度的弧度值
-
- //   // 构建视图矩阵、模型矩阵和MV矩阵
-    //glm::mat vMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)); // 变换摄像机的位置。向后移动3个单位
-    //glm::mat mMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubeLocX, cubeLocY, cubeLocZ)); // 变换物体的世界位置。将立方体移动
-
-    //shader.SetUniformMat4fv("u_MvMatrix", vMat * mMat); // 设置MV矩阵
-    //shader.SetUniformMat4fv("u_ProjMatrix", pMat); // 设置投影矩阵
-
-
-    //UnbindAll(va, vb, ib, shader);
-  //  Renderer renderer;
-  //  while (!glfwWindowShouldClose(window))
-  //  {
-  //      renderer.Clear();
-        //glEnable(GL_DEPTH_TEST); // 启用深度测试
-  //      glDepthFunc(GL_LEQUAL);
-  //      BindAll(va, vb, ib, shader);
-  //      GLCall(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr));
-
-
-  //      GLCall(glfwSwapBuffers(window));
-  //      GLCall(glfwPollEvents());
-  //  }
-  //  
+ 
 
 }

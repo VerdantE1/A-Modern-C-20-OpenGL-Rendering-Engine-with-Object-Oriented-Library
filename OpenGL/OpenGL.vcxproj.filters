@@ -1385,15 +1385,16 @@
     <None Include="PROJECT_DOC.md" />
     <None Include="doc\VertexBuffer.md" />
     <None Include="doc\Shader开发规范.md" />
-    <None Include="doc\Shaper使用说明.md" />
     <None Include="res\shaders\OnePoint.shader" />
     <None Include="doc\VertexArray使用说明.md" />
     <None Include="res\shaders\Triangle.shader" />
     <None Include="res\shaders\AnimationTriangle.shader" />
     <None Include="res\shaders\TriangleRotate.shader" />
     <None Include="res\shaders\Cube.shader" />
-    <None Include="res\shaders\vertShader.shader" />
+    <None Include="res\shaders\Cube1.shader" />
     <None Include="res\shaders\fragShader.shader" />
+    <None Include="doc\Renderer.md" />
+    <None Include="doc\Utility.md" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\textures1.jpg">
