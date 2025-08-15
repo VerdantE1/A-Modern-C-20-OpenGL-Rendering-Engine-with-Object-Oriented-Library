@@ -1,7 +1,8 @@
 #include "Renderer.h"
+#include "Utility.h"
+#include "IndexBuffer.h"
 
-
-void Renderer::Clear()
+void Renderer::Clear() const
 {
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
@@ -34,6 +35,12 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 	BindAll(va, ib, shader);
 	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, (void*)0)); 
 
+}
+
+void Renderer::DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const
+{
+	BindAll(va,ib,shader);
+	GLCall(glDrawElementsInstanced(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, (void*)0, instanceCount));
 }
 
 

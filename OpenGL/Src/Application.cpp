@@ -33,12 +33,10 @@ int main(void)
 
 
 
-    DrawMultiCube(window);
+ 
 
 
     //DrawDemo(window);
-   
-
     //DrawPoint(window);
 	//DrawAnimationOnePoint_Scale(window);
 	//DrawTriangle(window);
@@ -46,6 +44,12 @@ int main(void)
 	//DrawTriangleIsosceles(window);
 	//DrawAnimationTrianlge(window);
     //DrawAnimationTrianlge_Move(window, glfwGetTime());
+
+	//DrawCube(window);
+    //DrawMultiCube(window);
+	//DrawMultiCubeIntances(window);
+
+	DrawCube_And_Pyramid(window);
 
     std::cout << "Loop exited. Terminating." << std::endl;
     glfwTerminate();

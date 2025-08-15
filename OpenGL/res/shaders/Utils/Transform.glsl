@@ -1,8 +1,3 @@
-#pragma once
-#include <glm/fwd.hpp>
-#include <glm/glm.hpp>
-
-using namespace glm;
 // 构建并返回平移矩阵 
 mat4 buildTranslate(float x, float y, float z)
 {

@@ -2,6 +2,11 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <type_traits>
+#include <VertexArray.h>
+#include <IndexBuffer.h>
+#include <Shader.h>
+
+
 /* For General */
 #define ASSERT(X) if (!(X)) __debugbreak(); // Accept one predicate expression X and break if it is false
 #define GLCall(X) GLClearError();\
@@ -39,7 +44,7 @@ void UnbindAll(const Args&...  args)
 		if constexpr (has_unbind_v<decltype(a)>)
 			a.Unbind();
 		else
-			std::cout << "Warning! " << idx << "parameter don't have Unbind Member!" << std::endl;
+			std::cout << "Warning! " << idx << " parameter don't have Unbind Member!" << std::endl;
 		};
 	(lambda(args), ...);
 
@@ -49,12 +54,14 @@ void UnbindAll(const Args&...  args)
 template<typename... Args>
 void BindAll(const Args&...  args)
 {
-	static int idx = 0;
+	int idx = 0;
 	auto lambda = [&](const auto& a) {
-		if constexpr (has_unbind_v<decltype(a)>)
+		idx++;
+		if constexpr (has_bind_v<decltype(a)>)
 			a.Bind();
 		else
-			std::cout << "Warning! " << idx << "parameter don't have Bind Member!" << std::endl;
+			std::cout << "Warning! " << idx << " parameter don't have Bind Member!" << std::endl;
+
 		};
 	(lambda(args), ...);
 

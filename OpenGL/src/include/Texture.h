@@ -1,5 +1,6 @@
 #pragma once
-#include "Renderer.h"
+#include "Resource.h"
+#include <string>
 /*
 * Texture will be assigned in orderly from 0 start. This is force for unifying the bind interface.
 */

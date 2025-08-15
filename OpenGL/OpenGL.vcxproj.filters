@@ -959,10 +959,16 @@
     <ClInclude Include="src\include\2D\IsoscelesTriangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Matrix.h">
+    <ClInclude Include="res\shaders\Utils\Transform.glsl">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\include\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\3D\Cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\AllShaperTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1392,9 +1398,10 @@
     <None Include="res\shaders\TriangleRotate.shader" />
     <None Include="res\shaders\Cube.shader" />
     <None Include="res\shaders\Cube1.shader" />
-    <None Include="res\shaders\fragShader.shader" />
     <None Include="doc\Renderer.md" />
     <None Include="doc\Utility.md" />
+    <None Include="res\shaders\CubeMultiInstances.shader" />
+    <None Include="doc\Shaper.md" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\textures1.jpg">

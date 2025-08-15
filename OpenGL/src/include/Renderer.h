@@ -1,21 +1,21 @@
 #pragma once
-#include <VertexArray.h>
-#include <VertexBuffer.h>
-#include <IndexBuffer.h>
-#include <Shader.h>
-#include <Utility.h>
-#include <Texture.h>
+
+class VertexArray;
+class IndexBuffer;
+class Shader;
 
 class Renderer
 {
 public:
 
-	void Clear();
+	void Clear() const;
 
 	//通用的以VertexArray, IndexBuffer和Shader的渲染并以三角形为图元的渲染函数
 	// 该函数会自动绑定VAO, IBO和Shader，并在渲
 	void Draw(const VertexArray& va, const IndexBuffer& ib , const Shader& shader) const;
+	//void Draw(const Shaper& sp, const Shader& shader) const;
 
+	void DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const; //由用户确保shader符合instance的要求
 	void ClearColor();
 
 	// 是否使用线框模式和深度测试（可读写）

@@ -182,7 +182,9 @@
   <ItemGroup>
     <ClInclude Include="src\DrawDemo.h" />
     <ClInclude Include="src\include\2D\IsoscelesTriangle.h" />
-    <ClInclude Include="src\include\Matrix.h" />
+    <ClInclude Include="res\shaders\Utils\Transform.glsl" />
+    <ClInclude Include="src\include\3D\Cube.h" />
+    <ClInclude Include="src\include\AllShaperTypes.h" />
     <ClInclude Include="src\include\Renderer.h" />
     <ClInclude Include="src\include\Shader.h" />
     <ClInclude Include="src\include\Shaper.h" />
@@ -485,6 +487,7 @@
   <ItemGroup>
     <None Include="doc\Renderer.md" />
     <None Include="doc\Shader开发规范.md" />
+    <None Include="doc\Shaper.md" />
     <None Include="doc\Utility.md" />
     <None Include="doc\VertexArray使用说明.md" />
     <None Include="doc\VertexBuffer.md" />
@@ -492,7 +495,7 @@
     <None Include="res\shaders\AnimationTriangle.shader" />
     <None Include="res\shaders\Basic.shader" />
     <None Include="res\shaders\Cube.shader" />
-    <None Include="res\shaders\fragShader.shader" />
+    <None Include="res\shaders\CubeMultiInstances.shader" />
     <None Include="res\shaders\OnePoint.shader" />
     <None Include="res\shaders\Triangle.shader" />
     <None Include="res\shaders\TriangleRotate.shader" />
