@@ -1,5 +1,6 @@
 #pragma once
 #include "Shaper.h"
+#include "Renderer.h"
 class Cube :public Shaper {
 	inline static constexpr float vertices[] = {
 		// Ç°Ãæ

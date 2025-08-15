@@ -12,7 +12,10 @@
 #include "Texture.h"
 #include "Renderer.h"
 
+#include "Camera.h"
+
 #include "AllShaperTypes.h"
+#include <Transform.h>
 void DrawDemo(GLFWwindow* window)
 {
     // 顶点和索引数据
@@ -527,59 +530,72 @@ void DrawMultiCubeIntances(GLFWwindow* window, bool enbaleAnimation)
 
 void DrawCube_And_Pyramid(GLFWwindow* window, bool enbaleAnimation)
 {
-
-    
-    Cube cube;
     Shader shader("res/shaders/Cube.shader");
+ 
+    Cube cube;
+	Pyramid pyramid;
 
-    // 获取窗口的宽度和高度
+
+    // MVP设置同 Cube
     int width, height;
     GLCall(glfwGetFramebufferSize(window, &width, &height));
     float aspect = (float)width / (float)height;
 
-
-    // 在渲染前设置MVP
-    glm::mat4 model = model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, -3.0f)); // 摄像机后退3单位
-    glm::mat4 mv = view * model;
-
-    glm::mat4 projection = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
-
-
+    // 摄像机初始化
+    Camera camera(
+        glm::vec3(0, 0, 3), // position
+        glm::vec3(0, 0, 0),  // target
+        glm::vec3(0, 1, 0),  // up
+        70.0f, aspect, 0.1f, 100.0f
+    );
 
 
+    // 初始化物体的Transform
+    Transform cubeTransform;
+    cubeTransform.setPosition(0.0f, 0.0f, -5.0f); // 立方体后移
 
+    Transform pyramidTransform;
+    pyramidTransform.setPosition(0.0f, -2.0f, -5.0f); // 金字塔偏下
+
+	glm::mat4 view = camera.GetViewMatrix();              //View Matrix
+	glm::mat4 projection = camera.GetProjectionMatrix();  //Projection Matrix
 
     Renderer renderer;
     renderer.SetPolygonMode(false).SetDepthTest(true); //启动线框模式和深度测试
 
     while (!glfwWindowShouldClose(window))
     {
-        auto currentTime = static_cast<float>(glfwGetTime());
-        if (enbaleAnimation)
-        {
-            glm::mat4 tMat = glm::translate(glm::mat4(1.0f), glm::vec3(sin(0.35 * currentTime) * 2.0f, cos(0.52f * currentTime) * 2.0f, sin(0.7f * currentTime) * 2.0f)); //平移不会改变大小
-            //glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f * currentTime * currentTime, glm::vec3(0.0f, 0.0f, 1.0f)); 试试二次曲线，旋转速度随时间增大而增大而不是纯线性增大，挺有意思的
-            glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f * currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
-            rMat = glm::rotate(rMat, 1.75f * currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
-            rMat = glm::rotate(rMat, 1.75f * currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
-            //1.75f * currentTime是旋转速度，可以根据需要调整
-
-            glm::mat4 mMat = tMat * rMat; // 先平移后旋转
-
-            shader.SetUniformMat4fv("mv_matrix", mMat * mv);
-            shader.SetUniformMat4fv("proj_matrix", projection);
-
-        }
-        else
-        {
-            shader.SetUniformMat4fv("mv_matrix", mv);
-            shader.SetUniformMat4fv("proj_matrix", projection);
-        }
-
-
         renderer.Clear();
-        renderer.Draw(cube.GetVertexArray(),cube.GetIndexBuffer(), shader);
+        float currentTime = static_cast<float>(glfwGetTime());
+
+        // ====== Cube绘制 ======
+        glm::mat4 cubeMV = view * cubeTransform.getMatrix();
+
+        // 动画：旋转 + 圆周运动
+        float animAngle = 1.75f * currentTime;
+        float animX = sin(0.35f * currentTime) * 2.0f;
+        float animY = cos(0.52f * currentTime) * 2.0f;
+        float animZ = sin(0.7f * currentTime) * 2.0f;
+
+        // 更新Transform属性
+        cubeTransform.setPosition(animX, animY, animZ - 5.0f);
+        cubeTransform.setRotation(0.0f, animAngle, animAngle);
+
+        //std::cout << camera.GetFrustumRectAtZ(-5) << std::endl;
+
+        // --- 设置shader & 绘制Cube ---
+        shader.SetUniformMat4fv("mv_matrix", view * cubeTransform.getMatrix());
+        shader.SetUniformMat4fv("proj_matrix", projection);
+
+        renderer.Draw(cube, shader);
+
+        // ====== Pyramid绘制 ======
+        pyramidTransform.setRotation(animX, 0.0f, 0.0f);
+        pyramidTransform.setScale(1.0f, 1.0f, 1.0f);     
+
+
+        shader.SetUniformMat4fv("mv_matrix", view * pyramidTransform.getMatrix());
+		renderer.Draw(pyramid,shader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

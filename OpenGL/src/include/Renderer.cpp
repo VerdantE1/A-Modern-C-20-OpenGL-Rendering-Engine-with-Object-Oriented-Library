@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "Utility.h"
 #include "IndexBuffer.h"
+#include "Shaper.h"
 
 void Renderer::Clear() const
 {
@@ -35,6 +36,11 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 	BindAll(va, ib, shader);
 	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, (void*)0)); 
 
+}
+
+void Renderer::Draw(const Shaper& sp, const Shader& shader) const
+{
+	Draw(sp.GetVertexArray(), sp.GetIndexBuffer(), shader);
 }
 
 void Renderer::DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const

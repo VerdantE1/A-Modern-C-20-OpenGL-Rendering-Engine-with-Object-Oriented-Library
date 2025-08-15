@@ -20,10 +20,10 @@ public:
     virtual ~Shaper() = default;
     virtual void Draw(Shader& shader, const Renderer& renderer) = 0;
 
-    const VertexArray& GetVertexArray() { return va; }
-	const VertexBuffer& GetVertexBuffer() { return vb; }
-    const IndexBuffer& GetIndexBuffer() { return ib; }
-	const VertexBufferLayout& GetVertexBufferLayout() { return layout; }
+    const VertexArray& GetVertexArray() const { return va; }
+	const VertexBuffer& GetVertexBuffer() const { return vb; }
+    const IndexBuffer& GetIndexBuffer() const { return ib; }
+	const VertexBufferLayout& GetVertexBufferLayout() const { return layout; }
 
 protected:
     VertexArray va;

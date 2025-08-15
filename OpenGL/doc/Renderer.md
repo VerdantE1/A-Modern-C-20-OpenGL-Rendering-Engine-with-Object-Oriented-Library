@@ -8,6 +8,8 @@
   - 清除颜色与深度缓冲（确保下一帧从干净的缓冲开始渲染）。
 - ``void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const``;
   - 使用给定 VA/IB/Shader进行索引绘制。	通用的以VertexArray, IndexBuffer和Shader的渲染并以三角形为图元的渲染函数。该函数会调用BindAll自动绑定VAO, IBO和Shader.
+- ``void Draw(const Shape& sp, const Shader& shader) const``;
+  - 使用给定 Shape 和 Shader 进行绘制。底层调用Draw(va, ib, shader) 
 - ``void ClearColor();``
   - 设置清屏颜色（内部通常调用 glClearColor）。
 - ``const Renderer& SetPolygonMode(bool mode) const;``
