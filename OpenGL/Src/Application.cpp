@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Utility.h"
 #include "DrawDemo.h"
+#include "SolarSystem.h"
 int main(void)
 {
     if (!glfwInit())
@@ -49,7 +50,10 @@ int main(void)
     //DrawMultiCube(window);
 	//DrawMultiCubeIntances(window);
 
-	DrawCube_And_Pyramid(window);
+	//DrawCube_And_Pyramid(window);
+
+
+	displaySoloar(window, glfwGetTime());
 
     std::cout << "Loop exited. Terminating." << std::endl;
     glfwTerminate();

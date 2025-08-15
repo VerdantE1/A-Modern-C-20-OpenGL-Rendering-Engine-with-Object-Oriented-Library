@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\SolarSystem.cpp" />
     <ClCompile Include="src\DrawDemo.cpp" />
     <ClCompile Include="src\include\Utils.cpp" />
     <ClCompile Include="src\include\Texture.cpp" />
@@ -181,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="doc\Camera.md" />
+    <ClInclude Include="src\SolarSystem.h" />
     <ClInclude Include="src\include\ViewUtils\Camera.h" />
     <ClInclude Include="src\DrawDemo.h" />
     <ClInclude Include="src\include\2D\IsoscelesTriangle.h" />
@@ -502,6 +504,7 @@
     <None Include="res\shaders\Cube.shader" />
     <None Include="res\shaders\CubeMultiInstances.shader" />
     <None Include="res\shaders\OnePoint.shader" />
+    <None Include="res\shaders\SoloarSystem.shader" />
     <None Include="res\shaders\Triangle.shader" />
     <None Include="res\shaders\TriangleRotate.shader" />
     <None Include="res\shaders\Cube1.shader" />

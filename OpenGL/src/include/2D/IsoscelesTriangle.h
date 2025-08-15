@@ -1,5 +1,6 @@
 #pragma once
 #include "Shaper.h"
+#include "Renderer.h"
 
 class IsoscelesTriangle : public Shaper {
     static constexpr GLfloat vertices[] = {

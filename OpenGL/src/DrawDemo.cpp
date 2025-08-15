@@ -237,15 +237,6 @@ void DrawAnimationTrianlge_Move(GLFWwindow* window, float currentTime)
     }
 }
 
-void DrawSolarSystem(GLFWwindow* windows)
-{
-
-
-}
-
-
-
-
 void DrawCube(GLFWwindow* window,bool enbaleAnimation)
 {
 
@@ -603,3 +594,5 @@ void DrawCube_And_Pyramid(GLFWwindow* window, bool enbaleAnimation)
 
 
 }
+
+

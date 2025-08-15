@@ -13,6 +13,9 @@ public:
     friend glm::mat4 operator*(const glm::mat4& m, const Transform& t);
 
     Transform() = default;
+    Transform(glm::mat4 rhs ) {
+		setMatrix(rhs); // 默认构造函数，允许mat4->Transform转换
+    }
 
     void setPosition(float x, float y, float z) { 
         position = glm::vec3(x, y, z);

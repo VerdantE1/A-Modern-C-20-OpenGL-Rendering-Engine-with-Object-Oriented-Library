@@ -24,6 +24,8 @@ glm::mat4 modelMatrix = t.GetMatrix();
 Transform类将平移、旋转、缩放整合为一个变换矩阵，渲染时直接用于模型变换，让物体在三维空间中灵活变换。只包含基础变换，不处理复杂的变换组合。复杂的变换组合请用多个Transform对象或其他变换类。
 Transform类设有缓存机制。若属性未改变，则返回缓存的变换矩阵，避免重复计算，提高性能。若调用改变参数的方法（如`SetPosition`、`SetRotation`等），则会清除缓存，确保下次获取矩阵时重新计算。
 Transform只能由set方法更改内部属性，其他方法（如`GetMatrix`）不会修改属性。这样可以确保变换矩阵的正确性和一致性。
+Transform的任意改变都将使得变换矩阵被标记为“脏”（dirty）。
+任何修改过Transform属性的方法（如`SetPosition`、`SetRotation`等）都会清除变换矩阵缓存，确保下次获取矩阵时重新计算，且矩阵以单位矩阵开始计算。
 
 setMatrix方法用于直接设置变换矩阵，适用于需要手动控制变换的场景。
 

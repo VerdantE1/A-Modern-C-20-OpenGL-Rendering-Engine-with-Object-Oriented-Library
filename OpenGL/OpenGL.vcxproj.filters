@@ -60,6 +60,9 @@
     <ClCompile Include="src\include\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\SolarSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Resource.h">
@@ -983,6 +986,9 @@
     <ClInclude Include="src\include\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\SolarSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
@@ -1415,6 +1421,7 @@
     <None Include="res\shaders\CubeMultiInstances.shader" />
     <None Include="doc\Shaper.md" />
     <None Include="doc\Transform.md" />
+    <None Include="res\shaders\SoloarSystem.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\textures1.jpg">

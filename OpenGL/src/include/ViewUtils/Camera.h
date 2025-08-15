@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
+
 struct FrustumRect {
 	float left, right, bottom, top, z;
 };
