@@ -6,41 +6,97 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Utility.h"
+#include "Texture.h"  // 添加纹理头文件
 #include "Ds/TransformStack.h"
 #include "Globals.h"
 
 class GLFWwindow;
 
+// 全局变量声明
 TransformStack transformStk;
+
+// 全局纹理对象 - 在整个程序生命周期中保持
+Texture* sunTexture = nullptr;
+Texture* earthTexture = nullptr;
+Texture* moonTexture = nullptr;
+
+// 全局着色器和形状对象 - 避免每帧重新创建
+Shader* solarShader = nullptr;
+Pyramid* Sun = nullptr;
+Pyramid* Earth = nullptr;
+Pyramid* Moon = nullptr;
+
+void Solarinit()
+{
+    // 只初始化一次纹理对象
+    if (sunTexture == nullptr) {
+        sunTexture = new Texture("res/textures/2k_sun.jpg",
+            TextureFilterMode::LINEAR,
+            TextureFilterMode::LINEAR_MIPMAP_LINEAR,
+            TextureWrapMode::REPEAT,
+            TextureWrapMode::REPEAT,
+            true,  // 生成mipmap
+            true); // 垂直翻转
+
+        earthTexture = new Texture("res/textures/2k_earth_clouds.jpg",
+            TextureFilterMode::LINEAR,
+            TextureFilterMode::LINEAR_MIPMAP_LINEAR,
+            TextureWrapMode::REPEAT,
+            TextureWrapMode::REPEAT,
+            true,  // 生成mipmap
+            true); // 垂直翻转
+
+        moonTexture = new Texture("res/textures/2k_mercury.jpg",
+            TextureFilterMode::LINEAR,
+            TextureFilterMode::LINEAR_MIPMAP_LINEAR,
+            TextureWrapMode::REPEAT,
+            TextureWrapMode::REPEAT,
+            true,  // 生成mipmap
+            true); // 垂直翻转
+
+        // 初始化着色器（避免每帧重新加载）
+        solarShader = new Shader("res/shaders/SoloarSystem.shader");
+
+        // 初始化形状对象
+        Sun = new Pyramid();
+        Earth = new Pyramid();
+        Moon = new Pyramid();
+
+        // 打印初始化信息
+        std::cout << "Solar System Initialized:" << std::endl;
+        std::cout << "Sun texture slot: " << sunTexture->GetAssignedSlot() << std::endl;
+        std::cout << "Earth texture slot: " << earthTexture->GetAssignedSlot() << std::endl;
+        std::cout << "Moon texture slot: " << moonTexture->GetAssignedSlot() << std::endl;
+    }
+}
 
 void displaySoloar(GLFWwindow* window, double currentTime)
 {
     //=========================初始化========================================
+    // 摄像机每帧更新（因为可能需要动态调整）
     Camera camera(
-        glm::vec3(0, 0, 10),  // position
+        glm::vec3(0, 0, 35),  // position
         glm::vec3(0, 0, 0),   // target
         glm::vec3(0, 1, 0),   // up
         45.0f, (float)g_WindowWidth / (float)g_WindowHeight, 0.1f, 100.0f
     );
 
-    Shader shader("res/shaders/SoloarSystem.shader");
+    // 渲染器每帧创建（轻量级对象）
     Renderer renderer;
-    Cube Earth, Moon;
-    Pyramid Sun;
-
-    renderer.SetDepthTest(true).SetPolygonMode(false).SetCullFace(true);
+    renderer.SetDepthTest(true).SetPolygonMode(false).SetCullFace(false);
     renderer.Clear();
 
     //==========================设置变换矩阵========================================
 
-    //获取投影矩阵P
-    Transform porjectionTransform = camera.GetProjectionMatrix();
-    transformStk.Push(porjectionTransform);
+    // 获取投影矩阵P
+    Transform projectionTransform = camera.GetProjectionMatrix();
+    transformStk.Push(projectionTransform);
 
-    //获取视图矩阵V
+    // 获取视图矩阵V
     Transform viewTransform = camera.GetViewMatrix();
     transformStk.Push(viewTransform);
 
+    // Transform对象每帧创建（用于计算当前帧的变换）
     Transform earthTransformPos, moonTransformPos, sunTransformPos;
     Transform earthTransformRotate, moonTransformRotate, sunTransformRotate;
 
@@ -48,35 +104,81 @@ void displaySoloar(GLFWwindow* window, double currentTime)
     sunTransformPos.setPosition(0.0f, 0.0f, 0.0f);
     transformStk.Push(sunTransformPos);
 
-    sunTransformRotate.setRotation((float)currentTime, 0, 0);
+    sunTransformRotate.setRotation((float)currentTime * 0.3f, 0, 0);  // 减慢太阳自转
+    sunTransformRotate.setScale(1.2f, 1.2f, 1.2f);  // 让太阳稍大一些
     transformStk.Push(sunTransformRotate);
 
-    shader.SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
-    renderer.Draw(Sun, shader);
+    solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
+    solarShader->SetUniform1i("objectType", 0); // sun
+    renderer.Draw(*Sun, *solarShader, *sunTexture);
     transformStk.Pop();
 
     //----------------------------地球------------------------------------------
-    earthTransformPos.setPosition(sin((float)currentTime) * 8.0, 0.0f, cos((float)currentTime) * 4.0);
+    // 地球公转轨道 - 保持您原有的设置但稍作调整
+    float earthOrbitSpeed = (float)currentTime * 0.3f;  // 调整地球公转速度
+    float earthX = sin(earthOrbitSpeed) * 18.0f;
+    float earthZ = cos(earthOrbitSpeed) * 14.0f;
+    
+    earthTransformPos.setPosition(earthX, 0.0f, earthZ);
     transformStk.Push(earthTransformPos);
 
-    earthTransformRotate.setRotation(0.0f, (float)currentTime, 0.0f);
+    earthTransformRotate.setRotation(0.0f, (float)currentTime * 2.0f, 0.0f);  // 地球快速自转
     earthTransformRotate.setScale(0.5f, 0.5f, 0.5f);
     transformStk.Push(earthTransformRotate);
 
-    shader.SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
-    renderer.Draw(Earth, shader);
+    solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
+    solarShader->SetUniform1i("objectType", 1); // earth
+    renderer.Draw(*Earth, *solarShader, *earthTexture);
     transformStk.Pop();
 
     //----------------------------月球------------------------------------------
-    moonTransformPos.setPosition(0, sin((float)currentTime) * 1.0, cos((float)currentTime) * 1.0f);
+    // 改进的月球轨道系统
+    float moonOrbitSpeed = (float)currentTime * 1.5f;  // 月球公转速度（比地球快一些，但合理）
+    float moonOrbitRadius = 2.0f;  // 月球轨道半径（相对于地球）
+    
+    // 月球相对于地球的位置
+    float moonLocalX = sin(moonOrbitSpeed) * moonOrbitRadius;
+    float moonLocalZ = cos(moonOrbitSpeed) * moonOrbitRadius;
+    
+    // 添加轻微的轨道倾斜效果
+    float orbitTilt = sin(moonOrbitSpeed * 0.8f) * 0.3f;  // 轻微的上下浮动
+    
+    // 月球最终位置 = 地球位置 + 月球相对地球的位置
+    moonTransformPos.setPosition(
+        moonLocalX, 
+        orbitTilt,  // 轨道倾斜产生的垂直位移
+        moonLocalZ
+    );
     transformStk.Push(moonTransformPos);
 
-    moonTransformRotate.setRotation(0.0f, (float)currentTime, 0.0f);
-    moonTransformRotate.setScale(0.2f, 0.2f, 0.2f);
+    // 月球自转（稍微比公转慢一点，产生潮汐锁定的近似效果）
+    moonTransformRotate.setRotation(0.0f, moonOrbitSpeed * 0.9f, 0.0f);
+    moonTransformRotate.setScale(0.2f, 0.2f, 0.2f);  // 保持月球较小的尺寸
     transformStk.Push(moonTransformRotate);
 
-    shader.SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
-    renderer.Draw(Moon, shader);
+    solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
+    solarShader->SetUniform1i("objectType", 2); // moon
+    renderer.Draw(*Moon, *solarShader, *moonTexture);
 
     transformStk.Clear(); // 清空变换栈，准备下一个物体的变换
+}
+
+// 清理函数 - 在程序结束时调用
+void SolarCleanup()
+{
+    delete sunTexture;
+    delete earthTexture;
+    delete moonTexture;
+    delete solarShader;
+    delete Sun;
+    delete Earth;
+    delete Moon;
+    
+    sunTexture = nullptr;
+    earthTexture = nullptr;
+    moonTexture = nullptr;
+    solarShader = nullptr;
+    Sun = nullptr;
+    Earth = nullptr;
+    Moon = nullptr;
 }

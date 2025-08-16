@@ -7,6 +7,7 @@
 #include "Globals.h"
 
 
+
 // Init Global variables
 void General_Init(GLFWwindow* window)
 {
@@ -66,6 +67,9 @@ int main(void)
     //========================渲染=====================================================
 	General_Init(window);
 
+    Solarinit(); // 在main函数中，在渲染循环开始前调用
+
+    // 渲染循环
     while (!glfwWindowShouldClose(window))
     {
         displaySoloar(window, glfwGetTime());
@@ -73,10 +77,14 @@ int main(void)
         glfwPollEvents();
     }
 
+    SolarCleanup(); // 在程序结束前调用清理函数
+
     std::cout << "Loop exited. Terminating." << std::endl;
     glfwTerminate();
     return 0;
 }
+
+
 
 
 
