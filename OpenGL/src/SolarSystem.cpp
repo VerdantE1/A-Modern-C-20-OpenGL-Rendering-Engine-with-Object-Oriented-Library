@@ -20,7 +20,7 @@ void displaySoloar(GLFWwindow* window, double currentTime)
         glm::vec3(0, 0, 10),  // position
         glm::vec3(0, 0, 0),   // target
         glm::vec3(0, 1, 0),   // up
-        70.0f, (float)g_WindowWidth / (float)g_WindowHeight, 0.1f, 100.0f
+        45.0f, (float)g_WindowWidth / (float)g_WindowHeight, 0.1f, 100.0f
     );
 
     Shader shader("res/shaders/SoloarSystem.shader");

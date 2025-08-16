@@ -998,6 +998,9 @@
     <ClInclude Include="src\include\Globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="res\shaders\3DShaderWithTexture.shader">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
@@ -1431,6 +1434,8 @@
     <None Include="doc\Shaper.md" />
     <None Include="doc\Transform.md" />
     <None Include="res\shaders\SoloarSystem.shader" />
+    <None Include="doc\Texture.md" />
+    <None Include="res\shaders\3DBasicShader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\textures1.jpg">

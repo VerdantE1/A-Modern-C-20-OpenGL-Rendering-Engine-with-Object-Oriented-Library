@@ -15,3 +15,5 @@ void DrawCube(GLFWwindow* window,bool enableAnimation = true);
 void DrawMultiCube(GLFWwindow* window, bool enbaleAnimation = true);
 void DrawMultiCubeIntances(GLFWwindow* window, bool enbaleAnimation = true); // Draw MultiCube using instances which can leverage the GPU performance
 void DrawCube_And_Pyramid(GLFWwindow* window, bool enbaleAnimation = true);
+void DrawPyramidWithTexture(GLFWwindow* window, bool enbaleAnimation); // Draw Pyramid with texture
+void Draw3PyramidsWithTextureControls(GLFWwindow* window); // Draw 3 Pyramids with texture and controls

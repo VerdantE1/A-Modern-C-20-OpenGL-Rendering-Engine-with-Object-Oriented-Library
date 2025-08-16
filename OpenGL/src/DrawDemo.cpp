@@ -39,14 +39,23 @@ void DrawDemo(GLFWwindow* window)
     IndexBuffer ib(indices, sizeof(indices) / sizeof(unsigned int));
     Shader shader("res/shaders/Basic.shader");
 
-    Texture texture_1("res/textures/Texture1.jpg");
-    texture_1.Bind();
+
+    
+
+
+    // To this, explicitly specify all constructor parameters to avoid ambiguity:
+    Texture texture_1(
+        "res/textures/Texture1.jpg",
+        TextureFilterMode::LINEAR, 
+        TextureFilterMode::LINEAR,
+        TextureWrapMode::CLAMP_TO_EDGE,
+        TextureWrapMode::CLAMP_TO_EDGE,
+        false, // generateMipmaps
+        true   // flipVertically
+    );
+
+
     shader.SetUniform1i("u_Texture1", texture_1.GetAssignedSlot());
-
-    Texture texture_2("res/textures/Texture2.jpg");
-    texture_2.Bind();
-    shader.SetUniform1i("u_Texture2", texture_2.GetAssignedSlot());
-
     UnbindAll(va, vb, ib, shader);
 
     Renderer renderer;
@@ -594,5 +603,301 @@ void DrawCube_And_Pyramid(GLFWwindow* window, bool enbaleAnimation)
 
 
 }
+
+void DrawPyramidWithTexture(GLFWwindow* window, bool enableAnimation)
+{
+    // 创建三个不同过滤模式的纹理以便比较效果
+    Texture textureNearest("res/textures/brick1.jpg", 
+        TextureFilterMode::NEAREST,  // 最近点过滤（像素化）
+        TextureFilterMode::NEAREST); 
+        
+    Texture textureLinear("res/textures/brick1.jpg", 
+        TextureFilterMode::LINEAR,   // 线性过滤（平滑）
+        TextureFilterMode::LINEAR);
+        
+    Texture textureMipmap("res/textures/brick1.jpg", 
+        TextureFilterMode::LINEAR, 
+        TextureFilterMode::LINEAR_MIPMAP_LINEAR,  // 三线性过滤（最高质量）
+        TextureWrapMode::REPEAT,
+        TextureWrapMode::REPEAT,
+        true);  // 生成mipmap
+
+    Shader shader("res/shaders/3DShaderWithTexture.shader");
+    Pyramid pyramid;
+
+    // MVP设置同 Cube
+    int width, height;
+    GLCall(glfwGetFramebufferSize(window, &width, &height));
+    float aspect = (float)width / (float)height;
+
+    // 摄像机初始化
+    Camera camera(
+        glm::vec3(0, 0, 3),   // position
+        glm::vec3(0, 0, 0),   // target
+        glm::vec3(0, 1, 0),   // up
+        70.0f, aspect, 0.1f, 100.0f
+    );
+
+    Transform pyramidTransform;
+    pyramidTransform.setPosition(0.0f, 0.0f, -5.0f); // 调整金字塔位置到中心
+
+    glm::mat4 view = camera.GetViewMatrix();         // View Matrix
+    glm::mat4 projection = camera.GetProjectionMatrix(); // Projection Matrix
+
+    Renderer renderer;
+    renderer.SetPolygonMode(false).SetDepthTest(true);
+
+    // 放大缩小动画的参数
+    float minScale = 0.2f;    // 最小缩放值
+    float maxScale = 5.0f;    // 最大缩放值（放大5倍）
+    float scaleSpeed = 0.5f;  // 缩放速度
+    
+    // 添加一个变量跟踪当前使用的纹理
+    int currentTextureMode = 0;  // 0=最近点, 1=线性, 2=mipmap
+    double lastKeyPressTime = 0.0;
+    
+    // 设置窗口标题以显示当前过滤模式
+    glfwSetWindowTitle(window, "Texture Filter Mode: NEAREST");
+
+    while (!glfwWindowShouldClose(window))
+    {
+        renderer.Clear();
+        float currentTime = static_cast<float>(glfwGetTime());
+        
+        // 按空格键切换纹理过滤模式
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && 
+            (currentTime - lastKeyPressTime) > 0.3) {  // 防止连续触发
+            
+            currentTextureMode = (currentTextureMode + 1) % 3;
+            lastKeyPressTime = currentTime;
+            
+            // 更新窗口标题以显示当前模式
+            switch (currentTextureMode) {
+                case 0:
+                    glfwSetWindowTitle(window, "Texture Filter Mode: NEAREST (像素化)");
+                    break;
+                case 1:
+                    glfwSetWindowTitle(window, "Texture Filter Mode: LINEAR (平滑)");
+                    break;
+                case 2:
+                    glfwSetWindowTitle(window, "Texture Filter Mode: MIPMAP (三线性过滤)");
+                    break;
+            }
+        }
+
+        // 计算当前缩放值 - 使用正弦函数实现平滑的缩放动画
+        float scale = 0.0f;
+        
+        if (enableAnimation) {
+            // 计算缩放值在minScale和maxScale之间变化
+            scale = minScale + (maxScale - minScale) * 
+                   (sin(scaleSpeed * currentTime) * 0.5f + 0.5f);
+        }
+        else {
+            scale = 1.0f;  // 不启用动画时使用默认大小
+        }
+
+        // 应用缩放和旋转
+        float animAngle = 0.5f * currentTime;  // 缓慢旋转
+        pyramidTransform.setRotation(0.0f, animAngle, 0.0f);  // 绕Y轴旋转
+        pyramidTransform.setScale(scale, scale, scale);  // 设置缩放
+
+        // 设置着色器矩阵
+        shader.SetUniformMat4fv("proj_matrix", projection);
+        shader.SetUniformMat4fv("mv_matrix", view * pyramidTransform.getMatrix());
+        
+        // 根据当前模式选择纹理
+        switch (currentTextureMode) {
+            case 0:
+                renderer.Draw(pyramid, shader, textureNearest);
+                break;
+            case 1:
+                renderer.Draw(pyramid, shader, textureLinear);
+                break;
+            case 2:
+                renderer.Draw(pyramid, shader, textureMipmap);
+                break;
+        }
+
+        // 在屏幕上显示当前缩放值和使用的过滤模式
+        // 这需要一个文本渲染系统，如果没有，可以省略这部分
+        
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
+void Draw3PyramidsWithTextureControls(GLFWwindow* window)
+{
+    // 创建三个不同过滤模式的纹理
+    Texture textureNearest("res/textures/cheese.jpg", 
+        TextureFilterMode::NEAREST,  // 最近点过滤（像素化）
+        TextureFilterMode::NEAREST,
+        TextureWrapMode::REPEAT,
+        TextureWrapMode::REPEAT);
+        
+    Texture textureLinear("res/textures/cheese.jpg", 
+        TextureFilterMode::LINEAR,   // 线性过滤（平滑）
+        TextureFilterMode::LINEAR,
+        TextureWrapMode::REPEAT,
+        TextureWrapMode::REPEAT);
+        
+    Texture textureMipmap("res/textures/cheese.jpg", 
+        TextureFilterMode::LINEAR, 
+        TextureFilterMode::LINEAR_MIPMAP_LINEAR,  // 三线性过滤（最高质量）
+        TextureWrapMode::REPEAT,
+        TextureWrapMode::REPEAT,
+        true);  // 生成mipmap
+
+    Shader shader("res/shaders/3DShaderWithTexture.shader");
+    Pyramid pyramid;
+
+    // MVP设置
+    int width, height;
+    GLCall(glfwGetFramebufferSize(window, &width, &height));
+    float aspect = (float)width / (float)height;
+
+    // 摄像机初始化
+    Camera camera(
+        glm::vec3(0, 1, 10),   // 位置调高一点，向后移动以便看到三个金字塔
+        glm::vec3(0, 0, 0),    // 目标点
+        glm::vec3(0, 1, 0),    // 上向量
+        70.0f, aspect, 0.1f, 100.0f
+    );
+
+    // 三个金字塔的Transform
+    Transform pyramid1Transform;
+    Transform pyramid2Transform;
+    Transform pyramid3Transform;
+    
+    // 初始横向位置（水平排列）
+    pyramid1Transform.setPosition(-4.0f, 0.0f, -10.0f);  // 左边
+    pyramid2Transform.setPosition(0.0f, 0.0f, -10.0f);   // 中间
+    pyramid3Transform.setPosition(4.0f, 0.0f, -10.0f);   // 右边
+    
+    // 应用一些初始旋转，使它们看起来不同
+    pyramid1Transform.setRotation(10.0f, 0.0f, 0.0f);     // 标准朝向
+    pyramid2Transform.setRotation(10.0f, 0.0f, 0.0f);    // Y轴旋转45度
+    pyramid3Transform.setRotation(10.0f, 0.0f, 0.0f);   // Y轴旋转-45度
+
+    glm::mat4 view = camera.GetViewMatrix();              // 视图矩阵
+    glm::mat4 projection = camera.GetProjectionMatrix();  // 投影矩阵
+
+    Renderer renderer;
+    renderer.SetPolygonMode(false).SetDepthTest(true);    // 启用深度测试
+
+    // 距离控制参数
+    float moveSpeed = 0.4f;          // 移动速度
+    float rotationSpeed = 0.05f;      // 旋转速度
+    
+    // 信息显示
+    glfwSetWindowTitle(window, "3 Pyramids Demo | 按[W/S]键控制距离 | 按[A/D]键控制旋转");
+    
+    // 主循环
+    while (!glfwWindowShouldClose(window))
+    {
+        renderer.Clear();
+        float currentTime = static_cast<float>(glfwGetTime());
+        
+        // 键盘输入处理 - 控制金字塔的距离
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            // W键 - 拉近金字塔
+            pyramid1Transform.setPosition(
+                pyramid1Transform.getPosition().x,
+                pyramid1Transform.getPosition().y,
+                pyramid1Transform.getPosition().z + moveSpeed);
+                
+            pyramid2Transform.setPosition(
+                pyramid2Transform.getPosition().x,
+                pyramid2Transform.getPosition().y,
+                pyramid2Transform.getPosition().z + moveSpeed);
+                
+            pyramid3Transform.setPosition(
+                pyramid3Transform.getPosition().x,
+                pyramid3Transform.getPosition().y,
+                pyramid3Transform.getPosition().z + moveSpeed);
+        }
+        
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            // S键 - 推远金字塔
+            pyramid1Transform.setPosition(
+                pyramid1Transform.getPosition().x,
+                pyramid1Transform.getPosition().y,
+                pyramid1Transform.getPosition().z - moveSpeed);
+                
+            pyramid2Transform.setPosition(
+                pyramid2Transform.getPosition().x,
+                pyramid2Transform.getPosition().y,
+                pyramid2Transform.getPosition().z - moveSpeed);
+                
+            pyramid3Transform.setPosition(
+                pyramid3Transform.getPosition().x,
+                pyramid3Transform.getPosition().y,
+                pyramid3Transform.getPosition().z - moveSpeed);
+        }
+        
+        // 旋转控制
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            // A键 - 逆时针旋转
+            pyramid1Transform.setRotation(
+                pyramid1Transform.getRotation().x,
+                pyramid1Transform.getRotation().y + rotationSpeed,
+                pyramid1Transform.getRotation().z);
+                
+            pyramid2Transform.setRotation(
+                pyramid2Transform.getRotation().x,
+                pyramid2Transform.getRotation().y + rotationSpeed,
+                pyramid2Transform.getRotation().z);
+                
+            pyramid3Transform.setRotation(
+                pyramid3Transform.getRotation().x,
+                pyramid3Transform.getRotation().y + rotationSpeed,
+                pyramid3Transform.getRotation().z);
+        }
+        
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            // D键 - 顺时针旋转
+            pyramid1Transform.setRotation(
+                pyramid1Transform.getRotation().x,
+                pyramid1Transform.getRotation().y - rotationSpeed,
+                pyramid1Transform.getRotation().z);
+                
+            pyramid2Transform.setRotation(
+                pyramid2Transform.getRotation().x,
+                pyramid2Transform.getRotation().y - rotationSpeed,
+                pyramid2Transform.getRotation().z);
+                
+            pyramid3Transform.setRotation(
+                pyramid3Transform.getRotation().x,
+                pyramid3Transform.getRotation().y - rotationSpeed,
+                pyramid3Transform.getRotation().z);
+        }
+        
+        // 计算当前Z位置，更新窗口标题显示信息
+        std::string zPosStr = "Z位置: " + std::to_string(pyramid2Transform.getPosition().z);
+        glfwSetWindowTitle(window, ("3 Pyramids Demo | W/S控制距离 | A/D控制旋转 | " + zPosStr).c_str());
+
+        // 设置着色器投影矩阵（对所有金字塔相同）
+        shader.SetUniformMat4fv("proj_matrix", projection);
+        
+        // 渲染第一个金字塔（最近点过滤）
+        shader.SetUniformMat4fv("mv_matrix", view * pyramid1Transform.getMatrix());
+        renderer.Draw(pyramid, shader, textureNearest);
+        
+        // 渲染第二个金字塔（线性过滤）
+        shader.SetUniformMat4fv("mv_matrix", view * pyramid2Transform.getMatrix());
+        renderer.Draw(pyramid, shader, textureLinear);
+        
+        // 渲染第三个金字塔（Mipmap过滤）
+        shader.SetUniformMat4fv("mv_matrix", view * pyramid3Transform.getMatrix());
+        renderer.Draw(pyramid, shader, textureMipmap);
+        
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
+
+
 
 

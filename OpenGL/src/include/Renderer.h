@@ -1,4 +1,5 @@
 #pragma once
+#include <Texture.h>
 
 class VertexArray;
 class IndexBuffer;
@@ -15,6 +16,7 @@ public:
 	// 该函数会自动绑定VAO, IBO和Shader，并在渲
 	void Draw(const VertexArray& va, const IndexBuffer& ib , const Shader& shader) const;
 	void Draw(const Shaper& sp, const Shader& shader) const;
+	void Draw(const Shaper& sp, const Shader& shader, const Texture& texture) const; // 该函数会自动绑定VAO, IBO和Shader，并在渲染前绑定纹理
 
 	void DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const; //由用户确保shader符合instance的要求
 	void ClearColor();

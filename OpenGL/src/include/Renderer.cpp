@@ -62,6 +62,12 @@ void Renderer::Draw(const Shaper& sp, const Shader& shader) const
 	Draw(sp.GetVertexArray(), sp.GetIndexBuffer(), shader);
 }
 
+void Renderer::Draw(const Shaper& sp, const Shader& shader, const Texture& texture) const
+{
+	BindAll(sp.GetVertexArray(),sp.GetIndexBuffer(),shader,texture);
+	GLCall(glDrawElements(GL_TRIANGLES, sp.GetIndexBuffer().GetCount(), GL_UNSIGNED_INT, (void*)0));
+}
+
 void Renderer::DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const
 {
 	BindAll(va,ib,shader);

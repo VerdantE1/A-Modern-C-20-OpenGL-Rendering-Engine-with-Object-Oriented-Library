@@ -60,6 +60,8 @@ int main(void)
 	//DrawMultiCubeIntances(window);
 
 	//DrawCube_And_Pyramid(window);
+	//DrawPyramidWithTexture(window, true);
+	//Draw3PyramidsWithTextureControls(window);
 
     //========================‰÷»æ=====================================================
 	General_Init(window);

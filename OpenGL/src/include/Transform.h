@@ -37,7 +37,9 @@ public:
 
 	const float getWorldX() const { return position.x; }
 	const float getWorldY() const { return position.y; }
-	const float getWorldZ() const { return position.z; }    
+	const float getWorldZ() const { return position.z; }   
+	const glm::vec3& getPosition() const { return position; }
+	const glm::vec3& getRotation() const { return rotation; }
 
 
     
