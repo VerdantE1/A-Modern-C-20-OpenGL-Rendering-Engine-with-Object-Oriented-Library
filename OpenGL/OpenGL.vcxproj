@@ -182,6 +182,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="doc\Camera.md" />
+    <ClInclude Include="src\include\Callback.h" />
+    <ClInclude Include="src\include\Ds\TransformStack.h" />
+    <ClInclude Include="src\include\Globals.h" />
     <ClInclude Include="src\SolarSystem.h" />
     <ClInclude Include="src\include\ViewUtils\Camera.h" />
     <ClInclude Include="src\DrawDemo.h" />

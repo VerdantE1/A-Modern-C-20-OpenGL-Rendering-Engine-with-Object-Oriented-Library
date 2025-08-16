@@ -4,6 +4,15 @@
 #include "Utility.h"
 #include "DrawDemo.h"
 #include "SolarSystem.h"
+#include "Globals.h"
+
+
+// Init Global variables
+void General_Init(GLFWwindow* window)
+{
+    GLCall(glfwGetFramebufferSize(window, &g_WindowWidth, &g_WindowHeight));
+}
+
 int main(void)
 {
     if (!glfwInit())
@@ -52,7 +61,9 @@ int main(void)
 
 	//DrawCube_And_Pyramid(window);
 
-        //========================‰÷»æ=====================================================
+    //========================‰÷»æ=====================================================
+	General_Init(window);
+
     while (!glfwWindowShouldClose(window))
     {
         displaySoloar(window, glfwGetTime());

@@ -22,11 +22,15 @@ public:
 	// 是否使用线框模式和深度测试（可读写）
 	mutable bool UsePolygonMode = false;
 	mutable bool UseDepthTest = false;
+	mutable bool UseCullFace = false;
 
 	// 设置线框模式（mode=true为线框，false为填充）
 	const Renderer& SetPolygonMode(bool mode) const;
 
 	// 设置是否开启深度测试
 	const Renderer& SetDepthTest(bool enable) const;
+
+	// 设置剔除面（enable=true开启，front和back分别表示是否剔除前面和后面）
+	const Renderer& SetCullFace(bool enable ,bool front=false, bool back = true) const;
 private:
 };

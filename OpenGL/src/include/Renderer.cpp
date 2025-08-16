@@ -31,6 +31,25 @@ const Renderer& Renderer::SetDepthTest(bool enable) const
 	return (*this);
 }
 
+const Renderer& Renderer::SetCullFace(bool enable, bool front, bool back) const
+{
+	if (enable)
+	{
+		glEnable(GL_CULL_FACE);
+		if (front && back)
+			glCullFace(GL_FRONT_AND_BACK); // 启用双面剔除
+		else if (front)
+			glCullFace(GL_FRONT); // 只剔除前面
+		else if (back)
+			glCullFace(GL_BACK); // 只剔除后面
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
+	}
+	return (*this);
+}
+
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
 {
 	BindAll(va, ib, shader);
