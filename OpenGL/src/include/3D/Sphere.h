@@ -3,7 +3,7 @@
 #include <cmath> 
 #include <vector> 
 #include <glm/glm.hpp> 
-
+#include <stdexcept>
 
 class Sphere : public Shaper
 {
@@ -38,11 +38,14 @@ public:
 	int getNumVertices() const { return numVertices; }
 	int getNumIndices() const { return numIndices; }
 
+	void Draw(Shader& shader, const Renderer& renderer) override {
+		throw std::logic_error(" Draw() not implemented for this subclass!");
+	}
 
 };
 
 
-void Sphere::generateVertices(std::vector<float>& vertexData, std::vector<unsigned int>& indexDate)
+inline void Sphere::generateVertices(std::vector<float>& vertexData, std::vector<unsigned int>& indexDate)
 {
 	numVertices = (numSegment + 1) * (numSegment  + 1);	//多一个顶点缝合纹理
 	numIndices = numSegment * numSegment * 6;				// 每个面两个三角形，每个三角形三个顶点
