@@ -182,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="doc\Camera.md" />
+    <ClInclude Include="src\include\3D\ImportedModel.h" />
     <ClInclude Include="res\shaders\3DShaderWithTexture.shader" />
     <ClInclude Include="src\include\3D\Sphere.h" />
     <ClInclude Include="src\include\Callback.h" />
@@ -494,6 +495,7 @@
     <ClInclude Include="src\vendor\glm\vector_relational.hpp" />
     <ClInclude Include="src\vendor\stb_image\stb_image.h" />
     <ClInclude Include="src\include\Transform.h" />
+    <ClInclude Include="src\include\3D\Torus.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="doc\Renderer.md" />

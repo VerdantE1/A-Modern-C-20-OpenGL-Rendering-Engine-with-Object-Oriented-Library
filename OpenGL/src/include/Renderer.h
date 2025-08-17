@@ -12,28 +12,41 @@ public:
 
 	void Clear() const;
 
-	//通用的以VertexArray, IndexBuffer和Shader的渲染并以三角形为图元的渲染函数
-	// 该函数会自动绑定VAO, IBO和Shader，并在渲
-	void Draw(const VertexArray& va, const IndexBuffer& ib , const Shader& shader) const;
+	// ===== 原有的索引渲染方法 =====
+	// 通用的用VertexArray, IndexBuffer和Shader进行渲染，这里主要为图元进行渲染设置
+	// 该函数会自动绑定VAO, IBO和Shader，并进行设置
+	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
 	void Draw(const Shaper& sp, const Shader& shader) const;
-	void Draw(const Shaper& sp, const Shader& shader, const Texture& texture) const; // 该函数会自动绑定VAO, IBO和Shader，并在渲染前绑定纹理
+	void Draw(const Shaper& sp, const Shader& shader, const Texture& texture) const; // 该函数会自动绑定VAO, IBO和Shader，并进行渲染前设置
 
-	void DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const; //由用户确保shader符合instance的要求
+	void DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const; // 需要用户确保shader包含instance相关
+
+	// ===== 新增的全展开顶点渲染方法 =====
+	// 用于渲染完全展开的顶点数据（不使用索引缓冲）
+	void DrawArrays(const VertexArray& va, const Shader& shader, unsigned int vertexCount) const;
+	void DrawArrays(const VertexArray& va, const Shader& shader, const Texture& texture, unsigned int vertexCount) const;
+	void DrawArrays(const Shaper& sp, const Shader& shader, unsigned int vertexCount) const;
+	void DrawArrays(const Shaper& sp, const Shader& shader, const Texture& texture, unsigned int vertexCount) const;
+
+	
+	// 实例化渲染的数组版本
+	void DrawArraysInstanced(const VertexArray& va, const Shader& shader, unsigned int vertexCount, unsigned int instanceCount) const;
+
 	void ClearColor();
 
-	// 是否使用线框模式和深度测试（可读写）
+	// 是否使用线框模式和深度测试，可读写的
 	mutable bool UsePolygonMode = false;
 	mutable bool UseDepthTest = false;
 	mutable bool UseCullFace = false;
 
-	// 设置线框模式（mode=true为线框，false为填充）
+	// 设置线框模式（mode=true为线框false为填充）
 	const Renderer& SetPolygonMode(bool mode) const;
 
-	// 设置是否开启深度测试
+	// 设置是否启用深度测试
 	const Renderer& SetDepthTest(bool enable) const;
 
-	// 设置剔除面（enable=true开启，front和back分别表示是否剔除前面和后面）
-	const Renderer& SetCullFace(bool enable ,bool front=false, bool back = true) const;
+	// 设置背面剔除（enable=true启用，front和back分别表示是否剔除前面和后面）
+	const Renderer& SetCullFace(bool enable, bool front=false, bool back = true) const;
 private:
 };
 /*

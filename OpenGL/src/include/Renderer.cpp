@@ -10,7 +10,7 @@ void Renderer::Clear() const
 
 void Renderer::ClearColor()
 {
-	GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // 比如设置一个深绿色背景
+	GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // 设置背景为一个深灰色调色
 }
 
 const Renderer& Renderer::SetPolygonMode(bool mode) const
@@ -50,11 +50,11 @@ const Renderer& Renderer::SetCullFace(bool enable, bool front, bool back) const
 	return (*this);
 }
 
+// ===== 原有的索引渲染方法 =====
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
 {
 	BindAll(va, ib, shader);
 	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, (void*)0)); 
-
 }
 
 void Renderer::Draw(const Shaper& sp, const Shader& shader) const
@@ -64,17 +64,47 @@ void Renderer::Draw(const Shaper& sp, const Shader& shader) const
 
 void Renderer::Draw(const Shaper& sp, const Shader& shader, const Texture& texture) const
 {
-	BindAll(sp.GetVertexArray(),sp.GetIndexBuffer(),shader,texture);
+	BindAll(sp.GetVertexArray(), sp.GetIndexBuffer(), shader, texture);
 	GLCall(glDrawElements(GL_TRIANGLES, sp.GetIndexBuffer().GetCount(), GL_UNSIGNED_INT, (void*)0));
 }
 
 void Renderer::DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const
 {
-	BindAll(va,ib,shader);
+	BindAll(va, ib, shader);
 	GLCall(glDrawElementsInstanced(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, (void*)0, instanceCount));
 }
 
+// ===== 新增的全展开顶点渲染方法 =====
+void Renderer::DrawArrays(const VertexArray& va, const Shader& shader, unsigned int vertexCount) const
+{
+	BindAll(va, shader);
+	GLCall(glDrawArrays(GL_TRIANGLES, 0, vertexCount));
+}
 
+void Renderer::DrawArrays(const VertexArray& va, const Shader& shader, const Texture& texture, unsigned int vertexCount) const
+{
+	BindAll(va, shader, texture);
+	GLCall(glDrawArrays(GL_TRIANGLES, 0, vertexCount));
+}
+
+
+void Renderer::DrawArraysInstanced(const VertexArray& va, const Shader& shader, unsigned int vertexCount, unsigned int instanceCount) const
+{
+	BindAll(va, shader);
+	GLCall(glDrawArraysInstanced(GL_TRIANGLES, 0, vertexCount, instanceCount));
+}
+
+void Renderer::DrawArrays(const Shaper& sp, const Shader& shader, unsigned int vertexCount) const
+{
+	BindAll(sp.GetVertexArray(), shader);
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+}
+
+void Renderer::DrawArrays(const Shaper& sp, const Shader& shader, const Texture& texture, unsigned int vertexCount) const
+{
+	BindAll(sp.GetVertexArray(), shader, texture);
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+}
 
 /*
  * Copyright (c) 2025 

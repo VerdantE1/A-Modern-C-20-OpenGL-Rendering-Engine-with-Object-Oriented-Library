@@ -978,6 +978,86 @@ void DrawSphere(GLFWwindow* window)
 
 }
 
+void DrawImportedModel(GLFWwindow* window)
+{
+    Shader shader("res/shaders/Cube.shader");
+
+#define IMPORTED_MODEL_DEBUG
+   
+    ImportedModel cube("res/objs/NASA_SpaceShuttle.obj");
+    Torus pyramid;
+
+
+    // MVP设置同 Cube
+    int width, height;
+    GLCall(glfwGetFramebufferSize(window, &width, &height));
+    float aspect = (float)width / (float)height;
+
+    // 摄像机初始化
+    Camera camera(
+        glm::vec3(0, 0, 30), // position
+        glm::vec3(0, 0, 0),  // target
+        glm::vec3(0, 1, 0),  // up
+        70.0f, aspect, 0.1f, 100.0f
+    );
+
+
+
+    // 初始化物体的Transform
+    Transform cubeTransform;
+    cubeTransform.setPosition(0.0f, 0.0f, -5.0f); // 立方体后移
+    cubeTransform.setScale(0.01f, 0.01f, 0.01f);
+
+    Transform pyramidTransform;
+    pyramidTransform.setPosition(10.0f, -2.0f, -5.0f); // 金字塔偏下
+
+    glm::mat4 view = camera.GetViewMatrix();              //View Matrix
+    glm::mat4 projection = camera.GetProjectionMatrix();  //Projection Matrix
+
+    Renderer renderer;
+    renderer.SetPolygonMode(false).SetDepthTest(true); //启动线框模式和深度测试
+
+    while (!glfwWindowShouldClose(window))
+    {
+        renderer.Clear();
+        float currentTime = static_cast<float>(glfwGetTime());
+
+        // ====== Cube绘制 ======
+        glm::mat4 cubeMV = view * cubeTransform.getMatrix();
+
+        // 动画：旋转 + 圆周运动
+        float animAngle = 1.75f * currentTime;
+        float animX = sin(0.35f * currentTime) * 2.0f;
+        float animY = cos(0.52f * currentTime) * 2.0f;
+        float animZ = sin(0.7f * currentTime) * 2.0f;
+
+        // 更新Transform属性
+        cubeTransform.setPosition(animX, animY, animZ - 5.0f);
+        cubeTransform.setRotation(0.0f, animAngle, animAngle);
+
+        //std::cout << camera.GetFrustumRectAtZ(-5) << std::endl;
+
+        // --- 设置shader & 绘制Cube ---
+        shader.SetUniformMat4fv("mv_matrix", view * cubeTransform.getMatrix());
+        shader.SetUniformMat4fv("proj_matrix", projection);
+
+        //renderer.Draw(cube, shader);
+		renderer.DrawArrays(cube, shader,cube.getNumVertices());
+
+        // ====== Pyramid绘制 ======
+        pyramidTransform.setRotation(animX, 0.0f, 0.0f);
+        pyramidTransform.setScale(1.0f, 1.0f, 1.0f);
+
+
+        shader.SetUniformMat4fv("mv_matrix", view * pyramidTransform.getMatrix());
+        renderer.Draw(pyramid, shader);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+}
+
 /*
  * Copyright (c) 2025 
  * Email: 2523877046@qq.com

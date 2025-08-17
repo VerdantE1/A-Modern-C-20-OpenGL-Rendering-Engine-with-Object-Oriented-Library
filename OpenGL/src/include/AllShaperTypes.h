@@ -6,6 +6,7 @@
 #include "3D/Pyramid.h"
 #include "3D/Sphere.h"
 #include "3D/Torus.h"
+#include "3D/ImportedModel.h"
 /*
  * Copyright (c) 2025 
  * Email: 2523877046@qq.com
