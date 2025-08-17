@@ -907,7 +907,7 @@ void DrawSphere(GLFWwindow* window)
     Shader shader("res/shaders/Cube.shader");
 
     Sphere cube;
-    Pyramid pyramid;
+	Torus pyramid;
 
 
     // MVP…Ë÷√Õ¨ Cube
