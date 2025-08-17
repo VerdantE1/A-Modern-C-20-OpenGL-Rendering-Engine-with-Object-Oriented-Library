@@ -50,6 +50,15 @@ const Renderer& Renderer::SetCullFace(bool enable, bool front, bool back) const
 	return (*this);
 }
 
+const Renderer& Renderer::SetBlend(bool enable) const
+{
+	if (enable)
+		glEnable(GL_BLEND);
+	else
+		glDisable(GL_BLEND);
+	return (*this);
+}
+
 // ===== 原有的索引渲染方法 =====
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
 {

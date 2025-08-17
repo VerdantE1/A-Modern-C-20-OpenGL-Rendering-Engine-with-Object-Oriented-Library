@@ -6,7 +6,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Utility.h"
-#include "Texture.h"  // 添加纹理头文件
+#include "Texture.h"  
 #include "Ds/TransformStack.h"
 #include "Globals.h"
 
@@ -19,12 +19,21 @@ TransformStack transformStk;
 Texture* sunTexture = nullptr;
 Texture* earthTexture = nullptr;
 Texture* moonTexture = nullptr;
+Texture* sunRingTexture = nullptr;  // 添加太阳环纹理
 
 // 全局着色器和形状对象 - 避免每帧重新创建
 Shader* solarShader = nullptr;
 Sphere* Sun = nullptr;
 ImportedModel* Earth = nullptr;
 ImportedModel* Moon = nullptr;
+Torus* SunRing = nullptr;  // 添加太阳环对象
+
+// 随机旋转参数 - 静态变量确保每次调用都能保持状态
+static float randomRotationSpeedX = 0.0f;
+static float randomRotationSpeedY = 0.0f;
+static float randomRotationSpeedZ = 0.0f;
+static double lastRandomUpdateTime = 0.0;
+static bool randomInitialized = false;
 
 void Solarinit()
 {
@@ -32,6 +41,10 @@ void Solarinit()
     Sun = new Sphere();
     Earth = new ImportedModel("res/objs/earth.obj");
     Moon = new ImportedModel("res/objs/earth.obj");
+    
+    // 创建太阳环 - 调整参数以获得合适的外观
+    // majorRadius: 主半径(环的大小), minorRadius: 小半径(环的厚度)
+    SunRing = new Torus(25.5f, 0.15f, 196, 16);  // 大环，较薄，高分辨率
 
     // 只初始化一次纹理对象
     if (sunTexture == nullptr) {
@@ -62,16 +75,25 @@ void Solarinit()
             true,
             AnisotropyLevel::HIGH); // 垂直翻转
 
+        // 为太阳环创建纹理 - 可以使用专门的环纹理或重用现有纹理
+        sunRingTexture = new Texture("res/textures/2k_sun.jpg",  // 或使用专门的环纹理
+            TextureFilterMode::LINEAR,
+            TextureFilterMode::LINEAR_MIPMAP_LINEAR,
+            TextureWrapMode::REPEAT,
+            TextureWrapMode::REPEAT,
+            true,  // 生成mipmap
+            true,
+            AnisotropyLevel::HIGH); // 垂直翻转
+
         // 初始化着色器（避免每帧重新加载）
         solarShader = new Shader("res/shaders/SoloarSystem.shader");
-
-
 
         // 打印初始化信息
         std::cout << "Solar System Initialized:" << std::endl;
         std::cout << "Sun texture slot: " << sunTexture->GetAssignedSlot() << std::endl;
         std::cout << "Earth texture slot: " << earthTexture->GetAssignedSlot() << std::endl;
         std::cout << "Moon texture slot: " << moonTexture->GetAssignedSlot() << std::endl;
+        std::cout << "Sun Ring texture slot: " << sunRingTexture->GetAssignedSlot() << std::endl;
     }
 }
 
@@ -80,7 +102,7 @@ void displaySoloar(GLFWwindow* window, double currentTime)
     //=========================初始化========================================
     // 摄像机每帧更新（因为可能需要动态调整）
     Camera camera(
-        glm::vec3(0, 0, 35),  // position
+        glm::vec3(0, 0, 45),  // position
         glm::vec3(0, 0, 0),   // target
         glm::vec3(0, 1, 0),   // up
         45.0f, (float)g_WindowWidth / (float)g_WindowHeight, 0.1f, 100.0f
@@ -88,8 +110,10 @@ void displaySoloar(GLFWwindow* window, double currentTime)
 
     // 渲染器每帧创建（轻量级对象）
     Renderer renderer;
-    renderer.SetDepthTest(true).SetPolygonMode(false).SetCullFace(false);
+    renderer.SetDepthTest(true).SetPolygonMode(false).SetCullFace(false).SetBlend(true);
     renderer.Clear();
+    
+
 
     //==========================设置变换矩阵========================================
 
@@ -104,6 +128,7 @@ void displaySoloar(GLFWwindow* window, double currentTime)
     // Transform对象每帧创建（用于计算当前帧的变换）
     Transform earthTransformPos, moonTransformPos, sunTransformPos;
     Transform earthTransformRotate, moonTransformRotate, sunTransformRotate;
+    Transform sunRingTransform;  // 添加太阳环变换
 
     //----------------------------太阳------------------------------------------
     sunTransformPos.setPosition(0.0f, 0.0f, 0.0f);
@@ -117,6 +142,22 @@ void displaySoloar(GLFWwindow* window, double currentTime)
     solarShader->SetUniform1i("objectType", 0); // sun
     renderer.Draw(*Sun, *solarShader, *sunTexture);
     transformStk.Pop();
+
+    //----------------------------太阳环------------------------------------------
+    // 太阳环的旋转动画
+    sunRingTransform.setRotation(
+        sin((float)currentTime*0.05) * 0.5f,  
+        cos((float)currentTime*0.05) * 0.5f,  
+        sin((float)currentTime*0.05) * 0.5f
+    );
+    sunRingTransform.setScale(1.0f, 1.0f, 1.0f);  
+    transformStk.Push(sunRingTransform);
+
+    solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
+    solarShader->SetUniform1i("objectType", 3); // sun ring - 新的类型
+    renderer.Draw(*SunRing, *solarShader, *sunRingTexture);
+    transformStk.Pop();
+    transformStk.Pop();  // 弹出太阳的位置变换
 
     //----------------------------地球------------------------------------------
     // 地球公转轨道 - 保持您原有的设置但稍作调整
@@ -133,7 +174,7 @@ void displaySoloar(GLFWwindow* window, double currentTime)
 
     solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
     solarShader->SetUniform1i("objectType", 1); // earth
-    renderer.DrawArrays(*Earth, *solarShader, *earthTexture,Earth->getNumVertices());
+    renderer.DrawArrays(*Earth, *solarShader, *earthTexture, Earth->getNumVertices());
     transformStk.Pop();
 
     //----------------------------月球------------------------------------------
@@ -163,7 +204,7 @@ void displaySoloar(GLFWwindow* window, double currentTime)
 
     solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
     solarShader->SetUniform1i("objectType", 2); // moon
-    renderer.DrawArrays(*Moon, *solarShader, *moonTexture,Moon->getNumVertices());
+    renderer.DrawArrays(*Moon, *solarShader, *moonTexture, Moon->getNumVertices());
 
     transformStk.Clear(); // 清空变换栈，准备下一个物体的变换
 }
@@ -174,18 +215,22 @@ void SolarCleanup()
     delete sunTexture;
     delete earthTexture;
     delete moonTexture;
+    delete sunRingTexture;  // 清理太阳环纹理
     delete solarShader;
     delete Sun;
     delete Earth;
     delete Moon;
+    delete SunRing;  // 清理太阳环对象
     
     sunTexture = nullptr;
     earthTexture = nullptr;
     moonTexture = nullptr;
+    sunRingTexture = nullptr;
     solarShader = nullptr;
     Sun = nullptr;
     Earth = nullptr;
     Moon = nullptr;
+    SunRing = nullptr;
 }
 /*
  * Copyright (c) 2025 

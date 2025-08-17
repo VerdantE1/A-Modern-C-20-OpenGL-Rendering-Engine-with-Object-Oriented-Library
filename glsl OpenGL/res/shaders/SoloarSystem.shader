@@ -1,48 +1,50 @@
 #shader vertex 
 #version 430
-layout (location = 0) in vec3 position; //从位于Buffer里的顶点属性槽0读取数据。
+layout (location = 0) in vec3 position;
 layout (location = 1) in vec2 texCoord;
 
-
-
-uniform mat4 mvp_matrix; //模型视图投影矩阵
+uniform mat4 mvp_matrix;
 
 out vec4 varyingColor;
 out vec2 tc;
+
 void main(void)
 {
-	gl_Position =  mvp_matrix * vec4(position.x,position.y,position.z ,1.0);
-	varyingColor = vec4(position,1.0) * 0.5 + vec4(0.5,0.5,0.5,1.0); // 将位置映射到颜色
-	tc = texCoord;  // 关键的一行
+    gl_Position = mvp_matrix * vec4(position.x, position.y, position.z, 1.0);
+    varyingColor = vec4(position, 1.0) * 0.5 + vec4(0.5, 0.5, 0.5, 1.0);
+    tc = texCoord;
 }
-
-
 
 #shader fragment 
 #version 430
 
-in vec4 varyingColor; //从顶点着色器接收颜色数据
+in vec4 varyingColor;
 in vec2 tc;
 
-out vec4 color; //把color输出到帧缓冲的第0个颜色附件（通常就是屏幕）
-
+out vec4 color;
 
 layout(binding = 0) uniform sampler2D sunSampler;
 layout(binding = 1) uniform sampler2D earthSampler;
 layout(binding = 2) uniform sampler2D moonSampler;
-layout(binding = 3) uniform sampler2D sunRingSampler;
+layout(binding = 3) uniform sampler2D sunRingSampler;  // 添加太阳环纹理采样器
 
 uniform int objectType; 
 
 void main(void)
 {
-    if(objectType == 0)
+    if(objectType == 0) {
+        // 太阳
         color = texture(sunSampler, tc);
-    else if(objectType == 1)
+        
+    } else if(objectType == 1) {
+        // 地球
         color = texture(earthSampler, tc);
-    else if(objectType == 2)
+        
+    } else if(objectType == 2) {
+        // 月球
         color = texture(moonSampler, tc);
-    else if(objectType == 3) {
+        
+    } else if(objectType == 3) {
         // 太阳环 - 添加半透明效果和特殊处理
         vec4 ringColor = texture(sunRingSampler, tc);
         
@@ -55,7 +57,8 @@ void main(void)
         ringColor.a = alpha * 0.6;  // 设置透明度
         
         color = ringColor;
-     } else {
+        
+    } else {
         color = vec4(1, 0, 1, 1);  // 错误颜色
     }
 }

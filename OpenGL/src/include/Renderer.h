@@ -47,6 +47,8 @@ public:
 
 	// 设置背面剔除（enable=true启用，front和back分别表示是否剔除前面和后面）
 	const Renderer& SetCullFace(bool enable, bool front=false, bool back = true) const;
+
+	const Renderer& SetBlend(bool enable) const;
 private:
 };
 /*
