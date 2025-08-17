@@ -1,4 +1,4 @@
-# OpenGL现代化渲染引擎
+# OpenGL现代化渲染引擎-ReduxGL
 ## Updating (2025.8.1~Now)
 ## 1. 项目简介
 
