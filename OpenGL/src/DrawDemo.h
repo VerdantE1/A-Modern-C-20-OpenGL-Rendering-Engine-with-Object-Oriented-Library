@@ -17,3 +17,4 @@ void DrawMultiCubeIntances(GLFWwindow* window, bool enbaleAnimation = true); // 
 void DrawCube_And_Pyramid(GLFWwindow* window, bool enbaleAnimation = true);
 void DrawPyramidWithTexture(GLFWwindow* window, bool enbaleAnimation); // Draw Pyramid with texture
 void Draw3PyramidsWithTextureControls(GLFWwindow* window); // Draw 3 Pyramids with texture and controls
+void DrawSphere(GLFWwindow*); // Draw a sphere in the center of the window

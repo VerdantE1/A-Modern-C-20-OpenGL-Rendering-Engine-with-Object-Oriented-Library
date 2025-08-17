@@ -64,6 +64,8 @@ int main(void)
 	//DrawPyramidWithTexture(window, true);
 	//Draw3PyramidsWithTextureControls(window);
 
+    DrawSphere(window);
+
     //========================‰÷»æ=====================================================
 	General_Init(window);
 

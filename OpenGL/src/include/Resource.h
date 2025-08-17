@@ -14,9 +14,9 @@ public:
 	Resource(const Resource& other) = delete;
 	Resource& operator=(const Resource& other) = delete;
 
-	// Could be move but not needed for now
-	Resource(Resource&& other) = delete;
-	Resource& operator=(Resource&& other) = delete;
+	// Could be move
+	Resource(Resource&& other);
+	Resource& operator=(Resource&& other);
 
 	virtual ~Resource() = default;
 
@@ -32,4 +32,18 @@ protected:
 };
 
 
+inline Resource::Resource(Resource&& other)
+	: m_id(other.m_id)
+{
+	other.m_id = 0;
+}
 
+inline Resource& Resource:: operator=(Resource&& other)
+{
+	if (this != &other)
+	{
+		m_id = other.m_id;
+		other.m_id = 0;
+	}
+	return *this;
+}

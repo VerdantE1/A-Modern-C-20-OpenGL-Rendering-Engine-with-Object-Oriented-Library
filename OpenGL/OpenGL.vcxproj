@@ -183,6 +183,7 @@
   <ItemGroup>
     <ClInclude Include="doc\Camera.md" />
     <ClInclude Include="res\shaders\3DShaderWithTexture.shader" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="src\include\Callback.h" />
     <ClInclude Include="src\include\Ds\TransformStack.h" />
     <ClInclude Include="src\include\Globals.h" />
