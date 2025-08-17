@@ -10,6 +10,15 @@ VertexBuffer::VertexBuffer(const void* data, unsigned int size)
 
 }
 
+VertexBuffer::VertexBuffer(const std::vector<float>& data)
+{
+	unsigned int size = static_cast<unsigned int>(data.size() * sizeof(float));
+	GLCall(glGenBuffers(1, &m_id)); // Generate a new buffer object and store its ID in m_id
+	GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_id)); // Bind the buffer to the GL_ARRAY_BUFFER target
+	GLCall(glBufferData(GL_ARRAY_BUFFER, size, data.data(), GL_STATIC_DRAW)); // Upload the data to the GPU
+
+}
+
 VertexBuffer::~VertexBuffer()
 {
 	GLCall(glDeleteBuffers(1, &m_id)); // Delete the buffer object from GPU memory

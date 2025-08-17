@@ -12,6 +12,15 @@ IndexBuffer::IndexBuffer(const unsigned int* data, unsigned int count) :m_Count(
 
 }
 
+IndexBuffer::IndexBuffer(const std::vector<unsigned int>& data)
+{
+	m_Count = static_cast<unsigned int>(data.size());
+	ASSERT(sizeof(unsigned int) == sizeof(GLuint));
+	GLCall(glGenBuffers(1, &m_id)); // Generate a new buffer object and store its ID in m_id
+	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id)); // Bind the buffer to the GL_ELEMENT_ARRAY_BUFFER target
+	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(GLuint), data.data(), GL_STATIC_DRAW)); // Upload the data to the GPU
+}
+
 IndexBuffer::~IndexBuffer()
 {
 	GLCall(glDeleteBuffers(1, &m_id)); // Delete the buffer object from GPU memory

@@ -26,19 +26,17 @@ public:
 	{
 
 		generateVertices(vertexData,indexData);
-		vb = VertexBuffer(vertexData.data(), vertexData.size() * sizeof(float));
+		vb = std::move(VertexBuffer(vertexData));
+		ib = std::move(IndexBuffer(indexData));
+		//layout已经初始化过
+		va.LinkBufferAndLayout(vb, layout);
+
 
 
 	}
 
 	int getNumVertices() const { return numVertices; }
 	int getNumIndices() const { return numIndices; }
-
-	//std::vector<unsigned int> getIndices() const { return indices; }
-	//std::vector<glm::vec3> getVertices() const { return vertices; }
-	//std::vector<glm::vec2> getTexCoords() const { return texCoords; }
-	//std::vector<glm::vec3> getNormals() const { return normals; }
-
 
 
 };
