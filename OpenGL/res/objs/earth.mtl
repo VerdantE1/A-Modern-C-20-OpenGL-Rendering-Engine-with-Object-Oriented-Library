@@ -1,0 +1,12 @@
+# Blender 4.5.1 LTS MTL File: 'quit.blend'
+# www.blender.org
+
+newmtl Default_OBJ
+Ns 10.000005
+Ka 0.250000 0.250000 0.250000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3

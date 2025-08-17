@@ -65,12 +65,12 @@ int main(void)
 	//Draw3PyramidsWithTextureControls(window);
 
     //DrawSphere(window);
-	DrawImportedModel(window);
+	//DrawImportedModel(window);
 
-    //========================渲染=====================================================
-	//General_Init(window);
+    //========================应用程序1- 太阳系渲染=====================================================
+	General_Init(window);
 
-    //Solarinit(); // 在main函数中，在渲染循环开始前调用
+    Solarinit(); // 在main函数中，在渲染循环开始前调用
 
     // 渲染循环
     while (!glfwWindowShouldClose(window))
