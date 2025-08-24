@@ -28,12 +28,8 @@ ImportedModel* Earth = nullptr;
 ImportedModel* Moon = nullptr;
 Torus* SunRing = nullptr;  // 添加太阳环对象
 
-// 随机旋转参数 - 静态变量确保每次调用都能保持状态
-static float randomRotationSpeedX = 0.0f;
-static float randomRotationSpeedY = 0.0f;
-static float randomRotationSpeedZ = 0.0f;
-static double lastRandomUpdateTime = 0.0;
-static bool randomInitialized = false;
+
+
 
 void Solarinit()
 {
@@ -41,6 +37,7 @@ void Solarinit()
     Sun = new Sphere();
     Earth = new ImportedModel("res/objs/earth.obj");
     Moon = new ImportedModel("res/objs/earth.obj");
+
     
     // 创建太阳环 - 调整参数以获得合适的外观
     // majorRadius: 主半径(环的大小), minorRadius: 小半径(环的厚度)
@@ -205,8 +202,11 @@ void displaySoloar(GLFWwindow* window, double currentTime)
     solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
     solarShader->SetUniform1i("objectType", 2); // moon
     renderer.DrawArrays(*Moon, *solarShader, *moonTexture, Moon->getNumVertices());
-
+    transformStk.Pop();
+    
     transformStk.Clear(); // 清空变换栈，准备下一个物体的变换
+
+
 }
 
 // 清理函数 - 在程序结束时调用

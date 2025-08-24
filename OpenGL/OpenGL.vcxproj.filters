@@ -1007,7 +1007,10 @@
     <ClInclude Include="src\include\3D\Torus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\ImportTools\ImportModel.h">
+    <ClInclude Include="src\include\3D\ImportedModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="res\light\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
