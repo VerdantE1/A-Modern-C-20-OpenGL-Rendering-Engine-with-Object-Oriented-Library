@@ -511,9 +511,12 @@
     <None Include="res\shaders\AnimationTriangle.shader" />
     <None Include="res\shaders\Basic.shader" />
     <None Include="res\shaders\basicShaderWithLight.shader" />
+    <None Include="res\shaders\Blinn-Phong.Shader" />
     <None Include="res\shaders\Cube.shader" />
     <None Include="res\shaders\CubeMultiInstances.shader" />
+    <None Include="res\shaders\Gouraud.shader" />
     <None Include="res\shaders\OnePoint.shader" />
+    <None Include="res\shaders\Phong.Shader" />
     <None Include="res\shaders\SoloarSystem.shader" />
     <None Include="res\shaders\Triangle.shader" />
     <None Include="res\shaders\TriangleRotate.shader" />

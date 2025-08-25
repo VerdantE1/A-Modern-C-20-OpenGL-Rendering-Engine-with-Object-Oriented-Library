@@ -31,7 +31,6 @@ uniform Material material;
 
 void main(void)
 {
-	vec4 color;
 
 	//将顶点位置转换到视觉空间
 	//将法向量转换到视觉空间

@@ -67,7 +67,8 @@ int main(void)
     //DrawSphere(window);
 	//DrawImportedModel(window);
 	//DrawTorus(window);
-    DrawTorusWithLight(window);
+    //DrawTorusWithLight(window);
+	DrawTorusWithGouraudVsPhong(window);
 
     
 
