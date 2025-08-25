@@ -1450,8 +1450,8 @@
     <None Include="res\shaders\3DBasicShader.shader" />
     <None Include="res\shaders\basicShaderWithLight.shader" />
     <None Include="res\shaders\Gouraud.shader" />
-    <None Include="res\shaders\Phong.Shader" />
-    <None Include="res\shaders\Blinn-Phong.Shader" />
+    <None Include="res\shaders\Phong.shader" />
+    <None Include="res\shaders\Blinn-Phong.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\textures1.jpg">

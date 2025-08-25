@@ -21,6 +21,8 @@ void DrawSphere(GLFWwindow*); // Draw a sphere in the center of the window
 void DrawTorus(GLFWwindow*); // Draw a torus in the center of the window
 void DrawImportedModel(GLFWwindow* window); // Draw an imported model in the center of the window
 void DrawTorusWithLight(GLFWwindow* window); // Draw a torus with light in the center of the window
+void DrawTorusWithLightMouseControl(GLFWwindow* window); // p7.1 Draw a torus w
+void DrawTorusWithLightMouseControlComparison(GLFWwindow* window); //p7.2 Draw a torus with light w
 void DrawTorusWithGouraudVsPhong(GLFWwindow* window); // Draw a torus with light in the center of the window and compare Gouraud vs Phong shading
 /*
  * Copyright (c) 2025 

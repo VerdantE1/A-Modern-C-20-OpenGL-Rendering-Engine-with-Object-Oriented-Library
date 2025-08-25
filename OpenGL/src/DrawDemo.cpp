@@ -899,9 +899,6 @@ void Draw3PyramidsWithTextureControls(GLFWwindow* window)
 
 
 
-
-
-
 void DrawSphere(GLFWwindow* window)
 {
     Shader shader("res/shaders/Cube.shader");
@@ -1185,7 +1182,187 @@ void DrawTorusWithLight(GLFWwindow* window)
     }
 }
 
+void DrawTorusWithLightMouseControl(GLFWwindow* window)
+{
+    Shader torusShader("res/shaders/Gouraud.shader");  // Torus：Gouraud 观察高光伪影
+    Shader lightShader("res/shaders/Phong.shader");    // 光源球体：Phong（统一光照 uniform）
 
+    Torus  torus;         // 观察对象（保持静止）
+    Sphere lightSphere;   // 可视化光源
+
+    int width, height;
+    GLCall(glfwGetFramebufferSize(window, &width, &height));
+    float aspect = (float)width / (float)height;
+
+    Camera camera(
+        glm::vec3(0, 0, 8),
+        glm::vec3(0, 0, 0),
+        glm::vec3(0, 1, 0),
+        70.0f, aspect, 0.1f, 100.0f
+    );
+
+    // Torus 固定在世界原点前方
+    Transform torusTransform;
+    torusTransform.setPosition(0.0f, 0.0f, -5.0f);
+
+    // 光源球体（仅可视化），放大一点方便看
+    Transform lightSphereTransform;
+    lightSphereTransform.setScale(0.18f, 0.18f, 0.18f);
+
+    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 projection = camera.GetProjectionMatrix();
+
+    Renderer renderer;
+    renderer.SetPolygonMode(false).SetDepthTest(true);
+
+    // 光源位置（仅由鼠标驱动）
+    glm::vec3 lightWorldPos(3.0f, 2.0f, 2.0f);
+
+    glfwSetWindowTitle(window, "Mouse Light: Torus=Static | Sphere=Light (move mouse)");
+
+    while (!glfwWindowShouldClose(window))
+    {
+        renderer.Clear();
+
+        // 读取鼠标并映射到世界坐标（固定 Z）
+        double mouseX, mouseY;
+        glfwGetCursorPos(window, &mouseX, &mouseY);
+
+        float nx = (float)mouseX / (float)width * 2.0f - 1.0f;
+        float ny = 1.0f - (float)mouseY / (float)height * 2.0f;
+
+        lightWorldPos.x = nx * 10.0f;
+        lightWorldPos.y = ny * 6.0f;
+        lightWorldPos.z = 2.0f;
+
+        currentLightPos = lightWorldPos;
+
+        // 绘制 Torus（静止）
+        glm::mat4 torusMV = view * torusTransform.getMatrix();
+        glm::mat4 torusNormalM = glm::transpose(glm::inverse(torusMV));
+
+        installLights(view, torusShader);
+        torusShader.SetUniformMat4fv("mv_matrix",   torusMV);
+        torusShader.SetUniformMat4fv("proj_matrix", projection);
+        torusShader.SetUniformMat4fv("norm_matrix", torusNormalM);
+        renderer.Draw(torus, torusShader);
+
+        // 绘制光源球体（跟随鼠标）
+        lightSphereTransform.setPosition(lightWorldPos.x, lightWorldPos.y, lightWorldPos.z);
+        glm::mat4 lightMV = view * lightSphereTransform.getMatrix();
+        glm::mat4 lightNormalM = glm::transpose(glm::inverse(lightMV));
+
+        lightShader.Bind();                         // <-- 必须绑定
+        installLights(view, lightShader);
+        lightShader.SetUniformMat4fv("mv_matrix",   lightMV);
+        lightShader.SetUniformMat4fv("proj_matrix", projection);
+        lightShader.SetUniformMat4fv("norm_matrix", lightNormalM);
+        renderer.Draw(lightSphere, lightShader);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
+
+// 对比版本，使用不同的着色器来观察 Gouraud 着色的伪影
+void DrawTorusWithLightMouseControlComparison(GLFWwindow* window)
+{
+    // Shaders
+    Shader gouraudShader("res/shaders/Gouraud.shader");  // Left torus
+    Shader phongShader("res/shaders/Phong.shader");      // Right torus
+    Shader lightShader("res/shaders/Phong.shader");      // Visual light sphere
+
+    // Geometry
+    Torus leftTorus;
+    Torus rightTorus;
+    Sphere lightSphere;
+
+    // Camera / viewport
+    int width, height;
+    GLCall(glfwGetFramebufferSize(window, &width, &height));
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
+    Camera camera(
+        glm::vec3(0, 0, 12),
+        glm::vec3(0, 0, 0),
+        glm::vec3(0, 1, 0),
+        70.0f, aspect, 0.1f, 100.0f
+    );
+
+    // Static transforms for the two torus objects
+    Transform leftTorusTransform;
+    leftTorusTransform.setPosition(-3.0f, 0.0f, -5.0f);
+
+    Transform rightTorusTransform;
+    rightTorusTransform.setPosition(3.0f, 0.0f, -5.0f);
+
+    // Light sphere transform (only for visualization)
+    Transform lightSphereTransform;
+    lightSphereTransform.setScale(0.18f, 0.18f, 0.18f);
+
+    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 projection = camera.GetProjectionMatrix();
+
+    Renderer renderer;
+    renderer.SetPolygonMode(false).SetDepthTest(true);
+
+    // Light position controlled by mouse
+    glm::vec3 lightWorldPos(0.0f, 0.0f, 2.0f);
+
+    glfwSetWindowTitle(window, "Compare: Left=Gouraud | Right=Phong | Mouse controls light");
+
+    while (!glfwWindowShouldClose(window))
+    {
+        renderer.Clear();
+
+        // Map mouse to world space (keep Z constant)
+        double mouseX, mouseY;
+        glfwGetCursorPos(window, &mouseX, &mouseY);
+        float nx = static_cast<float>(mouseX) / static_cast<float>(width) * 2.0f - 1.0f; // [-1,1]
+        float ny = 1.0f - static_cast<float>(mouseY) / static_cast<float>(height) * 2.0f; // [-1,1]
+
+        lightWorldPos.x = nx * 12.0f;
+        lightWorldPos.y = ny * 8.0f;
+        lightWorldPos.z = 2.0f;
+
+        // Update global light used by installLights
+        currentLightPos = lightWorldPos;
+
+        // Left torus (Gouraud) - static
+        glm::mat4 leftMv = view * leftTorusTransform.getMatrix();
+        glm::mat4 leftNorm = glm::transpose(glm::inverse(leftMv));
+        gouraudShader.Bind();
+        installLights(view, gouraudShader);
+        gouraudShader.SetUniformMat4fv("mv_matrix", leftMv);
+        gouraudShader.SetUniformMat4fv("proj_matrix", projection);
+        gouraudShader.SetUniformMat4fv("norm_matrix", leftNorm);
+        renderer.Draw(leftTorus, gouraudShader);
+
+        // Right torus (Phong) - static
+        glm::mat4 rightMv = view * rightTorusTransform.getMatrix();
+        glm::mat4 rightNorm = glm::transpose(glm::inverse(rightMv));
+        phongShader.Bind();
+        installLights(view, phongShader);
+        phongShader.SetUniformMat4fv("mv_matrix", rightMv);
+        phongShader.SetUniformMat4fv("proj_matrix", projection);
+        phongShader.SetUniformMat4fv("norm_matrix", rightNorm);
+        renderer.Draw(rightTorus, phongShader);
+
+        // Visualize the light as a sphere (follows mouse)
+        lightSphereTransform.setPosition(lightWorldPos.x, lightWorldPos.y, lightWorldPos.z);
+        glm::mat4 lightMv = view * lightSphereTransform.getMatrix();
+        glm::mat4 lightNorm = glm::transpose(glm::inverse(lightMv));
+        lightShader.Bind();
+        installLights(view, lightShader);
+        lightShader.SetUniformMat4fv("mv_matrix", lightMv);
+        lightShader.SetUniformMat4fv("proj_matrix", projection);
+        lightShader.SetUniformMat4fv("norm_matrix", lightNorm);
+        renderer.Draw(lightSphere, lightShader);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
 
 void DrawTorusWithGouraudVsPhong(GLFWwindow* window)
 {
