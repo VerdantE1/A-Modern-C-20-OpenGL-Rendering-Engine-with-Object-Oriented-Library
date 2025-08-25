@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+ï»¿#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Utility.h"
@@ -66,24 +66,30 @@ int main(void)
 
     //DrawSphere(window);
 	//DrawImportedModel(window);
+	//DrawTorus(window);
+    DrawTorusWithLight(window);
 
-    //========================Ó¦ÓÃ³ÌĞò1- Ì«ÑôÏµäÖÈ¾=====================================================
-	General_Init(window);
+    
 
-    Solarinit(); // ÔÚmainº¯ÊıÖĞ£¬ÔÚäÖÈ¾Ñ­»·¿ªÊ¼Ç°µ÷ÓÃ
 
-    // äÖÈ¾Ñ­»·
-    while (!glfwWindowShouldClose(window))
-    {
-        displaySoloar(window, glfwGetTime());
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
 
-    SolarCleanup(); // ÔÚ³ÌĞò½áÊøÇ°µ÷ÓÃÇåÀíº¯Êı
+ //   //========================åº”ç”¨ç¨‹åº1- å¤ªé˜³ç³»æ¸²æŸ“=====================================================
+	//General_Init(window);
 
-    std::cout << "Loop exited. Terminating." << std::endl;
-    glfwTerminate();
+ //   Solarinit(); // åœ¨mainå‡½æ•°ä¸­ï¼Œåœ¨æ¸²æŸ“å¾ªç¯å¼€å§‹å‰è°ƒç”¨
+
+ //   // æ¸²æŸ“å¾ªç¯
+ //   while (!glfwWindowShouldClose(window))
+ //   {
+ //       displaySoloar(window, glfwGetTime());
+ //       glfwSwapBuffers(window);
+ //       glfwPollEvents();
+ //   }
+
+ //   SolarCleanup(); // åœ¨ç¨‹åºç»“æŸå‰è°ƒç”¨æ¸…ç†å‡½æ•°
+
+ //   std::cout << "Loop exited. Terminating." << std::endl;
+ //   glfwTerminate();
     return 0;
 }
 

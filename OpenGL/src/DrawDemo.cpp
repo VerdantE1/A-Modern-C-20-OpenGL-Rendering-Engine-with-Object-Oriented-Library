@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+ï»¿#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 
@@ -15,10 +15,11 @@
 #include "Camera.h"
 
 #include "AllShaperTypes.h"
-#include <Transform.h>
+#include "Globals.h"
+#include "Transform.h"
 void DrawDemo(GLFWwindow* window)
 {
-    // ¶¥µãºÍË÷ÒıÊı¾İ
+    // é¡¶ç‚¹å’Œç´¢å¼•æ•°æ®
     GLfloat vertices[] = {
         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
@@ -117,8 +118,8 @@ void DrawAnimationOnePoint_Scale(GLFWwindow* window)
         renderer.Clear();
         BindAll(vao, shader);
 
-		if (pointsize > 100.0f || pointsize < 10.0f) inc = -inc; // ¿ØÖÆµã´óĞ¡ÔÚ10µ½100Ö®¼ä
-		pointsize += inc; // Ôö¼Ó»ò¼õÉÙµã´óĞ¡
+		if (pointsize > 100.0f || pointsize < 10.0f) inc = -inc; // æ§åˆ¶ç‚¹å¤§å°åœ¨10åˆ°100ä¹‹é—´
+		pointsize += inc; // å¢åŠ æˆ–å‡å°‘ç‚¹å¤§å°
 
         GLCall(glPointSize(pointsize));
         GLCall(glDrawArrays(GL_POINTS, 0, 1));
@@ -151,10 +152,10 @@ void DrawTriangleRotate(GLFWwindow* window)
     Shader shader("res/shaders/TriangleRotate.shader");
     Renderer renderer;
 
-	glm::mat4 rotatemtx = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // ´´½¨Ò»¸öÈÆZÖáĞı×ª45¶ÈµÄ¾ØÕó
+	glm::mat4 rotatemtx = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // åˆ›å»ºä¸€ä¸ªç»•Zè½´æ—‹è½¬45åº¦çš„çŸ©é˜µ
 
 
-	shader.SetUniformMat4fv("transform", rotatemtx); // ÉèÖÃ³õÊ¼Ğı×ª¾ØÕó
+	shader.SetUniformMat4fv("transform", rotatemtx); // è®¾ç½®åˆå§‹æ—‹è½¬çŸ©é˜µ
 
 
     while (!glfwWindowShouldClose(window))
@@ -170,7 +171,7 @@ void DrawTriangleRotate(GLFWwindow* window)
 
 void DrawTriangleIsosceles(GLFWwindow* window)
 {
-	IsoscelesTriangle triangle; // Ê¹ÓÃIsoscelesTriangleÀà
+	IsoscelesTriangle triangle; // ä½¿ç”¨IsoscelesTriangleç±»
     Shader shader("res/shaders/GeneralTriangle.shader");
     Renderer renderer;
 
@@ -206,7 +207,7 @@ void DrawAnimationTrianlge_Move(GLFWwindow* window)
         xpos += inc;
 
 
-		shader.SetUniform1f("offset", xpos); // ÉèÖÃxÎ»ÖÃ
+		shader.SetUniform1f("offset", xpos); // è®¾ç½®xä½ç½®
 
         GLCall(glDrawArrays(GL_TRIANGLES, 0, 3));
         GLCall(glfwSwapBuffers(window));
@@ -220,9 +221,9 @@ void DrawAnimationTrianlge_Move(GLFWwindow* window, float currentTime)
     VertexArray vao;
     Shader shader("res/shaders/AnimationTriangle.shader");
 
-    // ¶¯»­²ÎÊı
-    float amplitude = 0.8f; // ×î´óÒÆ¶¯¾àÀë
-    float speed = 1.0f;     // ËÙ¶ÈÒò×Ó
+    // åŠ¨ç”»å‚æ•°
+    float amplitude = 0.8f; // æœ€å¤§ç§»åŠ¨è·ç¦»
+    float speed = 1.0f;     // é€Ÿåº¦å› å­
 
 
 
@@ -233,15 +234,15 @@ void DrawAnimationTrianlge_Move(GLFWwindow* window, float currentTime)
         renderer.Clear();
         BindAll(vao, shader);
 
-        // ¼ÆËãµ±Ç°Ö¡µÄxÎ»ÖÃ
+        // è®¡ç®—å½“å‰å¸§çš„xä½ç½®
         float xpos = amplitude * sin(speed * currentTime);
-        shader.SetUniform1f("offset", xpos); // ÉèÖÃxÎ»ÖÃ
+        shader.SetUniform1f("offset", xpos); // è®¾ç½®xä½ç½®
 
         GLCall(glDrawArrays(GL_TRIANGLES, 0, 3));
         GLCall(glfwSwapBuffers(window));
         GLCall(glfwPollEvents());
 
-        // ¸üĞÂ currentTime
+        // æ›´æ–° currentTime
         currentTime = static_cast<float>(glfwGetTime());
     }
 }
@@ -250,33 +251,33 @@ void DrawCube(GLFWwindow* window,bool enbaleAnimation)
 {
 
 
-    // ºìÉ«Á¢·½Ìå¶¥µãÊı¾İ£¨Ã¿¸ö¶¥µã£ºÎ»ÖÃx,y,z£¬ÑÕÉ«r,g,b£¬ÎÆÀíu,v£©
+    // çº¢è‰²ç«‹æ–¹ä½“é¡¶ç‚¹æ•°æ®ï¼ˆæ¯ä¸ªé¡¶ç‚¹ï¼šä½ç½®x,y,zï¼Œé¢œè‰²r,g,bï¼Œçº¹ç†u,vï¼‰
     GLfloat vertices[] = {
-        // Ç°Ãæ
+        // å‰é¢
         -1.0f, -1.0f,  1.0f,
          1.0f, -1.0f,  1.0f,
          1.0f,  1.0f,  1.0f,
         -1.0f,  1.0f,  1.0f,
-        // ºóÃæ
+        // åé¢
         -1.0f, -1.0f, -1.0f,
          1.0f, -1.0f, -1.0f,
          1.0f,  1.0f, -1.0f,
         -1.0f,  1.0f, -1.0f,
     };
 
-    // Á¢·½ÌåË÷ÒıÊı¾İ£¨Ã¿¸öÃæÁ½¸öÈı½ÇĞÎ£¬¹²12¸öÈı½ÇĞÎ£©
+    // ç«‹æ–¹ä½“ç´¢å¼•æ•°æ®ï¼ˆæ¯ä¸ªé¢ä¸¤ä¸ªä¸‰è§’å½¢ï¼Œå…±12ä¸ªä¸‰è§’å½¢ï¼‰
     unsigned int indices[] = {
-        // Ç°Ãæ
+        // å‰é¢
         0, 1, 2, 2, 3, 0,
-        // ÓÒÃæ
+        // å³é¢
         1, 5, 6, 6, 2, 1,
-        // ºóÃæ
+        // åé¢
         5, 4, 7, 7, 6, 5,
-        // ×óÃæ
+        // å·¦é¢
         4, 0, 3, 3, 7, 4,
-        // ÉÏÃæ
+        // ä¸Šé¢
         3, 2, 6, 6, 7, 3,
-        // ÏÂÃæ
+        // ä¸‹é¢
         4, 5, 1, 1, 0, 4
     };
 
@@ -290,15 +291,15 @@ void DrawCube(GLFWwindow* window,bool enbaleAnimation)
     Shader shader("res/shaders/Cube.shader");
     shader.Bind();
     
-	// »ñÈ¡´°¿ÚµÄ¿í¶ÈºÍ¸ß¶È
+	// è·å–çª—å£çš„å®½åº¦å’Œé«˜åº¦
     int width, height;
     GLCall(glfwGetFramebufferSize(window, &width, &height));
     float aspect = (float)width / (float)height;
 
 
-    // ÔÚäÖÈ¾Ç°ÉèÖÃMVP
+    // åœ¨æ¸²æŸ“å‰è®¾ç½®MVP
     glm::mat4 model = model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,-5.0f));
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, -3.0f)); // ÉãÏñ»úºóÍË3µ¥Î»
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, -3.0f)); // æ‘„åƒæœºåé€€3å•ä½
     glm::mat4 mv= view * model;
 
     glm::mat4 projection = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
@@ -309,21 +310,21 @@ void DrawCube(GLFWwindow* window,bool enbaleAnimation)
 
 
     Renderer renderer;
-	renderer.SetPolygonMode(false).SetDepthTest(true); //Æô¶¯Ïß¿òÄ£Ê½ºÍÉî¶È²âÊÔ
+	renderer.SetPolygonMode(false).SetDepthTest(true); //å¯åŠ¨çº¿æ¡†æ¨¡å¼å’Œæ·±åº¦æµ‹è¯•
 
     while (!glfwWindowShouldClose(window))
     {
 		auto currentTime = static_cast<float>(glfwGetTime());
         if (enbaleAnimation)
         {
-            glm::mat4 tMat = glm::translate(glm::mat4(1.0f), glm::vec3(sin(0.35 * currentTime) * 2.0f, cos(0.52f * currentTime) * 2.0f, sin(0.7f * currentTime) * 2.0f)); //Æ½ÒÆ²»»á¸Ä±ä´óĞ¡
-            //glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f * currentTime * currentTime, glm::vec3(0.0f, 0.0f, 1.0f)); ÊÔÊÔ¶ş´ÎÇúÏß£¬Ğı×ªËÙ¶ÈËæÊ±¼äÔö´ó¶øÔö´ó¶ø²»ÊÇ´¿ÏßĞÔÔö´ó£¬Í¦ÓĞÒâË¼µÄ
+            glm::mat4 tMat = glm::translate(glm::mat4(1.0f), glm::vec3(sin(0.35 * currentTime) * 2.0f, cos(0.52f * currentTime) * 2.0f, sin(0.7f * currentTime) * 2.0f)); //å¹³ç§»ä¸ä¼šæ”¹å˜å¤§å°
+            //glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f * currentTime * currentTime, glm::vec3(0.0f, 0.0f, 1.0f)); è¯•è¯•äºŒæ¬¡æ›²çº¿ï¼Œæ—‹è½¬é€Ÿåº¦éšæ—¶é—´å¢å¤§è€Œå¢å¤§è€Œä¸æ˜¯çº¯çº¿æ€§å¢å¤§ï¼ŒæŒºæœ‰æ„æ€çš„
             glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f * currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
             rMat = glm::rotate(rMat, 1.75f * currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
             rMat = glm::rotate(rMat, 1.75f * currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
-			//1.75f * currentTimeÊÇĞı×ªËÙ¶È£¬¿ÉÒÔ¸ù¾İĞèÒªµ÷Õû
+			//1.75f * currentTimeæ˜¯æ—‹è½¬é€Ÿåº¦ï¼Œå¯ä»¥æ ¹æ®éœ€è¦è°ƒæ•´
 
-			glm::mat4 mMat = tMat * rMat ; // ÏÈÆ½ÒÆºóĞı×ª
+			glm::mat4 mMat = tMat * rMat ; // å…ˆå¹³ç§»åæ—‹è½¬
 
             shader.SetUniformMat4fv("mv_matrix", mMat*mv);
             shader.SetUniformMat4fv("proj_matrix", projection);
@@ -351,33 +352,33 @@ void DrawMultiCube(GLFWwindow* window, bool enbaleAnimation)
 {
 
 
-    // ºìÉ«Á¢·½Ìå¶¥µãÊı¾İ£¨Ã¿¸ö¶¥µã£ºÎ»ÖÃx,y,z£¬ÑÕÉ«r,g,b£¬ÎÆÀíu,v£©
+    // çº¢è‰²ç«‹æ–¹ä½“é¡¶ç‚¹æ•°æ®ï¼ˆæ¯ä¸ªé¡¶ç‚¹ï¼šä½ç½®x,y,zï¼Œé¢œè‰²r,g,bï¼Œçº¹ç†u,vï¼‰
     GLfloat vertices[] = {
-        // Ç°Ãæ
+        // å‰é¢
         -1.0f, -1.0f,  1.0f,
          1.0f, -1.0f,  1.0f,
          1.0f,  1.0f,  1.0f,
         -1.0f,  1.0f,  1.0f,
-        // ºóÃæ
+        // åé¢
         -1.0f, -1.0f, -1.0f,
          1.0f, -1.0f, -1.0f,
          1.0f,  1.0f, -1.0f,
         -1.0f,  1.0f, -1.0f,
     };
 
-    // Á¢·½ÌåË÷ÒıÊı¾İ£¨Ã¿¸öÃæÁ½¸öÈı½ÇĞÎ£¬¹²12¸öÈı½ÇĞÎ£©
+    // ç«‹æ–¹ä½“ç´¢å¼•æ•°æ®ï¼ˆæ¯ä¸ªé¢ä¸¤ä¸ªä¸‰è§’å½¢ï¼Œå…±12ä¸ªä¸‰è§’å½¢ï¼‰
     unsigned int indices[] = {
-        // Ç°Ãæ
+        // å‰é¢
         0, 1, 2, 2, 3, 0,
-        // ÓÒÃæ
+        // å³é¢
         1, 5, 6, 6, 2, 1,
-        // ºóÃæ
+        // åé¢
         5, 4, 7, 7, 6, 5,
-        // ×óÃæ
+        // å·¦é¢
         4, 0, 3, 3, 7, 4,
-        // ÉÏÃæ
+        // ä¸Šé¢
         3, 2, 6, 6, 7, 3,
-        // ÏÂÃæ
+        // ä¸‹é¢
         4, 5, 1, 1, 0, 4
     };
 
@@ -391,15 +392,15 @@ void DrawMultiCube(GLFWwindow* window, bool enbaleAnimation)
     Shader shader("res/shaders/Cube.shader");
     shader.Bind();
 
-    // »ñÈ¡´°¿ÚµÄ¿í¶ÈºÍ¸ß¶È
+    // è·å–çª—å£çš„å®½åº¦å’Œé«˜åº¦
     int width, height;
     GLCall(glfwGetFramebufferSize(window, &width, &height));
     float aspect = (float)width / (float)height;
 
 
-    // ÔÚäÖÈ¾Ç°ÉèÖÃMVP
+    // åœ¨æ¸²æŸ“å‰è®¾ç½®MVP
     glm::mat4 model = model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, -3.0f)); // ÉãÏñ»úºóÍË3µ¥Î»
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, -3.0f)); // æ‘„åƒæœºåé€€3å•ä½
     glm::mat4 mv = view * model;
 
     glm::mat4 projection = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
@@ -410,7 +411,7 @@ void DrawMultiCube(GLFWwindow* window, bool enbaleAnimation)
 
 
     Renderer renderer;
-    renderer.SetPolygonMode(false).SetDepthTest(true); //Æô¶¯Ïß¿òÄ£Ê½ºÍÉî¶È²âÊÔ
+    renderer.SetPolygonMode(false).SetDepthTest(true); //å¯åŠ¨çº¿æ¡†æ¨¡å¼å’Œæ·±åº¦æµ‹è¯•
 
     while (!glfwWindowShouldClose(window))
     {
@@ -421,14 +422,14 @@ void DrawMultiCube(GLFWwindow* window, bool enbaleAnimation)
             auto tf = i + currentTime;
             if (enbaleAnimation)
             {
-                glm::mat4 tMat = glm::translate(glm::mat4(1.0f), glm::vec3(sin(0.35 * tf) * 8.0f, cos(0.52f * tf) * 8.0f, sin(0.7f * tf) * 8.0f)); //Æ½ÒÆ²»»á¸Ä±ä´óĞ¡
-                //glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f * currentTime * currentTime, glm::vec3(0.0f, 0.0f, 1.0f)); ÊÔÊÔ¶ş´ÎÇúÏß£¬Ğı×ªËÙ¶ÈËæÊ±¼äÔö´ó¶øÔö´ó¶ø²»ÊÇ´¿ÏßĞÔÔö´ó£¬Í¦ÓĞÒâË¼µÄ
+                glm::mat4 tMat = glm::translate(glm::mat4(1.0f), glm::vec3(sin(0.35 * tf) * 8.0f, cos(0.52f * tf) * 8.0f, sin(0.7f * tf) * 8.0f)); //å¹³ç§»ä¸ä¼šæ”¹å˜å¤§å°
+                //glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f * currentTime * currentTime, glm::vec3(0.0f, 0.0f, 1.0f)); è¯•è¯•äºŒæ¬¡æ›²çº¿ï¼Œæ—‹è½¬é€Ÿåº¦éšæ—¶é—´å¢å¤§è€Œå¢å¤§è€Œä¸æ˜¯çº¯çº¿æ€§å¢å¤§ï¼ŒæŒºæœ‰æ„æ€çš„
                 glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f * tf ,glm::vec3(0.0f, 0.0f, 1.0f));
                 rMat = glm::rotate(rMat, 1.75f * tf, glm::vec3(0.0f, 1.0f, 0.0f));
                 rMat = glm::rotate(rMat, 1.75f * tf, glm::vec3(1.0f, 0.0f, 0.0f));
-                //1.75f * currentTimeÊÇĞı×ªËÙ¶È£¬¿ÉÒÔ¸ù¾İĞèÒªµ÷Õû
+                //1.75f * currentTimeæ˜¯æ—‹è½¬é€Ÿåº¦ï¼Œå¯ä»¥æ ¹æ®éœ€è¦è°ƒæ•´
 
-                glm::mat4 mMat = tMat * rMat; // ÏÈÆ½ÒÆºóĞı×ª
+                glm::mat4 mMat = tMat * rMat; // å…ˆå¹³ç§»åæ—‹è½¬
 
                 shader.SetUniformMat4fv("mv_matrix", mMat * mv);
                 shader.SetUniformMat4fv("proj_matrix", projection);
@@ -453,33 +454,33 @@ void DrawMultiCube(GLFWwindow* window, bool enbaleAnimation)
 void DrawMultiCubeIntances(GLFWwindow* window, bool enbaleAnimation)
 {
 
-    // ºìÉ«Á¢·½Ìå¶¥µãÊı¾İ£¨Ã¿¸ö¶¥µã£ºÎ»ÖÃx,y,z£¬ÑÕÉ«r,g,b£¬ÎÆÀíu,v£©
+    // çº¢è‰²ç«‹æ–¹ä½“é¡¶ç‚¹æ•°æ®ï¼ˆæ¯ä¸ªé¡¶ç‚¹ï¼šä½ç½®x,y,zï¼Œé¢œè‰²r,g,bï¼Œçº¹ç†u,vï¼‰
     GLfloat vertices[] = {
-        // Ç°Ãæ
+        // å‰é¢
         -1.0f, -1.0f,  1.0f,
          1.0f, -1.0f,  1.0f,
          1.0f,  1.0f,  1.0f,
         -1.0f,  1.0f,  1.0f,
-        // ºóÃæ
+        // åé¢
         -1.0f, -1.0f, -1.0f,
          1.0f, -1.0f, -1.0f,
          1.0f,  1.0f, -1.0f,
         -1.0f,  1.0f, -1.0f,
     };
 
-    // Á¢·½ÌåË÷ÒıÊı¾İ£¨Ã¿¸öÃæÁ½¸öÈı½ÇĞÎ£¬¹²12¸öÈı½ÇĞÎ£©
+    // ç«‹æ–¹ä½“ç´¢å¼•æ•°æ®ï¼ˆæ¯ä¸ªé¢ä¸¤ä¸ªä¸‰è§’å½¢ï¼Œå…±12ä¸ªä¸‰è§’å½¢ï¼‰
     unsigned int indices[] = {
-        // Ç°Ãæ
+        // å‰é¢
         0, 1, 2, 2, 3, 0,
-        // ÓÒÃæ
+        // å³é¢
         1, 5, 6, 6, 2, 1,
-        // ºóÃæ
+        // åé¢
         5, 4, 7, 7, 6, 5,
-        // ×óÃæ
+        // å·¦é¢
         4, 0, 3, 3, 7, 4,
-        // ÉÏÃæ
+        // ä¸Šé¢
         3, 2, 6, 6, 7, 3,
-        // ÏÂÃæ
+        // ä¸‹é¢
         4, 5, 1, 1, 0, 4
     };
 
@@ -493,22 +494,22 @@ void DrawMultiCubeIntances(GLFWwindow* window, bool enbaleAnimation)
     Shader shader("res/shaders/CubeMultiInstances.shader");
     shader.Bind();
 
-    // »ñÈ¡´°¿ÚµÄ¿í¶ÈºÍ¸ß¶È
+    // è·å–çª—å£çš„å®½åº¦å’Œé«˜åº¦
     int width, height;
     GLCall(glfwGetFramebufferSize(window, &width, &height));
     float aspect = (float)width / (float)height;
 
 
-    // ÔÚäÖÈ¾Ç°ÉèÖÃMVP
+    // åœ¨æ¸²æŸ“å‰è®¾ç½®MVP
     glm::mat4 model = model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -420.0f)); // ÉãÏñ»úºóÍË420µ¥Î»
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -420.0f)); // æ‘„åƒæœºåé€€420å•ä½
     glm::mat4 mv = view * model;
 
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), aspect, 0.1f, 100.0f);
 
 
     Renderer renderer;
-    renderer.SetPolygonMode(false).SetDepthTest(true); //Æô¶¯Ïß¿òÄ£Ê½ºÍÉî¶È²âÊÔ
+    renderer.SetPolygonMode(false).SetDepthTest(true); //å¯åŠ¨çº¿æ¡†æ¨¡å¼å’Œæ·±åº¦æµ‹è¯•
 
     while (!glfwWindowShouldClose(window))
     {
@@ -536,12 +537,12 @@ void DrawCube_And_Pyramid(GLFWwindow* window, bool enbaleAnimation)
 	Pyramid pyramid;
 
 
-    // MVPÉèÖÃÍ¬ Cube
+    // MVPè®¾ç½®åŒ Cube
     int width, height;
     GLCall(glfwGetFramebufferSize(window, &width, &height));
     float aspect = (float)width / (float)height;
 
-    // ÉãÏñ»ú³õÊ¼»¯
+    // æ‘„åƒæœºåˆå§‹åŒ–
     Camera camera(
         glm::vec3(0, 0, 3), // position
         glm::vec3(0, 0, 0),  // target
@@ -550,46 +551,46 @@ void DrawCube_And_Pyramid(GLFWwindow* window, bool enbaleAnimation)
     );
 
 
-    // ³õÊ¼»¯ÎïÌåµÄTransform
+    // åˆå§‹åŒ–ç‰©ä½“çš„Transform
     Transform cubeTransform;
-    cubeTransform.setPosition(0.0f, 0.0f, -5.0f); // Á¢·½ÌåºóÒÆ
+    cubeTransform.setPosition(0.0f, 0.0f, -5.0f); // ç«‹æ–¹ä½“åç§»
 
     Transform pyramidTransform;
-    pyramidTransform.setPosition(0.0f, -2.0f, -5.0f); // ½ğ×ÖËşÆ«ÏÂ
+    pyramidTransform.setPosition(0.0f, -2.0f, -5.0f); // é‡‘å­—å¡”åä¸‹
 
 	glm::mat4 view = camera.GetViewMatrix();              //View Matrix
 	glm::mat4 projection = camera.GetProjectionMatrix();  //Projection Matrix
 
     Renderer renderer;
-    renderer.SetPolygonMode(false).SetDepthTest(true); //Æô¶¯Ïß¿òÄ£Ê½ºÍÉî¶È²âÊÔ
+    renderer.SetPolygonMode(false).SetDepthTest(true); //å¯åŠ¨çº¿æ¡†æ¨¡å¼å’Œæ·±åº¦æµ‹è¯•
 
     while (!glfwWindowShouldClose(window))
     {
         renderer.Clear();
         float currentTime = static_cast<float>(glfwGetTime());
 
-        // ====== Cube»æÖÆ ======
+        // ====== Cubeç»˜åˆ¶ ======
         glm::mat4 cubeMV = view * cubeTransform.getMatrix();
 
-        // ¶¯»­£ºĞı×ª + Ô²ÖÜÔË¶¯
+        // åŠ¨ç”»ï¼šæ—‹è½¬ + åœ†å‘¨è¿åŠ¨
         float animAngle = 1.75f * currentTime;
         float animX = sin(0.35f * currentTime) * 2.0f;
         float animY = cos(0.52f * currentTime) * 2.0f;
         float animZ = sin(0.7f * currentTime) * 2.0f;
 
-        // ¸üĞÂTransformÊôĞÔ
+        // æ›´æ–°Transformå±æ€§
         cubeTransform.setPosition(animX, animY, animZ - 5.0f);
         cubeTransform.setRotation(0.0f, animAngle, animAngle);
 
         //std::cout << camera.GetFrustumRectAtZ(-5) << std::endl;
 
-        // --- ÉèÖÃshader & »æÖÆCube ---
+        // --- è®¾ç½®shader & ç»˜åˆ¶Cube ---
         shader.SetUniformMat4fv("mv_matrix", view * cubeTransform.getMatrix());
         shader.SetUniformMat4fv("proj_matrix", projection);
 
         renderer.Draw(cube, shader);
 
-        // ====== Pyramid»æÖÆ ======
+        // ====== Pyramidç»˜åˆ¶ ======
         pyramidTransform.setRotation(animX, 0.0f, 0.0f);
         pyramidTransform.setScale(1.0f, 1.0f, 1.0f);     
 
@@ -606,31 +607,31 @@ void DrawCube_And_Pyramid(GLFWwindow* window, bool enbaleAnimation)
 
 void DrawPyramidWithTexture(GLFWwindow* window, bool enableAnimation)
 {
-    // ´´½¨Èı¸ö²»Í¬¹ıÂËÄ£Ê½µÄÎÆÀíÒÔ±ã±È½ÏĞ§¹û
+    // åˆ›å»ºä¸‰ä¸ªä¸åŒè¿‡æ»¤æ¨¡å¼çš„çº¹ç†ä»¥ä¾¿æ¯”è¾ƒæ•ˆæœ
     Texture textureNearest("res/textures/brick1.jpg", 
-        TextureFilterMode::NEAREST,  // ×î½üµã¹ıÂË£¨ÏñËØ»¯£©
+        TextureFilterMode::NEAREST,  // æœ€è¿‘ç‚¹è¿‡æ»¤ï¼ˆåƒç´ åŒ–ï¼‰
         TextureFilterMode::NEAREST); 
         
     Texture textureLinear("res/textures/brick1.jpg", 
-        TextureFilterMode::LINEAR,   // ÏßĞÔ¹ıÂË£¨Æ½»¬£©
+        TextureFilterMode::LINEAR,   // çº¿æ€§è¿‡æ»¤ï¼ˆå¹³æ»‘ï¼‰
         TextureFilterMode::LINEAR);
         
     Texture textureMipmap("res/textures/brick1.jpg", 
         TextureFilterMode::LINEAR, 
-        TextureFilterMode::LINEAR_MIPMAP_LINEAR,  // ÈıÏßĞÔ¹ıÂË£¨×î¸ßÖÊÁ¿£©
+        TextureFilterMode::LINEAR_MIPMAP_LINEAR,  // ä¸‰çº¿æ€§è¿‡æ»¤ï¼ˆæœ€é«˜è´¨é‡ï¼‰
         TextureWrapMode::REPEAT,
         TextureWrapMode::REPEAT,
-        true);  // Éú³Émipmap
+        true);  // ç”Ÿæˆmipmap
 
     Shader shader("res/shaders/3DShaderWithTexture.shader");
     Pyramid pyramid;
 
-    // MVPÉèÖÃÍ¬ Cube
+    // MVPè®¾ç½®åŒ Cube
     int width, height;
     GLCall(glfwGetFramebufferSize(window, &width, &height));
     float aspect = (float)width / (float)height;
 
-    // ÉãÏñ»ú³õÊ¼»¯
+    // æ‘„åƒæœºåˆå§‹åŒ–
     Camera camera(
         glm::vec3(0, 0, 3),   // position
         glm::vec3(0, 0, 0),   // target
@@ -639,7 +640,7 @@ void DrawPyramidWithTexture(GLFWwindow* window, bool enableAnimation)
     );
 
     Transform pyramidTransform;
-    pyramidTransform.setPosition(0.0f, 0.0f, -5.0f); // µ÷Õû½ğ×ÖËşÎ»ÖÃµ½ÖĞĞÄ
+    pyramidTransform.setPosition(0.0f, 0.0f, -5.0f); // è°ƒæ•´é‡‘å­—å¡”ä½ç½®åˆ°ä¸­å¿ƒ
 
     glm::mat4 view = camera.GetViewMatrix();         // View Matrix
     glm::mat4 projection = camera.GetProjectionMatrix(); // Projection Matrix
@@ -647,16 +648,16 @@ void DrawPyramidWithTexture(GLFWwindow* window, bool enableAnimation)
     Renderer renderer;
     renderer.SetPolygonMode(false).SetDepthTest(true);
 
-    // ·Å´óËõĞ¡¶¯»­µÄ²ÎÊı
-    float minScale = 0.2f;    // ×îĞ¡Ëõ·ÅÖµ
-    float maxScale = 5.0f;    // ×î´óËõ·ÅÖµ£¨·Å´ó5±¶£©
-    float scaleSpeed = 0.5f;  // Ëõ·ÅËÙ¶È
+    // æ”¾å¤§ç¼©å°åŠ¨ç”»çš„å‚æ•°
+    float minScale = 0.2f;    // æœ€å°ç¼©æ”¾å€¼
+    float maxScale = 5.0f;    // æœ€å¤§ç¼©æ”¾å€¼ï¼ˆæ”¾å¤§5å€ï¼‰
+    float scaleSpeed = 0.5f;  // ç¼©æ”¾é€Ÿåº¦
     
-    // Ìí¼ÓÒ»¸ö±äÁ¿¸ú×Ùµ±Ç°Ê¹ÓÃµÄÎÆÀí
-    int currentTextureMode = 0;  // 0=×î½üµã, 1=ÏßĞÔ, 2=mipmap
+    // æ·»åŠ ä¸€ä¸ªå˜é‡è·Ÿè¸ªå½“å‰ä½¿ç”¨çš„çº¹ç†
+    int currentTextureMode = 0;  // 0=æœ€è¿‘ç‚¹, 1=çº¿æ€§, 2=mipmap
     double lastKeyPressTime = 0.0;
     
-    // ÉèÖÃ´°¿Ú±êÌâÒÔÏÔÊ¾µ±Ç°¹ıÂËÄ£Ê½
+    // è®¾ç½®çª—å£æ ‡é¢˜ä»¥æ˜¾ç¤ºå½“å‰è¿‡æ»¤æ¨¡å¼
     glfwSetWindowTitle(window, "Texture Filter Mode: NEAREST");
 
     while (!glfwWindowShouldClose(window))
@@ -664,49 +665,49 @@ void DrawPyramidWithTexture(GLFWwindow* window, bool enableAnimation)
         renderer.Clear();
         float currentTime = static_cast<float>(glfwGetTime());
         
-        // °´¿Õ¸ñ¼üÇĞ»»ÎÆÀí¹ıÂËÄ£Ê½
+        // æŒ‰ç©ºæ ¼é”®åˆ‡æ¢çº¹ç†è¿‡æ»¤æ¨¡å¼
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && 
-            (currentTime - lastKeyPressTime) > 0.3) {  // ·ÀÖ¹Á¬Ğø´¥·¢
+            (currentTime - lastKeyPressTime) > 0.3) {  // é˜²æ­¢è¿ç»­è§¦å‘
             
             currentTextureMode = (currentTextureMode + 1) % 3;
             lastKeyPressTime = currentTime;
             
-            // ¸üĞÂ´°¿Ú±êÌâÒÔÏÔÊ¾µ±Ç°Ä£Ê½
+            // æ›´æ–°çª—å£æ ‡é¢˜ä»¥æ˜¾ç¤ºå½“å‰æ¨¡å¼
             switch (currentTextureMode) {
                 case 0:
-                    glfwSetWindowTitle(window, "Texture Filter Mode: NEAREST (ÏñËØ»¯)");
+                    glfwSetWindowTitle(window, "Texture Filter Mode: NEAREST (åƒç´ åŒ–)");
                     break;
                 case 1:
-                    glfwSetWindowTitle(window, "Texture Filter Mode: LINEAR (Æ½»¬)");
+                    glfwSetWindowTitle(window, "Texture Filter Mode: LINEAR (å¹³æ»‘)");
                     break;
                 case 2:
-                    glfwSetWindowTitle(window, "Texture Filter Mode: MIPMAP (ÈıÏßĞÔ¹ıÂË)");
+                    glfwSetWindowTitle(window, "Texture Filter Mode: MIPMAP (ä¸‰çº¿æ€§è¿‡æ»¤)");
                     break;
             }
         }
 
-        // ¼ÆËãµ±Ç°Ëõ·ÅÖµ - Ê¹ÓÃÕıÏÒº¯ÊıÊµÏÖÆ½»¬µÄËõ·Å¶¯»­
+        // è®¡ç®—å½“å‰ç¼©æ”¾å€¼ - ä½¿ç”¨æ­£å¼¦å‡½æ•°å®ç°å¹³æ»‘çš„ç¼©æ”¾åŠ¨ç”»
         float scale = 0.0f;
         
         if (enableAnimation) {
-            // ¼ÆËãËõ·ÅÖµÔÚminScaleºÍmaxScaleÖ®¼ä±ä»¯
+            // è®¡ç®—ç¼©æ”¾å€¼åœ¨minScaleå’ŒmaxScaleä¹‹é—´å˜åŒ–
             scale = minScale + (maxScale - minScale) * 
                    (sin(scaleSpeed * currentTime) * 0.5f + 0.5f);
         }
         else {
-            scale = 1.0f;  // ²»ÆôÓÃ¶¯»­Ê±Ê¹ÓÃÄ¬ÈÏ´óĞ¡
+            scale = 1.0f;  // ä¸å¯ç”¨åŠ¨ç”»æ—¶ä½¿ç”¨é»˜è®¤å¤§å°
         }
 
-        // Ó¦ÓÃËõ·ÅºÍĞı×ª
-        float animAngle = 0.5f * currentTime;  // »ºÂıĞı×ª
-        pyramidTransform.setRotation(0.0f, animAngle, 0.0f);  // ÈÆYÖáĞı×ª
-        pyramidTransform.setScale(scale, scale, scale);  // ÉèÖÃËõ·Å
+        // åº”ç”¨ç¼©æ”¾å’Œæ—‹è½¬
+        float animAngle = 0.5f * currentTime;  // ç¼“æ…¢æ—‹è½¬
+        pyramidTransform.setRotation(0.0f, animAngle, 0.0f);  // ç»•Yè½´æ—‹è½¬
+        pyramidTransform.setScale(scale, scale, scale);  // è®¾ç½®ç¼©æ”¾
 
-        // ÉèÖÃ×ÅÉ«Æ÷¾ØÕó
+        // è®¾ç½®ç€è‰²å™¨çŸ©é˜µ
         shader.SetUniformMat4fv("proj_matrix", projection);
         shader.SetUniformMat4fv("mv_matrix", view * pyramidTransform.getMatrix());
         
-        // ¸ù¾İµ±Ç°Ä£Ê½Ñ¡ÔñÎÆÀí
+        // æ ¹æ®å½“å‰æ¨¡å¼é€‰æ‹©çº¹ç†
         switch (currentTextureMode) {
             case 0:
                 renderer.Draw(pyramid, shader, textureNearest);
@@ -719,8 +720,8 @@ void DrawPyramidWithTexture(GLFWwindow* window, bool enableAnimation)
                 break;
         }
 
-        // ÔÚÆÁÄ»ÉÏÏÔÊ¾µ±Ç°Ëõ·ÅÖµºÍÊ¹ÓÃµÄ¹ıÂËÄ£Ê½
-        // ÕâĞèÒªÒ»¸öÎÄ±¾äÖÈ¾ÏµÍ³£¬Èç¹ûÃ»ÓĞ£¬¿ÉÒÔÊ¡ÂÔÕâ²¿·Ö
+        // åœ¨å±å¹•ä¸Šæ˜¾ç¤ºå½“å‰ç¼©æ”¾å€¼å’Œä½¿ç”¨çš„è¿‡æ»¤æ¨¡å¼
+        // è¿™éœ€è¦ä¸€ä¸ªæ–‡æœ¬æ¸²æŸ“ç³»ç»Ÿï¼Œå¦‚æœæ²¡æœ‰ï¼Œå¯ä»¥çœç•¥è¿™éƒ¨åˆ†
         
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -729,79 +730,79 @@ void DrawPyramidWithTexture(GLFWwindow* window, bool enableAnimation)
 
 void Draw3PyramidsWithTextureControls(GLFWwindow* window)
 {
-    // ´´½¨Èı¸ö²»Í¬¹ıÂËÄ£Ê½µÄÎÆÀí
+    // åˆ›å»ºä¸‰ä¸ªä¸åŒè¿‡æ»¤æ¨¡å¼çš„çº¹ç†
     Texture textureNearest("res/textures/cheese.jpg", 
-        TextureFilterMode::NEAREST,  // ×î½üµã¹ıÂË£¨ÏñËØ»¯£©
+        TextureFilterMode::NEAREST,  // æœ€è¿‘ç‚¹è¿‡æ»¤ï¼ˆåƒç´ åŒ–ï¼‰
         TextureFilterMode::NEAREST,
         TextureWrapMode::REPEAT,
         TextureWrapMode::REPEAT);
         
     Texture textureLinear("res/textures/cheese.jpg", 
-        TextureFilterMode::LINEAR,   // ÏßĞÔ¹ıÂË£¨Æ½»¬£©
+        TextureFilterMode::LINEAR,   // çº¿æ€§è¿‡æ»¤ï¼ˆå¹³æ»‘ï¼‰
         TextureFilterMode::LINEAR,
         TextureWrapMode::REPEAT,
         TextureWrapMode::REPEAT);
         
     Texture textureMipmap("res/textures/cheese.jpg", 
         TextureFilterMode::LINEAR, 
-        TextureFilterMode::LINEAR_MIPMAP_LINEAR,  // ÈıÏßĞÔ¹ıÂË£¨×î¸ßÖÊÁ¿£©
+        TextureFilterMode::LINEAR_MIPMAP_LINEAR,  // ä¸‰çº¿æ€§è¿‡æ»¤ï¼ˆæœ€é«˜è´¨é‡ï¼‰
         TextureWrapMode::REPEAT,
         TextureWrapMode::REPEAT,
-        true);  // Éú³Émipmap
+        true);  // ç”Ÿæˆmipmap
 
     Shader shader("res/shaders/3DShaderWithTexture.shader");
     Pyramid pyramid;
 
-    // MVPÉèÖÃ
+    // MVPè®¾ç½®
     int width, height;
     GLCall(glfwGetFramebufferSize(window, &width, &height));
     float aspect = (float)width / (float)height;
 
-    // ÉãÏñ»ú³õÊ¼»¯
+    // æ‘„åƒæœºåˆå§‹åŒ–
     Camera camera(
-        glm::vec3(0, 1, 10),   // Î»ÖÃµ÷¸ßÒ»µã£¬ÏòºóÒÆ¶¯ÒÔ±ã¿´µ½Èı¸ö½ğ×ÖËş
-        glm::vec3(0, 0, 0),    // Ä¿±êµã
-        glm::vec3(0, 1, 0),    // ÉÏÏòÁ¿
+        glm::vec3(0, 1, 10),   // ä½ç½®è°ƒé«˜ä¸€ç‚¹ï¼Œå‘åç§»åŠ¨ä»¥ä¾¿çœ‹åˆ°ä¸‰ä¸ªé‡‘å­—å¡”
+        glm::vec3(0, 0, 0),    // ç›®æ ‡ç‚¹
+        glm::vec3(0, 1, 0),    // ä¸Šå‘é‡
         70.0f, aspect, 0.1f, 100.0f
     );
 
-    // Èı¸ö½ğ×ÖËşµÄTransform
+    // ä¸‰ä¸ªé‡‘å­—å¡”çš„Transform
     Transform pyramid1Transform;
     Transform pyramid2Transform;
     Transform pyramid3Transform;
     
-    // ³õÊ¼ºáÏòÎ»ÖÃ£¨Ë®Æ½ÅÅÁĞ£©
-    pyramid1Transform.setPosition(-4.0f, 0.0f, -10.0f);  // ×ó±ß
-    pyramid2Transform.setPosition(0.0f, 0.0f, -10.0f);   // ÖĞ¼ä
-    pyramid3Transform.setPosition(4.0f, 0.0f, -10.0f);   // ÓÒ±ß
+    // åˆå§‹æ¨ªå‘ä½ç½®ï¼ˆæ°´å¹³æ’åˆ—ï¼‰
+    pyramid1Transform.setPosition(-4.0f, 0.0f, -10.0f);  // å·¦è¾¹
+    pyramid2Transform.setPosition(0.0f, 0.0f, -10.0f);   // ä¸­é—´
+    pyramid3Transform.setPosition(4.0f, 0.0f, -10.0f);   // å³è¾¹
     
-    // Ó¦ÓÃÒ»Ğ©³õÊ¼Ğı×ª£¬Ê¹ËüÃÇ¿´ÆğÀ´²»Í¬
-    pyramid1Transform.setRotation(10.0f, 0.0f, 0.0f);     // ±ê×¼³¯Ïò
-    pyramid2Transform.setRotation(10.0f, 0.0f, 0.0f);    // YÖáĞı×ª45¶È
-    pyramid3Transform.setRotation(10.0f, 0.0f, 0.0f);   // YÖáĞı×ª-45¶È
+    // åº”ç”¨ä¸€äº›åˆå§‹æ—‹è½¬ï¼Œä½¿å®ƒä»¬çœ‹èµ·æ¥ä¸åŒ
+    pyramid1Transform.setRotation(10.0f, 0.0f, 0.0f);     // æ ‡å‡†æœå‘
+    pyramid2Transform.setRotation(10.0f, 0.0f, 0.0f);    // Yè½´æ—‹è½¬45åº¦
+    pyramid3Transform.setRotation(10.0f, 0.0f, 0.0f);   // Yè½´æ—‹è½¬-45åº¦
 
-    glm::mat4 view = camera.GetViewMatrix();              // ÊÓÍ¼¾ØÕó
-    glm::mat4 projection = camera.GetProjectionMatrix();  // Í¶Ó°¾ØÕó
+    glm::mat4 view = camera.GetViewMatrix();              // è§†å›¾çŸ©é˜µ
+    glm::mat4 projection = camera.GetProjectionMatrix();  // æŠ•å½±çŸ©é˜µ
 
     Renderer renderer;
-    renderer.SetPolygonMode(false).SetDepthTest(true);    // ÆôÓÃÉî¶È²âÊÔ
+    renderer.SetPolygonMode(false).SetDepthTest(true);    // å¯ç”¨æ·±åº¦æµ‹è¯•
 
-    // ¾àÀë¿ØÖÆ²ÎÊı
-    float moveSpeed = 0.4f;          // ÒÆ¶¯ËÙ¶È
-    float rotationSpeed = 0.05f;      // Ğı×ªËÙ¶È
+    // è·ç¦»æ§åˆ¶å‚æ•°
+    float moveSpeed = 0.4f;          // ç§»åŠ¨é€Ÿåº¦
+    float rotationSpeed = 0.05f;      // æ—‹è½¬é€Ÿåº¦
     
-    // ĞÅÏ¢ÏÔÊ¾
-    glfwSetWindowTitle(window, "3 Pyramids Demo | °´[W/S]¼ü¿ØÖÆ¾àÀë | °´[A/D]¼ü¿ØÖÆĞı×ª");
+    // ä¿¡æ¯æ˜¾ç¤º
+    glfwSetWindowTitle(window, "3 Pyramids Demo | æŒ‰[W/S]é”®æ§åˆ¶è·ç¦» | æŒ‰[A/D]é”®æ§åˆ¶æ—‹è½¬");
     
-    // Ö÷Ñ­»·
+    // ä¸»å¾ªç¯
     while (!glfwWindowShouldClose(window))
     {
         renderer.Clear();
         float currentTime = static_cast<float>(glfwGetTime());
         
-        // ¼üÅÌÊäÈë´¦Àí - ¿ØÖÆ½ğ×ÖËşµÄ¾àÀë
+        // é”®ç›˜è¾“å…¥å¤„ç† - æ§åˆ¶é‡‘å­—å¡”çš„è·ç¦»
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            // W¼ü - À­½ü½ğ×ÖËş
+            // Wé”® - æ‹‰è¿‘é‡‘å­—å¡”
             pyramid1Transform.setPosition(
                 pyramid1Transform.getPosition().x,
                 pyramid1Transform.getPosition().y,
@@ -819,7 +820,7 @@ void Draw3PyramidsWithTextureControls(GLFWwindow* window)
         }
         
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            // S¼ü - ÍÆÔ¶½ğ×ÖËş
+            // Sé”® - æ¨è¿œé‡‘å­—å¡”
             pyramid1Transform.setPosition(
                 pyramid1Transform.getPosition().x,
                 pyramid1Transform.getPosition().y,
@@ -836,9 +837,9 @@ void Draw3PyramidsWithTextureControls(GLFWwindow* window)
                 pyramid3Transform.getPosition().z - moveSpeed);
         }
         
-        // Ğı×ª¿ØÖÆ
+        // æ—‹è½¬æ§åˆ¶
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            // A¼ü - ÄæÊ±ÕëĞı×ª
+            // Aé”® - é€†æ—¶é’ˆæ—‹è½¬
             pyramid1Transform.setRotation(
                 pyramid1Transform.getRotation().x,
                 pyramid1Transform.getRotation().y + rotationSpeed,
@@ -856,7 +857,7 @@ void Draw3PyramidsWithTextureControls(GLFWwindow* window)
         }
         
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            // D¼ü - Ë³Ê±ÕëĞı×ª
+            // Dé”® - é¡ºæ—¶é’ˆæ—‹è½¬
             pyramid1Transform.setRotation(
                 pyramid1Transform.getRotation().x,
                 pyramid1Transform.getRotation().y - rotationSpeed,
@@ -873,22 +874,22 @@ void Draw3PyramidsWithTextureControls(GLFWwindow* window)
                 pyramid3Transform.getRotation().z);
         }
         
-        // ¼ÆËãµ±Ç°ZÎ»ÖÃ£¬¸üĞÂ´°¿Ú±êÌâÏÔÊ¾ĞÅÏ¢
-        std::string zPosStr = "ZÎ»ÖÃ: " + std::to_string(pyramid2Transform.getPosition().z);
-        glfwSetWindowTitle(window, ("3 Pyramids Demo | W/S¿ØÖÆ¾àÀë | A/D¿ØÖÆĞı×ª | " + zPosStr).c_str());
+        // è®¡ç®—å½“å‰Zä½ç½®ï¼Œæ›´æ–°çª—å£æ ‡é¢˜æ˜¾ç¤ºä¿¡æ¯
+        std::string zPosStr = "Zä½ç½®: " + std::to_string(pyramid2Transform.getPosition().z);
+        glfwSetWindowTitle(window, ("3 Pyramids Demo | W/Sæ§åˆ¶è·ç¦» | A/Dæ§åˆ¶æ—‹è½¬ | " + zPosStr).c_str());
 
-        // ÉèÖÃ×ÅÉ«Æ÷Í¶Ó°¾ØÕó£¨¶ÔËùÓĞ½ğ×ÖËşÏàÍ¬£©
+        // è®¾ç½®ç€è‰²å™¨æŠ•å½±çŸ©é˜µï¼ˆå¯¹æ‰€æœ‰é‡‘å­—å¡”ç›¸åŒï¼‰
         shader.SetUniformMat4fv("proj_matrix", projection);
         
-        // äÖÈ¾µÚÒ»¸ö½ğ×ÖËş£¨×î½üµã¹ıÂË£©
+        // æ¸²æŸ“ç¬¬ä¸€ä¸ªé‡‘å­—å¡”ï¼ˆæœ€è¿‘ç‚¹è¿‡æ»¤ï¼‰
         shader.SetUniformMat4fv("mv_matrix", view * pyramid1Transform.getMatrix());
         renderer.Draw(pyramid, shader, textureNearest);
         
-        // äÖÈ¾µÚ¶ş¸ö½ğ×ÖËş£¨ÏßĞÔ¹ıÂË£©
+        // æ¸²æŸ“ç¬¬äºŒä¸ªé‡‘å­—å¡”ï¼ˆçº¿æ€§è¿‡æ»¤ï¼‰
         shader.SetUniformMat4fv("mv_matrix", view * pyramid2Transform.getMatrix());
         renderer.Draw(pyramid, shader, textureLinear);
         
-        // äÖÈ¾µÚÈı¸ö½ğ×ÖËş£¨Mipmap¹ıÂË£©
+        // æ¸²æŸ“ç¬¬ä¸‰ä¸ªé‡‘å­—å¡”ï¼ˆMipmapè¿‡æ»¤ï¼‰
         shader.SetUniformMat4fv("mv_matrix", view * pyramid3Transform.getMatrix());
         renderer.Draw(pyramid, shader, textureMipmap);
         
@@ -910,12 +911,12 @@ void DrawSphere(GLFWwindow* window)
 	Torus pyramid;
 
 
-    // MVPÉèÖÃÍ¬ Cube
+    // MVPè®¾ç½®åŒ Cube
     int width, height;
     GLCall(glfwGetFramebufferSize(window, &width, &height));
     float aspect = (float)width / (float)height;
 
-    // ÉãÏñ»ú³õÊ¼»¯
+    // æ‘„åƒæœºåˆå§‹åŒ–
     Camera camera(
         glm::vec3(0, 0, 3), // position
         glm::vec3(0, 0, 0),  // target
@@ -924,46 +925,46 @@ void DrawSphere(GLFWwindow* window)
     );
 
 
-    // ³õÊ¼»¯ÎïÌåµÄTransform
+    // åˆå§‹åŒ–ç‰©ä½“çš„Transform
     Transform cubeTransform;
-    cubeTransform.setPosition(0.0f, 0.0f, -5.0f); // Á¢·½ÌåºóÒÆ
+    cubeTransform.setPosition(0.0f, 0.0f, -5.0f); // ç«‹æ–¹ä½“åç§»
 
     Transform pyramidTransform;
-    pyramidTransform.setPosition(0.0f, -2.0f, -5.0f); // ½ğ×ÖËşÆ«ÏÂ
+    pyramidTransform.setPosition(0.0f, -2.0f, -5.0f); // é‡‘å­—å¡”åä¸‹
 
     glm::mat4 view = camera.GetViewMatrix();              //View Matrix
     glm::mat4 projection = camera.GetProjectionMatrix();  //Projection Matrix
 
     Renderer renderer;
-    renderer.SetPolygonMode(false).SetDepthTest(true); //Æô¶¯Ïß¿òÄ£Ê½ºÍÉî¶È²âÊÔ
+    renderer.SetPolygonMode(false).SetDepthTest(true); //å¯åŠ¨çº¿æ¡†æ¨¡å¼å’Œæ·±åº¦æµ‹è¯•
 
     while (!glfwWindowShouldClose(window))
     {
         renderer.Clear();
         float currentTime = static_cast<float>(glfwGetTime());
 
-        // ====== Cube»æÖÆ ======
+        // ====== Cubeç»˜åˆ¶ ======
         glm::mat4 cubeMV = view * cubeTransform.getMatrix();
 
-        // ¶¯»­£ºĞı×ª + Ô²ÖÜÔË¶¯
+        // åŠ¨ç”»ï¼šæ—‹è½¬ + åœ†å‘¨è¿åŠ¨
         float animAngle = 1.75f * currentTime;
         float animX = sin(0.35f * currentTime) * 2.0f;
         float animY = cos(0.52f * currentTime) * 2.0f;
         float animZ = sin(0.7f * currentTime) * 2.0f;
 
-        // ¸üĞÂTransformÊôĞÔ
+        // æ›´æ–°Transformå±æ€§
         cubeTransform.setPosition(animX, animY, animZ - 5.0f);
         cubeTransform.setRotation(0.0f, animAngle, animAngle);
 
         //std::cout << camera.GetFrustumRectAtZ(-5) << std::endl;
 
-        // --- ÉèÖÃshader & »æÖÆCube ---
+        // --- è®¾ç½®shader & ç»˜åˆ¶Cube ---
         shader.SetUniformMat4fv("mv_matrix", view * cubeTransform.getMatrix());
         shader.SetUniformMat4fv("proj_matrix", projection);
 
         renderer.Draw(cube, shader);
 
-        // ====== Pyramid»æÖÆ ======
+        // ====== Pyramidç»˜åˆ¶ ======
         pyramidTransform.setRotation(animX, 0.0f, 0.0f);
         pyramidTransform.setScale(1.0f, 1.0f, 1.0f);
 
@@ -978,6 +979,64 @@ void DrawSphere(GLFWwindow* window)
 
 }
 
+
+void DrawTorus(GLFWwindow* window)
+{
+    Shader shader("res/shaders/Cube.shader");
+
+    Torus toruhs;
+
+
+    int width, height;
+    GLCall(glfwGetFramebufferSize(window, &width, &height));
+    float aspect = (float)width / (float)height;
+
+    // æ‘„åƒæœºåˆå§‹åŒ–
+    Camera camera(
+        glm::vec3(0, 0, 3), // position
+        glm::vec3(0, 0, 0),  // target
+        glm::vec3(0, 1, 0),  // up
+        70.0f, aspect, 0.1f, 100.0f
+    );
+
+
+
+    Transform toruhsTransform;
+    toruhsTransform.setPosition(0.0f, -2.0f, -5.0f); // é‡‘å­—å¡”åä¸‹
+
+    glm::mat4 view = camera.GetViewMatrix();              //View Matrix
+    glm::mat4 projection = camera.GetProjectionMatrix();  //Projection Matrix
+
+    Renderer renderer;
+    renderer.SetPolygonMode(false).SetDepthTest(true); //å¯åŠ¨çº¿æ¡†æ¨¡å¼å’Œæ·±åº¦æµ‹è¯•
+
+    while (!glfwWindowShouldClose(window))
+    {
+        renderer.Clear();
+        float currentTime = static_cast<float>(glfwGetTime());
+
+       
+
+        // åŠ¨ç”»ï¼šæ—‹è½¬ + åœ†å‘¨è¿åŠ¨
+        float animAngle = 1.75f * currentTime;
+        float animX = sin(0.35f * currentTime) * 2.0f;
+        float animY = cos(0.52f * currentTime) * 2.0f;
+        float animZ = sin(0.7f * currentTime) * 2.0f;
+
+
+        // ====== Pyramidç»˜åˆ¶ ======
+        toruhsTransform.setRotation(animX, 0.0f, 0.0f);
+        toruhsTransform.setScale(1.0f, 1.0f, 1.0f);
+
+        shader.SetUniformMat4fv("proj_matrix", projection);
+        shader.SetUniformMat4fv("mv_matrix", view * toruhsTransform.getMatrix());
+        renderer.Draw(toruhs, shader);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
 void DrawImportedModel(GLFWwindow* window)
 {
     Shader shader("res/shaders/Cube.shader");
@@ -988,12 +1047,12 @@ void DrawImportedModel(GLFWwindow* window)
     Torus pyramid;
 
 
-    // MVPÉèÖÃÍ¬ Cube
+    // MVPè®¾ç½®åŒ Cube
     int width, height;
     GLCall(glfwGetFramebufferSize(window, &width, &height));
     float aspect = (float)width / (float)height;
 
-    // ÉãÏñ»ú³õÊ¼»¯
+    // æ‘„åƒæœºåˆå§‹åŒ–
     Camera camera(
         glm::vec3(0, 0, 30), // position
         glm::vec3(0, 0, 0),  // target
@@ -1003,48 +1062,48 @@ void DrawImportedModel(GLFWwindow* window)
 
 
 
-    // ³õÊ¼»¯ÎïÌåµÄTransform
+    // åˆå§‹åŒ–ç‰©ä½“çš„Transform
     Transform cubeTransform;
-    cubeTransform.setPosition(0.0f, 0.0f, -5.0f); // Á¢·½ÌåºóÒÆ
+    cubeTransform.setPosition(0.0f, 0.0f, -5.0f); // ç«‹æ–¹ä½“åç§»
     cubeTransform.setScale(0.01f, 0.01f, 0.01f);
 
     Transform pyramidTransform;
-    pyramidTransform.setPosition(10.0f, -2.0f, -5.0f); // ½ğ×ÖËşÆ«ÏÂ
+    pyramidTransform.setPosition(10.0f, -2.0f, -5.0f); // é‡‘å­—å¡”åä¸‹
 
     glm::mat4 view = camera.GetViewMatrix();              //View Matrix
     glm::mat4 projection = camera.GetProjectionMatrix();  //Projection Matrix
 
     Renderer renderer;
-    renderer.SetPolygonMode(false).SetDepthTest(true); //Æô¶¯Ïß¿òÄ£Ê½ºÍÉî¶È²âÊÔ
+    renderer.SetPolygonMode(false).SetDepthTest(true); //å¯åŠ¨çº¿æ¡†æ¨¡å¼å’Œæ·±åº¦æµ‹è¯•
 
     while (!glfwWindowShouldClose(window))
     {
         renderer.Clear();
         float currentTime = static_cast<float>(glfwGetTime());
 
-        // ====== Cube»æÖÆ ======
+        // ====== Cubeç»˜åˆ¶ ======
         glm::mat4 cubeMV = view * cubeTransform.getMatrix();
 
-        // ¶¯»­£ºĞı×ª + Ô²ÖÜÔË¶¯
+        // åŠ¨ç”»ï¼šæ—‹è½¬ + åœ†å‘¨è¿åŠ¨
         float animAngle = 1.75f * currentTime;
         float animX = sin(0.35f * currentTime) * 2.0f;
         float animY = cos(0.52f * currentTime) * 2.0f;
         float animZ = sin(0.7f * currentTime) * 2.0f;
 
-        // ¸üĞÂTransformÊôĞÔ
+        // æ›´æ–°Transformå±æ€§
         cubeTransform.setPosition(animX, animY, animZ - 5.0f);
         cubeTransform.setRotation(0.0f, animAngle, animAngle);
 
         //std::cout << camera.GetFrustumRectAtZ(-5) << std::endl;
 
-        // --- ÉèÖÃshader & »æÖÆCube ---
+        // --- è®¾ç½®shader & ç»˜åˆ¶Cube ---
         shader.SetUniformMat4fv("mv_matrix", view * cubeTransform.getMatrix());
         shader.SetUniformMat4fv("proj_matrix", projection);
 
         //renderer.Draw(cube, shader);
 		renderer.DrawArrays(cube, shader,cube.getNumVertices());
 
-        // ====== Pyramid»æÖÆ ======
+        // ====== Pyramidç»˜åˆ¶ ======
         pyramidTransform.setRotation(animX, 0.0f, 0.0f);
         pyramidTransform.setScale(1.0f, 1.0f, 1.0f);
 
@@ -1056,6 +1115,74 @@ void DrawImportedModel(GLFWwindow* window)
         glfwPollEvents();
     }
 
+}
+
+
+void DrawTorusWithLight(GLFWwindow* window)
+{
+    Shader shader("res/shaders/basicShaderWithLight.shader");
+
+    Torus toruhs;
+
+    int width, height;
+    GLCall(glfwGetFramebufferSize(window, &width, &height));
+    float aspect = (float)width / (float)height;
+
+    // æ‘„åƒæœºåˆå§‹åŒ–
+    Camera camera(
+        glm::vec3(0, 0, 3), // position
+        glm::vec3(0, 0, 0),  // target
+        glm::vec3(0, 1, 0),  // up
+        70.0f, aspect, 0.1f, 100.0f
+    );
+
+
+
+    Transform toruhsTransform;
+    toruhsTransform.setPosition(0.0f, -2.0f, -5.0f); // é‡‘å­—å¡”åä¸‹
+
+    glm::mat4 view = camera.GetViewMatrix();              //View Matrix
+    glm::mat4 projection = camera.GetProjectionMatrix();  //Projection Matrix
+	
+
+    Renderer renderer;
+    renderer.SetPolygonMode(false).SetDepthTest(true); //å¯åŠ¨çº¿æ¡†æ¨¡å¼å’Œæ·±åº¦æµ‹è¯•
+
+    while (!glfwWindowShouldClose(window))
+    {
+        renderer.Clear();
+        float currentTime = static_cast<float>(glfwGetTime());
+
+
+
+        // ... åŠ¨ç”»è®¡ç®— ...
+        float animAngle = 1.75f * currentTime;
+        float animX = sin(0.35f * currentTime) * 2.0f;
+        float animY = cos(0.52f * currentTime) * 2.0f;
+        float animZ = sin(0.7f * currentTime) * 2.0f;
+
+
+        // ====== Toruhsç»˜åˆ¶ ======
+        toruhsTransform.setRotation(animX, 0.0f, 0.0f);
+        toruhsTransform.setScale(1.0f, 1.0f, 1.0f);
+
+        // ====== é‡æ–°è®¡ç®—çŸ©é˜µï¼ˆå…³é”®ï¼ï¼‰======
+        glm::mat4 mv = view * toruhsTransform.getMatrix();    // âœ… æ¯å¸§é‡æ–°è®¡ç®—
+        glm::mat4 normal = glm::transpose(glm::inverse(mv));  // 
+
+		// è®¾ç½®å…‰æºä½ç½®å’Œé¢œè‰²
+		currentLightPos = glm::vec3(initialLightLoc.x, initialLightLoc.y, initialLightLoc.z);
+        installLights(view,shader);  
+
+        shader.SetUniformMat4fv("mv_matrix", mv);
+        shader.SetUniformMat4fv("proj_matrix", projection);
+        shader.SetUniformMat4fv("norm_matrix", normal);
+
+        renderer.Draw(toruhs, shader);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
 }
 
 /*

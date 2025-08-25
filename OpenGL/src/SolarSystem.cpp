@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+ï»¿#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "AllShaperTypes.h"
 #include "Shader.h"
@@ -12,80 +12,80 @@
 
 class GLFWwindow;
 
-// È«¾Ö±äÁ¿ÉùÃ÷
+// å…¨å±€å˜é‡å£°æ˜
 TransformStack transformStk;
 
-// È«¾ÖÎÆÀí¶ÔÏó - ÔÚÕû¸ö³ÌĞòÉúÃüÖÜÆÚÖĞ±£³Ö
+// å…¨å±€çº¹ç†å¯¹è±¡ - åœ¨æ•´ä¸ªç¨‹åºç”Ÿå‘½å‘¨æœŸä¸­ä¿æŒ
 Texture* sunTexture = nullptr;
 Texture* earthTexture = nullptr;
 Texture* moonTexture = nullptr;
-Texture* sunRingTexture = nullptr;  // Ìí¼ÓÌ«Ñô»·ÎÆÀí
+Texture* sunRingTexture = nullptr;  // æ·»åŠ å¤ªé˜³ç¯çº¹ç†
 
-// È«¾Ö×ÅÉ«Æ÷ºÍĞÎ×´¶ÔÏó - ±ÜÃâÃ¿Ö¡ÖØĞÂ´´½¨
+// å…¨å±€ç€è‰²å™¨å’Œå½¢çŠ¶å¯¹è±¡ - é¿å…æ¯å¸§é‡æ–°åˆ›å»º
 Shader* solarShader = nullptr;
 Sphere* Sun = nullptr;
 ImportedModel* Earth = nullptr;
 ImportedModel* Moon = nullptr;
-Torus* SunRing = nullptr;  // Ìí¼ÓÌ«Ñô»·¶ÔÏó
+Torus* SunRing = nullptr;  // æ·»åŠ å¤ªé˜³ç¯å¯¹è±¡
 
 
 
 
 void Solarinit()
 {
-    // ³õÊ¼»¯ĞÎ×´¶ÔÏó
+    // åˆå§‹åŒ–å½¢çŠ¶å¯¹è±¡
     Sun = new Sphere();
     Earth = new ImportedModel("res/objs/earth.obj");
     Moon = new ImportedModel("res/objs/earth.obj");
 
     
-    // ´´½¨Ì«Ñô»· - µ÷Õû²ÎÊıÒÔ»ñµÃºÏÊÊµÄÍâ¹Û
-    // majorRadius: Ö÷°ë¾¶(»·µÄ´óĞ¡), minorRadius: Ğ¡°ë¾¶(»·µÄºñ¶È)
-    SunRing = new Torus(25.5f, 0.15f, 196, 16);  // ´ó»·£¬½Ï±¡£¬¸ß·Ö±æÂÊ
+    // åˆ›å»ºå¤ªé˜³ç¯ - è°ƒæ•´å‚æ•°ä»¥è·å¾—åˆé€‚çš„å¤–è§‚
+    // majorRadius: ä¸»åŠå¾„(ç¯çš„å¤§å°), minorRadius: å°åŠå¾„(ç¯çš„åšåº¦)
+    SunRing = new Torus(25.5f, 0.15f, 196, 16);  // å¤§ç¯ï¼Œè¾ƒè–„ï¼Œé«˜åˆ†è¾¨ç‡
 
-    // Ö»³õÊ¼»¯Ò»´ÎÎÆÀí¶ÔÏó
+    // åªåˆå§‹åŒ–ä¸€æ¬¡çº¹ç†å¯¹è±¡
     if (sunTexture == nullptr) {
         sunTexture = new Texture("res/textures/2k_sun.jpg",
             TextureFilterMode::LINEAR,
             TextureFilterMode::LINEAR_MIPMAP_LINEAR,
             TextureWrapMode::REPEAT,
             TextureWrapMode::REPEAT,
-            true,  // Éú³Émipmap
+            true,  // ç”Ÿæˆmipmap
             true,
-            AnisotropyLevel::HIGH); // ´¹Ö±·­×ª
+            AnisotropyLevel::HIGH); // å‚ç›´ç¿»è½¬
 
         earthTexture = new Texture("res/textures/Earth.png",
             TextureFilterMode::LINEAR,
             TextureFilterMode::LINEAR_MIPMAP_LINEAR,
             TextureWrapMode::REPEAT,
             TextureWrapMode::REPEAT,
-            true,  // Éú³Émipmap
+            true,  // ç”Ÿæˆmipmap
             true,
-            AnisotropyLevel::HIGH); // ´¹Ö±·­×ª
+            AnisotropyLevel::HIGH); // å‚ç›´ç¿»è½¬
 
         moonTexture = new Texture("res/textures/2k_mercury.jpg",
             TextureFilterMode::LINEAR,
             TextureFilterMode::LINEAR_MIPMAP_LINEAR,
             TextureWrapMode::REPEAT,
             TextureWrapMode::REPEAT,
-            true,  // Éú³Émipmap
+            true,  // ç”Ÿæˆmipmap
             true,
-            AnisotropyLevel::HIGH); // ´¹Ö±·­×ª
+            AnisotropyLevel::HIGH); // å‚ç›´ç¿»è½¬
 
-        // ÎªÌ«Ñô»·´´½¨ÎÆÀí - ¿ÉÒÔÊ¹ÓÃ×¨ÃÅµÄ»·ÎÆÀí»òÖØÓÃÏÖÓĞÎÆÀí
-        sunRingTexture = new Texture("res/textures/2k_sun.jpg",  // »òÊ¹ÓÃ×¨ÃÅµÄ»·ÎÆÀí
+        // ä¸ºå¤ªé˜³ç¯åˆ›å»ºçº¹ç† - å¯ä»¥ä½¿ç”¨ä¸“é—¨çš„ç¯çº¹ç†æˆ–é‡ç”¨ç°æœ‰çº¹ç†
+        sunRingTexture = new Texture("res/textures/2k_sun.jpg",  // æˆ–ä½¿ç”¨ä¸“é—¨çš„ç¯çº¹ç†
             TextureFilterMode::LINEAR,
             TextureFilterMode::LINEAR_MIPMAP_LINEAR,
             TextureWrapMode::REPEAT,
             TextureWrapMode::REPEAT,
-            true,  // Éú³Émipmap
+            true,  // ç”Ÿæˆmipmap
             true,
-            AnisotropyLevel::HIGH); // ´¹Ö±·­×ª
+            AnisotropyLevel::HIGH); // å‚ç›´ç¿»è½¬
 
-        // ³õÊ¼»¯×ÅÉ«Æ÷£¨±ÜÃâÃ¿Ö¡ÖØĞÂ¼ÓÔØ£©
+        // åˆå§‹åŒ–ç€è‰²å™¨ï¼ˆé¿å…æ¯å¸§é‡æ–°åŠ è½½ï¼‰
         solarShader = new Shader("res/shaders/SoloarSystem.shader");
 
-        // ´òÓ¡³õÊ¼»¯ĞÅÏ¢
+        // æ‰“å°åˆå§‹åŒ–ä¿¡æ¯
         std::cout << "Solar System Initialized:" << std::endl;
         std::cout << "Sun texture slot: " << sunTexture->GetAssignedSlot() << std::endl;
         std::cout << "Earth texture slot: " << earthTexture->GetAssignedSlot() << std::endl;
@@ -96,8 +96,8 @@ void Solarinit()
 
 void displaySoloar(GLFWwindow* window, double currentTime)
 {
-    //=========================³õÊ¼»¯========================================
-    // ÉãÏñ»úÃ¿Ö¡¸üĞÂ£¨ÒòÎª¿ÉÄÜĞèÒª¶¯Ì¬µ÷Õû£©
+    //=========================åˆå§‹åŒ–========================================
+    // æ‘„åƒæœºæ¯å¸§æ›´æ–°ï¼ˆå› ä¸ºå¯èƒ½éœ€è¦åŠ¨æ€è°ƒæ•´ï¼‰
     Camera camera(
         glm::vec3(0, 0, 45),  // position
         glm::vec3(0, 0, 0),   // target
@@ -105,34 +105,34 @@ void displaySoloar(GLFWwindow* window, double currentTime)
         45.0f, (float)g_WindowWidth / (float)g_WindowHeight, 0.1f, 100.0f
     );
 
-    // äÖÈ¾Æ÷Ã¿Ö¡´´½¨£¨ÇáÁ¿¼¶¶ÔÏó£©
+    // æ¸²æŸ“å™¨æ¯å¸§åˆ›å»ºï¼ˆè½»é‡çº§å¯¹è±¡ï¼‰
     Renderer renderer;
     renderer.SetDepthTest(true).SetPolygonMode(false).SetCullFace(false).SetBlend(true);
     renderer.Clear();
     
 
 
-    //==========================ÉèÖÃ±ä»»¾ØÕó========================================
+    //==========================è®¾ç½®å˜æ¢çŸ©é˜µ========================================
 
-    // »ñÈ¡Í¶Ó°¾ØÕóP
+    // è·å–æŠ•å½±çŸ©é˜µP
     Transform projectionTransform = camera.GetProjectionMatrix();
     transformStk.Push(projectionTransform);
 
-    // »ñÈ¡ÊÓÍ¼¾ØÕóV
+    // è·å–è§†å›¾çŸ©é˜µV
     Transform viewTransform = camera.GetViewMatrix();
     transformStk.Push(viewTransform);
 
-    // Transform¶ÔÏóÃ¿Ö¡´´½¨£¨ÓÃÓÚ¼ÆËãµ±Ç°Ö¡µÄ±ä»»£©
+    // Transformå¯¹è±¡æ¯å¸§åˆ›å»ºï¼ˆç”¨äºè®¡ç®—å½“å‰å¸§çš„å˜æ¢ï¼‰
     Transform earthTransformPos, moonTransformPos, sunTransformPos;
     Transform earthTransformRotate, moonTransformRotate, sunTransformRotate;
-    Transform sunRingTransform;  // Ìí¼ÓÌ«Ñô»·±ä»»
+    Transform sunRingTransform;  // æ·»åŠ å¤ªé˜³ç¯å˜æ¢
 
-    //----------------------------Ì«Ñô------------------------------------------
+    //----------------------------å¤ªé˜³------------------------------------------
     sunTransformPos.setPosition(0.0f, 0.0f, 0.0f);
     transformStk.Push(sunTransformPos);
 
-    sunTransformRotate.setRotation((float)currentTime * 0.3f, 0, 0);  // ¼õÂıÌ«Ñô×Ô×ª
-    sunTransformRotate.setScale(6.9f, 6.9f, 6.9f);  // ÈÃÌ«ÑôÉÔ´óÒ»Ğ©
+    sunTransformRotate.setRotation((float)currentTime * 0.3f, 0, 0);  // å‡æ…¢å¤ªé˜³è‡ªè½¬
+    sunTransformRotate.setScale(6.9f, 6.9f, 6.9f);  // è®©å¤ªé˜³ç¨å¤§ä¸€äº›
     transformStk.Push(sunTransformRotate);
 
     solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
@@ -140,8 +140,8 @@ void displaySoloar(GLFWwindow* window, double currentTime)
     renderer.Draw(*Sun, *solarShader, *sunTexture);
     transformStk.Pop();
 
-    //----------------------------Ì«Ñô»·------------------------------------------
-    // Ì«Ñô»·µÄĞı×ª¶¯»­
+    //----------------------------å¤ªé˜³ç¯------------------------------------------
+    // å¤ªé˜³ç¯çš„æ—‹è½¬åŠ¨ç”»
     sunRingTransform.setRotation(
         sin((float)currentTime*0.05) * 0.5f,  
         cos((float)currentTime*0.05) * 0.5f,  
@@ -151,21 +151,21 @@ void displaySoloar(GLFWwindow* window, double currentTime)
     transformStk.Push(sunRingTransform);
 
     solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
-    solarShader->SetUniform1i("objectType", 3); // sun ring - ĞÂµÄÀàĞÍ
+    solarShader->SetUniform1i("objectType", 3); // sun ring - æ–°çš„ç±»å‹
     renderer.Draw(*SunRing, *solarShader, *sunRingTexture);
     transformStk.Pop();
-    transformStk.Pop();  // µ¯³öÌ«ÑôµÄÎ»ÖÃ±ä»»
+    transformStk.Pop();  // å¼¹å‡ºå¤ªé˜³çš„ä½ç½®å˜æ¢
 
-    //----------------------------µØÇò------------------------------------------
-    // µØÇò¹«×ª¹ìµÀ - ±£³ÖÄúÔ­ÓĞµÄÉèÖÃµ«ÉÔ×÷µ÷Õû
-    float earthOrbitSpeed = (float)currentTime * 0.3f;  // µ÷ÕûµØÇò¹«×ªËÙ¶È
+    //----------------------------åœ°çƒ------------------------------------------
+    // åœ°çƒå…¬è½¬è½¨é“ - ä¿æŒæ‚¨åŸæœ‰çš„è®¾ç½®ä½†ç¨ä½œè°ƒæ•´
+    float earthOrbitSpeed = (float)currentTime * 0.3f;  // è°ƒæ•´åœ°çƒå…¬è½¬é€Ÿåº¦
     float earthX = sin(earthOrbitSpeed) * 18.0f;
     float earthZ = cos(earthOrbitSpeed) * 14.0f;
     
     earthTransformPos.setPosition(earthX, 0.0f, earthZ);
     transformStk.Push(earthTransformPos);
 
-    earthTransformRotate.setRotation(0.0f, (float)currentTime * 0.5f, 0.0f);  // µØÇò¿ìËÙ×Ô×ª
+    earthTransformRotate.setRotation(0.0f, (float)currentTime * 0.5f, 0.0f);  // åœ°çƒå¿«é€Ÿè‡ªè½¬
     earthTransformRotate.setScale(0.003f, 0.003f, 0.003f);
     transformStk.Push(earthTransformRotate);
 
@@ -174,29 +174,29 @@ void displaySoloar(GLFWwindow* window, double currentTime)
     renderer.DrawArrays(*Earth, *solarShader, *earthTexture, Earth->getNumVertices());
     transformStk.Pop();
 
-    //----------------------------ÔÂÇò------------------------------------------
-    // ¸Ä½øµÄÔÂÇò¹ìµÀÏµÍ³
-    float moonOrbitSpeed = (float)currentTime * 1.5f;  // ÔÂÇò¹«×ªËÙ¶È£¨±ÈµØÇò¿ìÒ»Ğ©£¬µ«ºÏÀí£©
-    float moonOrbitRadius = 2.0f;  // ÔÂÇò¹ìµÀ°ë¾¶£¨Ïà¶ÔÓÚµØÇò£©
+    //----------------------------æœˆçƒ------------------------------------------
+    // æ”¹è¿›çš„æœˆçƒè½¨é“ç³»ç»Ÿ
+    float moonOrbitSpeed = (float)currentTime * 1.5f;  // æœˆçƒå…¬è½¬é€Ÿåº¦ï¼ˆæ¯”åœ°çƒå¿«ä¸€äº›ï¼Œä½†åˆç†ï¼‰
+    float moonOrbitRadius = 2.0f;  // æœˆçƒè½¨é“åŠå¾„ï¼ˆç›¸å¯¹äºåœ°çƒï¼‰
     
-    // ÔÂÇòÏà¶ÔÓÚµØÇòµÄÎ»ÖÃ
+    // æœˆçƒç›¸å¯¹äºåœ°çƒçš„ä½ç½®
     float moonLocalX = sin(moonOrbitSpeed) * moonOrbitRadius;
     float moonLocalZ = cos(moonOrbitSpeed) * moonOrbitRadius;
     
-    // Ìí¼ÓÇáÎ¢µÄ¹ìµÀÇãĞ±Ğ§¹û
-    float orbitTilt = sin(moonOrbitSpeed * 0.8f) * 0.3f;  // ÇáÎ¢µÄÉÏÏÂ¸¡¶¯
+    // æ·»åŠ è½»å¾®çš„è½¨é“å€¾æ–œæ•ˆæœ
+    float orbitTilt = sin(moonOrbitSpeed * 0.8f) * 0.3f;  // è½»å¾®çš„ä¸Šä¸‹æµ®åŠ¨
     
-    // ÔÂÇò×îÖÕÎ»ÖÃ = µØÇòÎ»ÖÃ + ÔÂÇòÏà¶ÔµØÇòµÄÎ»ÖÃ
+    // æœˆçƒæœ€ç»ˆä½ç½® = åœ°çƒä½ç½® + æœˆçƒç›¸å¯¹åœ°çƒçš„ä½ç½®
     moonTransformPos.setPosition(
         moonLocalX, 
-        orbitTilt,  // ¹ìµÀÇãĞ±²úÉúµÄ´¹Ö±Î»ÒÆ
+        orbitTilt,  // è½¨é“å€¾æ–œäº§ç”Ÿçš„å‚ç›´ä½ç§»
         moonLocalZ
     );
     transformStk.Push(moonTransformPos);
 
-    // ÔÂÇò×Ô×ª£¨ÉÔÎ¢±È¹«×ªÂıÒ»µã£¬²úÉú³±Ï«Ëø¶¨µÄ½üËÆĞ§¹û£©
+    // æœˆçƒè‡ªè½¬ï¼ˆç¨å¾®æ¯”å…¬è½¬æ…¢ä¸€ç‚¹ï¼Œäº§ç”Ÿæ½®æ±é”å®šçš„è¿‘ä¼¼æ•ˆæœï¼‰
     moonTransformRotate.setRotation(0.0f, moonOrbitSpeed * 0.9f, 0.0f);
-    moonTransformRotate.setScale(0.001f, 0.001f, 0.001f);  // ±£³ÖÔÂÇò½ÏĞ¡µÄ³ß´ç
+    moonTransformRotate.setScale(0.001f, 0.001f, 0.001f);  // ä¿æŒæœˆçƒè¾ƒå°çš„å°ºå¯¸
     transformStk.Push(moonTransformRotate);
 
     solarShader->SetUniformMat4fv("mvp_matrix", transformStk.Top().getMatrix());
@@ -204,23 +204,23 @@ void displaySoloar(GLFWwindow* window, double currentTime)
     renderer.DrawArrays(*Moon, *solarShader, *moonTexture, Moon->getNumVertices());
     transformStk.Pop();
     
-    transformStk.Clear(); // Çå¿Õ±ä»»Õ»£¬×¼±¸ÏÂÒ»¸öÎïÌåµÄ±ä»»
+    transformStk.Clear(); // æ¸…ç©ºå˜æ¢æ ˆï¼Œå‡†å¤‡ä¸‹ä¸€ä¸ªç‰©ä½“çš„å˜æ¢
 
 
 }
 
-// ÇåÀíº¯Êı - ÔÚ³ÌĞò½áÊøÊ±µ÷ÓÃ
+// æ¸…ç†å‡½æ•° - åœ¨ç¨‹åºç»“æŸæ—¶è°ƒç”¨
 void SolarCleanup()
 {
     delete sunTexture;
     delete earthTexture;
     delete moonTexture;
-    delete sunRingTexture;  // ÇåÀíÌ«Ñô»·ÎÆÀí
+    delete sunRingTexture;  // æ¸…ç†å¤ªé˜³ç¯çº¹ç†
     delete solarShader;
     delete Sun;
     delete Earth;
     delete Moon;
-    delete SunRing;  // ÇåÀíÌ«Ñô»·¶ÔÏó
+    delete SunRing;  // æ¸…ç†å¤ªé˜³ç¯å¯¹è±¡
     
     sunTexture = nullptr;
     earthTexture = nullptr;

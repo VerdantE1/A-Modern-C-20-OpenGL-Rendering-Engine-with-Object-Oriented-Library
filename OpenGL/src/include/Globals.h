@@ -1,8 +1,40 @@
-#pragma once
-
-// ȫ�ִ��ڿ��߱���
+﻿#pragma once
+#include "Light/Utils.h"
+/******************************************* 全局窗口变量  *************************************************/
 inline int g_WindowWidth = 0;
 inline int g_WindowHeight = 0;
+
+/******************************************* 光照参数相关变量  *************************************************/
+
+// 光照相关的uniform位置
+inline GLuint globalAmbLoc = 0;	   
+inline GLuint ambLoc = 0;
+inline GLuint diffLoc = 0;
+inline GLuint specLoc = 0;
+inline GLuint posLoc = 0;
+inline GLuint mAmbLoc = 0;            
+inline GLuint mDiffLoc = 0;          
+inline GLuint mSpecLoc = 0;           
+inline GLuint mShineLoc = 0;          
+
+// 光源属性
+// 位置position（x, y, z）
+inline glm::vec3 initialLightLoc(5.0f, 2.0f, 2.0f); // 初始光源位置（模型空间）
+inline glm::vec3 currentLightPos;		// 光源位置（模型空间）
+inline glm::vec3 lightPosV;			// 变换到视图空间后的光源位置
+inline float lightPos[3];				// 传递给GLSL的光源位置数组
+
+// 光照颜色属性
+inline float globalAmbient[4] = { 0.7f, 0.7f, 0.7f, 1.0f };
+inline float lightAmbient[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+inline float lightDiffuse[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+inline float lightSpecular[4] = { 1.0f, 1.0f, 1.0f, 1.0f };	
+
+inline float* matAmb = goldAmbient();   // 物体材质环境光
+inline float* matDif = goldDiffuse();   // 物体材质漫反射
+inline float* matSpe = goldSpecular();  // 物体材质镜面反射
+inline float matShi = goldShininess();    // 物体材质高光系数
+
 /*
  * Copyright (c) 2025 
  * Email: 2523877046@qq.com

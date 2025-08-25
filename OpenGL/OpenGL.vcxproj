@@ -182,7 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="doc\Camera.md" />
-    <ClInclude Include="res\light\Utils.h" />
+    <ClInclude Include="src\include\Light\Utils.h" />
     <ClInclude Include="src\include\3D\ImportedModel.h" />
     <ClInclude Include="res\shaders\3DShaderWithTexture.shader" />
     <ClInclude Include="src\include\3D\Sphere.h" />
@@ -510,6 +510,7 @@
     <None Include="PROJECT_DOC.md" />
     <None Include="res\shaders\AnimationTriangle.shader" />
     <None Include="res\shaders\Basic.shader" />
+    <None Include="res\shaders\basicShaderWithLight.shader" />
     <None Include="res\shaders\Cube.shader" />
     <None Include="res\shaders\CubeMultiInstances.shader" />
     <None Include="res\shaders\OnePoint.shader" />

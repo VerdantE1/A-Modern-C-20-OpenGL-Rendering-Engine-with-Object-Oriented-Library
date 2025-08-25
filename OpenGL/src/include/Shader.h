@@ -1,11 +1,10 @@
-#pragma once
+﻿#pragma once
 /* This Class is a wrapper class for OpenGL shader programs.
  * It handles the loading, compiling, and linking of shaders,
  * as well as providing an interface for setting shader uniforms.
  */
 #include <string>
 #include <Resource.h>
-#include <Utility.h>
 #include <unordered_map>
 #include <glm/ext/matrix_float4x4.hpp>
 
@@ -33,6 +32,7 @@ public:
 	void SetUniform1i(const std::string& name, int value);
 	void SetUniform1f(const std::string& name, float value);
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
+	void SetUniform3f(const std::string& name, float v0, float v1, float v2);
 	void SetUniformMat4fv(const std::string& name, const glm::mat4& matrix);
 
 

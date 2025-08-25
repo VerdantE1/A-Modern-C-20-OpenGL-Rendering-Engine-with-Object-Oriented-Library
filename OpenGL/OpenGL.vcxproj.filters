@@ -1010,7 +1010,7 @@
     <ClInclude Include="src\include\3D\ImportedModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="res\light\Utils.h">
+    <ClInclude Include="src\include\Light\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1448,6 +1448,7 @@
     <None Include="res\shaders\SoloarSystem.shader" />
     <None Include="doc\Texture.md" />
     <None Include="res\shaders\3DBasicShader.shader" />
+    <None Include="res\shaders\basicShaderWithLight.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\textures1.jpg">

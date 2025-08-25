@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <GL/glew.h>
 #include <iostream>
 #include <type_traits>
@@ -27,6 +27,7 @@ template<typename... Args>void UnbindAll(const Args&...  args);
 
 void GLClearError();                                              // Clear all OpenGL errors from the error queue
 bool GLLogCall(const char* function, const char* file, int line); // Log OpenGL errors, return true if no error, false if there is an error
+void installLights(const glm::mat4 viewMatrix,Shader&);    // Setup a simple light in the scene
 template <typename T> constexpr bool has_unbind_v = requires(T t) { t.Unbind(); };
 template <typename T> constexpr bool has_bind_v = requires (T t) { t.Bind(); };
 
