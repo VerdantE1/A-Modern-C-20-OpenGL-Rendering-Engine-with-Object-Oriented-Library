@@ -92,7 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src\include\ViewUtils;src\include;src;src\vendor;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)OpenGL\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\include\Scene\Components;src\include\Scene;src\include\ViewUtils;src\include;src;src\vendor;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)OpenGL\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src\include\ViewUtils;src\include;src;src\vendor;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)OpenGL\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\include\Scene\Components;src\include\Scene;src\include\ViewUtils;src\include;src;src\vendor;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)OpenGL\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -130,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src\include\ViewUtils;src\include;src;src\vendor;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)OpenGL\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\include\Scene\Components;src\include\Scene;src\include\ViewUtils;src\include;src;src\vendor;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)OpenGL\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -150,7 +150,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src\include\ViewUtils;src\include;src;src\vendor;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)OpenGL\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src\include\Scene\Components;src\include\Scene;src\include\ViewUtils;src\include;src;src\vendor;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)OpenGL\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -163,7 +163,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\SolarSystem.cpp" />
     <ClCompile Include="src\DrawDemo.cpp" />
     <ClCompile Include="src\include\Utils.cpp" />
     <ClCompile Include="src\include\Texture.cpp" />
@@ -182,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="doc\Camera.md" />
+    <ClInclude Include="src\include\DrawDemoUtils.h" />
     <ClInclude Include="src\include\Light\Utils.h" />
     <ClInclude Include="src\include\3D\ImportedModel.h" />
     <ClInclude Include="res\shaders\3DShaderWithTexture.shader" />
@@ -189,7 +189,14 @@
     <ClInclude Include="src\include\Callback.h" />
     <ClInclude Include="src\include\Ds\TransformStack.h" />
     <ClInclude Include="src\include\Globals.h" />
-    <ClInclude Include="src\SolarSystem.h" />
+    <ClInclude Include="src\include\Scene\Component.h" />
+    <ClInclude Include="src\include\Scene\Components\LightComponent.h" />
+    <ClInclude Include="src\include\Scene\Components\OrbitAnimation.h" />
+    <ClInclude Include="src\include\Scene\Components\RenderComponent.h" />
+    <ClInclude Include="src\include\Scene\Components\RotationAnimation.h" />
+    <ClInclude Include="src\include\Scene\Components\TransformComponent.h" />
+    <ClInclude Include="src\include\Scene\Entity.h" />
+    <ClInclude Include="src\include\Scene\Scene.h" />
     <ClInclude Include="src\include\ViewUtils\Camera.h" />
     <ClInclude Include="src\DrawDemo.h" />
     <ClInclude Include="src\include\2D\IsoscelesTriangle.h" />
@@ -517,6 +524,8 @@
     <None Include="res\shaders\Gouraud.shader" />
     <None Include="res\shaders\OnePoint.shader" />
     <None Include="res\shaders\Phong.shader" />
+    <None Include="res\shaders\ShadowShader\CameraPass.shader" />
+    <None Include="res\shaders\ShadowShader\ShadowPass.shader" />
     <None Include="res\shaders\SoloarSystem.shader" />
     <None Include="res\shaders\Triangle.shader" />
     <None Include="res\shaders\TriangleRotate.shader" />

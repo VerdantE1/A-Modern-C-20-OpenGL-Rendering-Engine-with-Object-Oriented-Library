@@ -24,6 +24,7 @@ void DrawTorusWithLight(GLFWwindow* window); // Draw a torus with light in the c
 void DrawTorusWithLightMouseControl(GLFWwindow* window); // p7.1 Draw a torus w
 void DrawTorusWithLightMouseControlComparison(GLFWwindow* window); //p7.2 Draw a torus with light w
 void DrawTorusWithGouraudVsPhong(GLFWwindow* window); // Draw a torus with light in the center of the window and compare Gouraud vs Phong shading
+void DrawShadowMapping(GLFWwindow* window); // Draw a torus with shadow mapping in the center of the window
 /*
  * Copyright (c) 2025 
  * Email: 2523877046@qq.com
