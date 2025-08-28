@@ -6,6 +6,12 @@
 #include "Component.h"
 #include <TransformComponent.h>
 
+/*
+每个实体(Entity)代表场景中的一个对象,可以包含多个组件(Component)来定义其行为和属性.
+每个实体至少包含一个TransformComponent,用于表示其位置、旋转和缩放.
+每个实体有一个可选的名称,用于标识和查找.
+*/
+
 class Entity {
 public:
     Entity(const std::string& name = "") : m_Name(name) {
@@ -41,6 +47,12 @@ public:
         return GetComponent<TransformComponent>(); 
     }
     
+    void UpdateAllComponent(float deltaTime) {
+        for (auto& [type, comp] : m_Components) {
+			comp->Update(deltaTime);
+        }
+	}
+
     const std::string& GetName() const { return m_Name; }
 
 private:

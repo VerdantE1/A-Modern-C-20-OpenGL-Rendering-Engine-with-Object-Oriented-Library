@@ -2,6 +2,13 @@
 
 class Entity; // 前向声明
 
+/*
+* Component 是所有组件的基类. 
+* 组件用于为实体(Entity)添加特定的功能或数据.
+* 组件可以是渲染组件、物理组件、动画组件等.
+* 组件可以初始化、更新和销毁.
+*/
+
 class Component {
 public:
     Component() = default;

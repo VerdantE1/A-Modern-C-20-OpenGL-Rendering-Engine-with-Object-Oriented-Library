@@ -25,7 +25,37 @@ public:
     Camera& GetCamera() { return *m_Camera; }
 
 protected:
-    std::vector<std::unique_ptr<Entity>> m_Entities;
+    std::vector<std::unique_ptr<Entity>> m_Entities; 
     std::unique_ptr<Camera> m_Camera;
-    std::unordered_map<std::string, Entity*> m_NamedEntities;
+	std::unordered_map<std::string, Entity*> m_NamedEntities;  // 通过名称快速查找实体
 };
+
+// 创建一个实体,如果提供了名称则注册,未提供名称则创建匿名实体;
+inline Entity* Scene::CreateEntity(const std::string& name) {
+    auto entity = std::make_unique<Entity>(name);
+    Entity* entityPtr = entity.get();
+    m_Entities.push_back(std::move(entity));
+    if (!name.empty()) {
+        m_NamedEntities[name] = entityPtr;
+    }
+    return entityPtr;
+}
+
+// 销毁实体,从场景中移除并释放资源;
+inline void Scene::DestroyEntity(Entity* entity)
+{
+    auto it = std::remove_if(m_Entities.begin(), m_Entities.end(),
+        [entity](const std::unique_ptr<Entity>& e) { return e.get() == entity; }
+    );
+    if (it != m_Entities.end())
+    {
+        if (!entity->GetName().empty()) {
+            m_NamedEntities.erase(entity->GetName());
+        }
+		m_Entities.erase(it, m_Entities.end());
+    }
+}
+
+inline void Scene::SetCamera(std::unique_ptr<Camera> camera) {
+    m_Camera = std::move(camera);
+}

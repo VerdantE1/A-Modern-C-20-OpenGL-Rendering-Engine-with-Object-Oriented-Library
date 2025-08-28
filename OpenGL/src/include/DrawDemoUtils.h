@@ -26,44 +26,8 @@
 #include "Scene/Components/OrbitAnimation.h"
 #include "Scene/Components/LightComponent.h"
 
-// ==================================== 通用配置结构 ====================================
-struct WindowConfig {
-	int width = 2560;
-	int height = 1660;
-	float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
-	void UpdateFromWindow(GLFWwindow* window) {
-		GLCall(glfwGetFramebufferSize(window, &width, &height));
-		aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-	}
-};
 
-struct CameraConfig {
-	glm::vec3 position = glm::vec3(0, 0, 12);
-	glm::vec3 target = glm::vec3(0, 0, 0);
-	glm::vec3 up = glm::vec3(0, 1, 0);
-	float fov = 70.0f;
-	float nearPlane = 0.1f;
-	float farPlane = 100.0f;
-	
-	Camera CreateCamera(float aspectRatio) const {
-		return Camera(position, target, up, fov, aspectRatio, nearPlane, farPlane);
-	}
-};
-
-struct RenderConfig {
-	bool usePolygonMode = false;
-	bool useDepthTest = true;
-	bool useCullFace = false;
-	bool useBlend = false;
-
-	void ApplyToRenderer(Renderer& renderer) const {
-		renderer.SetPolygonMode(usePolygonMode)
-			.SetDepthTest(useDepthTest)
-			.SetCullFace(useCullFace)
-			.SetBlend(useBlend);
-	}
-};
 
 // ==================== 键盘输入处理器 ====================================
 struct KeyboardHandler {

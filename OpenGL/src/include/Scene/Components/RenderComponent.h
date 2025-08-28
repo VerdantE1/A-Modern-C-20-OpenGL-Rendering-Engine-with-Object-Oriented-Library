@@ -5,6 +5,8 @@
 #include "Texture.h"
 #include "Renderer.h"
 #include <memory>
+#include <iostream>
+#include "MaterialComponent.h"
 
 class RenderComponent : public Component {
 public:
@@ -21,6 +23,7 @@ public:
                const glm::mat4& viewMatrix, 
                const glm::mat4& modelMatrix) {
         if (!m_Geometry || !m_Shader) {
+            std::cout << "RendererComponent don't have Geometry or Shader!" << std::endl;
             return; // 缺少必要资源
         }
         
@@ -32,6 +35,17 @@ public:
         if (m_NeedsNormalMatrix) {
             glm::mat4 normalMatrix = glm::transpose(glm::inverse(viewMatrix * modelMatrix));
             m_Shader->SetUniformMat4fv("norm_matrix", normalMatrix);
+        }
+        
+        // 设置材质属性（如果实体有MaterialComponent）
+        if (auto material = GetOwner()->GetComponent<MaterialComponent>()) {
+            m_Shader->SetUniform4f("material.ambient", 
+                material->ambient.r, material->ambient.g, material->ambient.b, material->ambient.a);
+            m_Shader->SetUniform4f("material.diffuse", 
+                material->diffuse.r, material->diffuse.g, material->diffuse.b, material->diffuse.a);
+            m_Shader->SetUniform4f("material.specular", 
+                material->specular.r, material->specular.g, material->specular.b, material->specular.a);
+            m_Shader->SetUniform1f("material.shininess", material->shininess);
         }
         
         // 渲染

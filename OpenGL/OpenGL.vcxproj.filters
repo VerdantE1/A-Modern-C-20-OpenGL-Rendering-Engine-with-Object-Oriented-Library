@@ -54,10 +54,10 @@
     <ClCompile Include="src\vendor\glm\glm.cppm">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\DrawDemo.cpp">
+    <ClCompile Include="src\include\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\include\Utils.cpp">
+    <ClCompile Include="src\DrawShadowMapping.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -950,9 +950,6 @@
     <ClInclude Include="src\vendor\glm\vector_relational.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\DrawDemo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\Shaper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1032,6 +1029,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\include\DrawDemoUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DrawDemo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\Light\GlobalLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\Scene\Components\MaterialComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1474,7 +1480,7 @@
     <None Include="res\shaders\Phong.shader" />
     <None Include="res\shaders\Blinn-Phong.shader" />
     <None Include="res\shaders\ShadowShader\ShadowPass.shader" />
-    <None Include="res\shaders\ShadowShader\CameraPass.shader" />
+    <None Include="res\shaders\ShadowShader\RenderPass.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\textures1.jpg">

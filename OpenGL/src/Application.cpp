@@ -5,7 +5,7 @@
 #include "DrawDemo.h"
 #include "SolarSystem.h"
 #include "Globals.h"
-#include "ECSDrawDemo.h"
+
 
 // Init Global variables
 void General_Init(GLFWwindow* window)
@@ -80,7 +80,7 @@ int main(void)
     //
     //
 	//========================第八章- 阴影映射=====================================================
-	//DrawShadowMapping(window);
+	DrawShadowMapping(window);
     
 
 
