@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -19,6 +20,7 @@
 #include "Camera.h"
 #include "Entity.h"
 
+#include "Logger.h"
 
 
 #include "AllShaperTypes.h"
@@ -56,8 +58,7 @@ inline void InitializeGlobalShaders() {
 	static bool initialized = false;
 	if (initialized) return; // 防止重复初始化
 
-	std::cout << "Initializing global shaders..." << std::endl;
-
+	LOG_INFO("Initializing global shaders...");
 	try {
 		gouraudShaderPtr = std::make_shared<Shader>(GOURAUD_SHADER_PATH);
 		blinnPhongShaderPtr = std::make_shared<Shader>(BLINN_PHONG_SHADER_PATH);
@@ -66,10 +67,10 @@ inline void InitializeGlobalShaders() {
 		shadowMappingRenderShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_RENDER_SHADER_PATH);
 
 		initialized = true;
-		std::cout << "Global shaders initialized successfully!" << std::endl;
+		LOG_INFO("Global shaders initialized successfully.");
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Failed to initialize global shaders: " << e.what() << std::endl;
+		LOG_ERROR("Failed to initialize global shaders: {}", e.what());
 		throw;
 	}
 }

@@ -229,24 +229,29 @@ public:
 		auto scene = sceneManager.GetActiveScene();
         if (!scene)
         {
-            std::cerr << "No active scene set in SceneManager!" << std::endl;
+			LOG_ERROR("No active scene set in SceneManager. Exiting Run loop.");
 			return;
         }
 
 		//主循环
         while (!glfwWindowShouldClose(window)) {
+			LOG_INFO("  New frame start.");
+
             //更新时间
             UpdateTime();
             
             //处理输入
             HandleInput(window);
 
+            
 			//通过SceneManager渲染当前场景
 			sceneManager.Update(deltaTime); 
             sceneManager.Render();
             
 			glfwSwapBuffers(window);
 			glfwPollEvents();
+
+			LOG_INFO("  Frame end.");
 
         }
 		// 清理场景
@@ -298,15 +303,23 @@ protected:
 
 void DrawShadowMappingWithECS(GLFWwindow* window) {
 
+	LOG_INFO("Starting DrawShadowMappingWithECS...");
     InitializeGlobalShaders();
 
     //创建引擎
+	LOG_INFO("Creating Engine...");
     Engine engine;
 
     //创建并设置场景
+	LOG_INFO("Creating and setting up Scene...");
     auto scene = std::make_unique<BaseScene>();
-    scene->SetEntityInitializer(enityInitializer_func);
+	LOG_INFO("Scene created.");
 
+    scene->SetEntityInitializer(enityInitializer_func);
+	LOG_INFO("Scene setup complete.");
+
+
+	LOG_INFO("Initializing Keyboard Handler...");
     // 设置键盘处理
     engine.SetKeyboardHandler([&](int key, int action) {
         switch (key) {
@@ -324,9 +337,15 @@ void DrawShadowMappingWithECS(GLFWwindow* window) {
             break;
         }
         });
+	LOG_INFO("Keyboard Handler setup complete.");
     
+	
 	engine.SetScene(std::move(scene));
+	LOG_INFO("Scene have moved to SceneManager in Engine");
+
+    LOG_INFO("Starting Engine Run...");
     engine.Run(window);
+	LOG_INFO("Engine Run complete.");
 }
 
 void DrawShadowMapping(GLFWwindow* window)

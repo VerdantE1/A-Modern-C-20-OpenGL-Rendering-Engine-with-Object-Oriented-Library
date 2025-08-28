@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <string>
 
+
+
 // 便捷宏定义
 #define LOG_TRACE(...)    spdlog::trace(__VA_ARGS__)
 #define LOG_DEBUG(...)    spdlog::debug(__VA_ARGS__)
@@ -14,7 +16,18 @@
 #define LOG_ERROR(...)    spdlog::error(__VA_ARGS__)
 #define LOG_CRITICAL(...) spdlog::critical(__VA_ARGS__)
 
+// 新增宏定义
+#define LOG_START()       Logger::LogStart()
+#define LOG_SECTION(name) Logger::LogSection(name)
+
 class Logger {
+private:
+    static inline int s_indentLevel = 0;
+    static std::string GetIndent(int level = -1) {
+        int actualLevel = (level == -1) ? s_indentLevel : level;
+        return std::string(actualLevel, '\t'); // 使用 Tab 字符
+    }
+
 public:
     static void Initialize() {
         // 创建 logs 目录（如果不存在）
@@ -48,7 +61,47 @@ public:
         LOG_INFO("Log files will be saved to: logs/opengl.log");
         LOG_INFO("Keeping latest 20 log files with 5MB each");
     }
-    
+
+    // 应用程序启动标志
+    static void LogStart() {
+        LOG_INFO("════════════════════════════════════════");
+        LOG_INFO("        APPLICATION STARTED");
+        LOG_INFO("════════════════════════════════════════");
+    }
+
+    // 模块/区段开始标志
+    static void LogSection(const std::string& sectionName) {
+        LOG_INFO("═════════════════════════════════════════");
+        LOG_INFO("SECTION: {}", sectionName);
+        LOG_INFO("═════════════════════════════════════════");
+    }
+
+    // 层级日志函数
+    template<typename... Args>
+    static void LogWithLevel(
+        int level,
+        spdlog::level::level_enum logLevel,
+        const char* fmt,
+        Args&&... args)
+    {
+        std::string indentedFormat = GetIndent(level) + std::string(fmt);
+        spdlog::default_logger()->log(logLevel, indentedFormat, std::forward<Args>(args)...);
+    }
+
+
+    // 层级日志函数 - 支持无参数情况
+    static void LogWithLevel(int level, spdlog::level::level_enum logLevel, const char* fmt) 
+    {
+        std::string indentedFormat = GetIndent(level) + std::string(fmt);
+        spdlog::default_logger()->log(logLevel, indentedFormat);
+    }
+
+    // 增加/减少缩进层级
+    static void IncreaseIndent() { s_indentLevel++; }
+    static void DecreaseIndent() { if (s_indentLevel > 0) s_indentLevel--; }
+    static void ResetIndent() { s_indentLevel = 0; }
+    static int GetCurrentIndent() { return s_indentLevel; }
+
     static void Shutdown() {
         LOG_INFO("=== Logger shutting down ===");
         spdlog::shutdown();
@@ -65,6 +118,21 @@ public:
     }
 };
 
+// 新增层级日志宏
+#define LOG_LEVEL_TRACE(_level, fmt, ...) \
+    Logger::LogWithLevel(_level, spdlog::level::trace, fmt)
+
+#define LOG_LEVEL_DEBUG(_level, fmt, ...) \
+    Logger::LogWithLevel(_level, spdlog::level::debug, fmt)
+
+#define LOG_LEVEL_INFO(_level, fmt, ...) \
+    Logger::LogWithLevel(_level, spdlog::level::info, fmt)
+
+#define LOG_LEVEL_WARN(_level, fmt, ...) \
+    Logger::LogWithLevel(_level, spdlog::level::warn, fmt)
+
+#define LOG_LEVEL_ERROR(_level, fmt, ...) \
+    Logger::LogWithLevel(_level, spdlog::level::err, fmt)
 
 
 // OpenGL 专用宏
@@ -82,16 +150,4 @@ public:
         if (condition) { \
             LOG_##level(__VA_ARGS__); \
         } \
-    } while(0)
-
-// 性能计时宏
-#define LOG_TIMER_START(name) \
-    auto timer_##name##_start = std::chrono::high_resolution_clock::now()
-
-#define LOG_TIMER_END(name) \
-    do { \
-        auto timer_##name##_end = std::chrono::high_resolution_clock::now(); \
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>( \
-            timer_##name##_end - timer_##name##_start).count(); \
-        LOG_DEBUG("Timer '{}' took {} ms", #name, duration); \
     } while(0)
