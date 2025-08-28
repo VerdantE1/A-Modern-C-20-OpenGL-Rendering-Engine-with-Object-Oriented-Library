@@ -17,7 +17,7 @@ public:
 	VertexBuffer(const void* data, unsigned int size);
 	VertexBuffer(const std::vector<float>& data);
 
-	// 添加移动语义支持
+	// 娣诲姞绉诲姩璇箟鏀寔
 	VertexBuffer(VertexBuffer&& other) noexcept = default;
 	VertexBuffer& operator=(VertexBuffer&& other) noexcept = default;
 

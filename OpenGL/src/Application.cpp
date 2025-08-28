@@ -1,13 +1,15 @@
-﻿#include <GL/glew.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Utility.h"
 #include "DrawDemo.h"
 #include "SolarSystem.h"
 #include "Globals.h"
+#include "Logger.h"
+
+#include "spdlog/spdlog.h"
 
 
-// Init Global variables
 void General_Init(GLFWwindow* window)
 {
     GLCall(glfwGetFramebufferSize(window, &g_WindowWidth, &g_WindowHeight));
@@ -15,14 +17,25 @@ void General_Init(GLFWwindow* window)
 
 int main(void)
 {
+    // 在程序开始时初始化日志系统
+    Logger::Initialize();
+
+    LOG_INFO("=== Application Started ===");
+    LOG_DEBUG("This is a debug message");
+    LOG_WARN("This is a warning message");
+    LOG_ERROR("This is an error message");
+	LOG_TRACE("This is a trace message");
+
+
+
     if (!glfwInit())
         return -1;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
     GLFWwindow* window = glfwCreateWindow(2560, 1660, "Hello World", NULL, NULL);
+
     if (!window)
     {
         glfwTerminate();
@@ -31,81 +44,23 @@ int main(void)
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-
     if (glewInit() != GLEW_OK)
     {
         std::cout << "Error initializing GLEW" << std::endl;
         return -1;
     }
-
     std::cout << "GLEW initialized successfully" << std::endl;
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 
+    //DrawShadowMappingWithECS(window);
 
-
- 
-
-
-    //DrawDemo(window);
-    //DrawPoint(window);
-	//DrawAnimationOnePoint_Scale(window);
-	//DrawTriangle(window);
-    //DrawTriangleRotate(window);
-	//DrawTriangleIsosceles(window);
-	//DrawAnimationTrianlge(window);
-    //DrawAnimationTrianlge_Move(window, glfwGetTime());
-
-	//DrawCube(window);
-    //DrawMultiCube(window);
-	//DrawMultiCubeIntances(window);
-
-	//========================第四~五章- 3D基础与纹理贴图=====================================================
-	//DrawCube_And_Pyramid(window);
-	//DrawPyramidWithTexture(window, true);
-	//Draw3PyramidsWithTextureControls(window);
-
-
-
-	//========================第六章- 3D模型=====================================================
-	//DrawTorus(window);
-    //DrawImportedModel(window);
-    //DrawSphere(window);
-    // 
-	//========================第七章- 光照=====================================================
-    //DrawTorusWithLight(window);
-	//DrawTorusWithGouraudVsPhong(window);
-    //
-	//DrawTorusWithLightMouseControl(window);
-    //DrawTorusWithLightMouseControlComparison(window);
-    //
-    //
-	//========================第八章- 阴影映射=====================================================
-	DrawShadowMapping(window);
     
 
 
 
 
 
-
-
- //   //========================应用程序1- 太阳系渲染=====================================================
-	//General_Init(window);
-
- //   Solarinit(); // 在main函数中，在渲染循环开始前调用
-
- //   // 渲染循环
- //   while (!glfwWindowShouldClose(window))
- //   {
- //       displaySoloar(window, glfwGetTime());
- //       glfwSwapBuffers(window);
- //       glfwPollEvents();
- //   }
-
- //   SolarCleanup(); // 在程序结束前调用清理函数
-
- //   std::cout << "Loop exited. Terminating." << std::endl;
- //   glfwTerminate();
+    Logger::Shutdown();
     return 0;
 }
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 // Gold Texture: Ambient, Diffuse, Specular, Shininess
 inline float* goldAmbient() { static float ambient[4] = { 0.24725f, 0.1995f, 0.0745f, 1.0f }; return (float*) ambient; }

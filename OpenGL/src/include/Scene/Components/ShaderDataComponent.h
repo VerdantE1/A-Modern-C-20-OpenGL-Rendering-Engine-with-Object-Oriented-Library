@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Component.h"
 #include "Shader.h"
 #include <glm/glm.hpp>

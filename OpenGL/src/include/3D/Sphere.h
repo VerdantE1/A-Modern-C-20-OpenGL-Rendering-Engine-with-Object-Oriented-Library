@@ -16,11 +16,11 @@ private:
 	void generateVertices(std::vector<float>& vertexData, std::vector<unsigned int>& indexDate);
 
 	float toRadians(float angle) const {
-		return angle * 3.14159265358979323846f / 180.0f; // ¦Ğ = 3.14159265358979323846
+		return angle * 3.14159265358979323846f / 180.0f; // Ï€ = 3.14159265358979323846
 	}
 
 public:
-	//numSegementÊÇÇĞÆ¬ÊıÁ¿
+	//numSegementæ˜¯åˆ‡ç‰‡æ•°é‡
 	Sphere(int numSegment = 36)
 		: Shaper(nullptr, 0, nullptr, 0, { (float)3, (float)2, (float)3 }), numVertices(0), numIndices(0), numSegment(numSegment)
 	{
@@ -28,7 +28,7 @@ public:
 		generateVertices(vertexData,indexData);
 		vb = std::move(VertexBuffer(vertexData));
 		ib = std::move(IndexBuffer(indexData));
-		//layoutÒÑ¾­³õÊ¼»¯¹ı
+		//layoutå·²ç»åˆå§‹åŒ–è¿‡
 		va.LinkBufferAndLayout(vb, layout);
 
 
@@ -47,12 +47,12 @@ public:
 
 inline void Sphere::generateVertices(std::vector<float>& vertexData, std::vector<unsigned int>& indexDate)
 {
-	numVertices = (numSegment + 1) * (numSegment  + 1);	//¶àÒ»¸ö¶¥µã·ìºÏÎÆÀí
-	numIndices = numSegment * numSegment * 6;				// Ã¿¸öÃæÁ½¸öÈı½ÇĞÎ£¬Ã¿¸öÈı½ÇĞÎÈı¸ö¶¥µã
+	numVertices = (numSegment + 1) * (numSegment  + 1);	//å¤šä¸€ä¸ªé¡¶ç‚¹ç¼åˆçº¹ç†
+	numIndices = numSegment * numSegment * 6;				// æ¯ä¸ªé¢ä¸¤ä¸ªä¸‰è§’å½¢ï¼Œæ¯ä¸ªä¸‰è§’å½¢ä¸‰ä¸ªé¡¶ç‚¹
 
 	vertexData.resize(numVertices * 8); // 3+2+3=8,
 
-	//¼ÆËã¶¥µãÎ»ÖÃ¡¢ÎÆÀí×ø±êºÍ·¨ÏòÁ¿
+	//è®¡ç®—é¡¶ç‚¹ä½ç½®ã€çº¹ç†åæ ‡å’Œæ³•å‘é‡
 	for (int i = 0; i <= numSegment; i++) {
 		for (int j = 0; j <= numSegment; j++) {
 			float y = (float)cos(toRadians(180.0f - i * 180.0f / numSegment));

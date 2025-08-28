@@ -4,12 +4,12 @@
 
 class IsoscelesTriangle : public Shaper {
     static constexpr GLfloat vertices[] = {
-        0.0f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f, // 红色
-       -0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f, // 绿色
-       0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f  // 蓝色
+        0.0f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f, // 绾㈣壊
+       -0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f, // 缁胯壊
+       0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f  // 钃濊壊
     };
 public:
-    // 构造函数：可选参数控制底边宽度和高度
+    // 鏋勯�犲嚱鏁帮細鍙�夊弬鏁版帶鍒跺簳杈瑰搴﹀拰楂樺害
     IsoscelesTriangle():
         Shaper(vertices, sizeof(vertices)/sizeof(vertices[0]), nullptr, 0, {(float)3, (float)3})
     {

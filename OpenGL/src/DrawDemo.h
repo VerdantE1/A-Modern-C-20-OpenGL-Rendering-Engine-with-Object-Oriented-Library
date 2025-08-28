@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 
 
 
-
+/* Version 1.0 旧库代码 */
 void DrawPoint(GLFWwindow* window); // Draw a point in the center of the window
 void DrawTriangle(GLFWwindow* window); // Draw a triangle in the center of the window
 void DrawTriangleRotate(GLFWwindow* window); // Draw a triangle in the center of the window
@@ -25,6 +25,9 @@ void DrawTorusWithLightMouseControl(GLFWwindow* window); // p7.1 Draw a torus w
 void DrawTorusWithLightMouseControlComparison(GLFWwindow* window); //p7.2 Draw a torus with light w
 void DrawTorusWithGouraudVsPhong(GLFWwindow* window); // Draw a torus with light in the center of the window and compare Gouraud vs Phong shading
 void DrawShadowMapping(GLFWwindow* window); // Draw a torus with shadow mapping in the center of the window
+
+/* Version 2.0 ECS代码 */
+void DrawShadowMappingWithECS(GLFWwindow* window); // Draw a torus with shadow mapping in the center of the window using ECS architecture
 /*
  * Copyright (c) 2025 
  * Email: 2523877046@qq.com

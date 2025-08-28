@@ -7,31 +7,31 @@
 
 typedef int GLint;
 
-// ÎÆÀí¹ıÂËÄ£Ê½Ã¶¾Ù
+// çº¹ç†è¿‡æ»¤æ¨¡å¼æšä¸¾
 enum class TextureFilterMode {
-    NEAREST,                // ×î½üµã²ÉÑù
-    LINEAR,                 // ÏßĞÔ¹ıÂË
-    NEAREST_MIPMAP_NEAREST, // ×î½üµÄmipmap²ã¼¶£¬²¢Ê¹ÓÃ×î½üµã²ÉÑù
-    LINEAR_MIPMAP_NEAREST,  // ×î½üµÄmipmap²ã¼¶£¬²¢Ê¹ÓÃÏßĞÔ¹ıÂË
-    NEAREST_MIPMAP_LINEAR,  // ÔÚmipmap²ã¼¶Ö®¼ä²åÖµ£¬Ã¿²ãÊ¹ÓÃ×î½üµã²ÉÑù
-    LINEAR_MIPMAP_LINEAR    // ÔÚmipmap²ã¼¶Ö®¼ä²åÖµ£¬Ã¿²ãÊ¹ÓÃÏßĞÔ¹ıÂË£¨ÖÊÁ¿×î¸ß£©
+    NEAREST,                // æœ€è¿‘ç‚¹é‡‡æ ·
+    LINEAR,                 // çº¿æ€§è¿‡æ»¤
+    NEAREST_MIPMAP_NEAREST, // æœ€è¿‘çš„mipmapå±‚çº§ï¼Œå¹¶ä½¿ç”¨æœ€è¿‘ç‚¹é‡‡æ ·
+    LINEAR_MIPMAP_NEAREST,  // æœ€è¿‘çš„mipmapå±‚çº§ï¼Œå¹¶ä½¿ç”¨çº¿æ€§è¿‡æ»¤
+    NEAREST_MIPMAP_LINEAR,  // åœ¨mipmapå±‚çº§ä¹‹é—´æ’å€¼ï¼Œæ¯å±‚ä½¿ç”¨æœ€è¿‘ç‚¹é‡‡æ ·
+    LINEAR_MIPMAP_LINEAR    // åœ¨mipmapå±‚çº§ä¹‹é—´æ’å€¼ï¼Œæ¯å±‚ä½¿ç”¨çº¿æ€§è¿‡æ»¤ï¼ˆè´¨é‡æœ€é«˜ï¼‰
 };
 
-// ÎÆÀí»·ÈÆÄ£Ê½Ã¶¾Ù
+// çº¹ç†ç¯ç»•æ¨¡å¼æšä¸¾
 enum class TextureWrapMode {
-    REPEAT,          // ÖØ¸´
-    MIRRORED_REPEAT, // ¾µÏñÖØ¸´
-    CLAMP_TO_EDGE,   // ±ßÔµÀ­Éì
-    CLAMP_TO_BORDER  // Ê¹ÓÃ±ß¿òÑÕÉ«
+    REPEAT,          // é‡å¤
+    MIRRORED_REPEAT, // é•œåƒé‡å¤
+    CLAMP_TO_EDGE,   // è¾¹ç¼˜æ‹‰ä¼¸
+    CLAMP_TO_BORDER  // ä½¿ç”¨è¾¹æ¡†é¢œè‰²
 };
 
-// ¸÷ÏòÒìĞÔ¹ıÂË¼¶±ğÃ¶¾Ù
+// å„å‘å¼‚æ€§è¿‡æ»¤çº§åˆ«æšä¸¾
 enum class AnisotropyLevel {
-    NONE = 0,        // ²»Ê¹ÓÃ¸÷ÏòÒìĞÔ¹ıÂË
-    LOW = 2,         // µÍ¼¶±ğ¸÷ÏòÒìĞÔ¹ıÂË (2x)
-    MEDIUM = 4,      // ÖĞ¼¶±ğ¸÷ÏòÒìĞÔ¹ıÂË (4x)
-    HIGH = 8,        // ¸ß¼¶±ğ¸÷ÏòÒìĞÔ¹ıÂË (8x)
-    VERY_HIGH = 16   // ·Ç³£¸ß¼¶±ğ¸÷ÏòÒìĞÔ¹ıÂË (16x)
+    NONE = 0,        // ä¸ä½¿ç”¨å„å‘å¼‚æ€§è¿‡æ»¤
+    LOW = 2,         // ä½çº§åˆ«å„å‘å¼‚æ€§è¿‡æ»¤ (2x)
+    MEDIUM = 4,      // ä¸­çº§åˆ«å„å‘å¼‚æ€§è¿‡æ»¤ (4x)
+    HIGH = 8,        // é«˜çº§åˆ«å„å‘å¼‚æ€§è¿‡æ»¤ (8x)
+    VERY_HIGH = 16   // éå¸¸é«˜çº§åˆ«å„å‘å¼‚æ€§è¿‡æ»¤ (16x)
 };
 
 
@@ -46,29 +46,29 @@ private:
     int m_Width, m_Height, m_Bpp;
     unsigned int m_AssignedSlot = -1; // This Slot AssignedSlot by Renderer
     
-    // ĞÂÔö£º´æ´¢¸÷ÏòÒìĞÔ¹ıÂËµÈ¼¶
+    // æ–°å¢ï¼šå­˜å‚¨å„å‘å¼‚æ€§è¿‡æ»¤ç­‰çº§
     float m_AnisotropyLevel = 1.0f;
     
     // Track available texture slots
     static std::unordered_set<unsigned int> s_AvailableSlots;
     static unsigned int s_MaxSlotUsed;
     
-    // ¾²Ì¬³ÉÔ±£º¼ì²é²¢´æ´¢ÊÇ·ñÖ§³Ö¸÷ÏòÒìĞÔ¹ıÂË¼°×î´óÖ§³Ö¼¶±ğ
+    // é™æ€æˆå‘˜ï¼šæ£€æŸ¥å¹¶å­˜å‚¨æ˜¯å¦æ”¯æŒå„å‘å¼‚æ€§è¿‡æ»¤åŠæœ€å¤§æ”¯æŒçº§åˆ«
     static bool s_AnisotropyChecked;
     static bool s_AnisotropySupported;
     static float s_MaxAnisotropy;
 
-    // ¸¨Öúº¯Êı£¬½«Ã¶¾Ù×ª»»ÎªOpenGL³£Á¿
+    // è¾…åŠ©å‡½æ•°ï¼Œå°†æšä¸¾è½¬æ¢ä¸ºOpenGLå¸¸é‡
     GLint GetGLFilterMode(TextureFilterMode mode) const;
     GLint GetGLWrapMode(TextureWrapMode mode) const;
     
-    // ¼ì²é¸÷ÏòÒìĞÔ¹ıÂËÖ§³Ö
+    // æ£€æŸ¥å„å‘å¼‚æ€§è¿‡æ»¤æ”¯æŒ
     static void CheckAnisotropySupport();
 
 public:
     Texture() = default;
     
-    // ´øÓĞÍêÕû²ÎÊıµÄ¹¹Ôìº¯Êı£¬Ôö¼ÓÁË¸÷ÏòÒìĞÔ¹ıÂË²ÎÊı
+    // å¸¦æœ‰å®Œæ•´å‚æ•°çš„æ„é€ å‡½æ•°ï¼Œå¢åŠ äº†å„å‘å¼‚æ€§è¿‡æ»¤å‚æ•°
     Texture(const std::string& filepath, 
             TextureFilterMode magFilter = TextureFilterMode::LINEAR, 
             TextureFilterMode minFilter = TextureFilterMode::LINEAR,
@@ -83,17 +83,17 @@ public:
     void Bind() const override; 
     void Unbind() const override;
 
-    // ÉèÖÃ±ß¿òÑÕÉ«£¨µ±Ê¹ÓÃCLAMP_TO_BORDERÄ£Ê½Ê±£©
+    // è®¾ç½®è¾¹æ¡†é¢œè‰²ï¼ˆå½“ä½¿ç”¨CLAMP_TO_BORDERæ¨¡å¼æ—¶ï¼‰
     void SetBorderColor(const glm::vec4& color);
     
-    // ÉèÖÃ¸÷ÏòÒìĞÔ¹ıÂË¼¶±ğ
+    // è®¾ç½®å„å‘å¼‚æ€§è¿‡æ»¤çº§åˆ«
     void SetAnisotropyLevel(AnisotropyLevel level);
     void SetAnisotropyLevel(float level);
     
-    // »ñÈ¡¸÷ÏòÒìĞÔ¹ıÂËÉèÖÃ
+    // è·å–å„å‘å¼‚æ€§è¿‡æ»¤è®¾ç½®
     float GetAnisotropyLevel() const { return m_AnisotropyLevel; }
     
-    // »ñÈ¡ÊÇ·ñÖ§³Ö¸÷ÏòÒìĞÔ¹ıÂËºÍ×î´óÖ§³Ö¼¶±ğ
+    // è·å–æ˜¯å¦æ”¯æŒå„å‘å¼‚æ€§è¿‡æ»¤å’Œæœ€å¤§æ”¯æŒçº§åˆ«
     static bool IsAnisotropySupported() { 
         if (!s_AnisotropyChecked) CheckAnisotropySupport();
         return s_AnisotropySupported; 
@@ -104,13 +104,13 @@ public:
         return s_MaxAnisotropy; 
     }
 
-    // Getter·½·¨
+    // Getteræ–¹æ³•
     inline int GetWidth() const { return m_Width; }
     inline int GetHeight() const { return m_Height; }
     inline int GetBpp() const { return m_Bpp; } 
     inline unsigned int GetAssignedSlot() const { return m_AssignedSlot; }
     
-    // ¾²Ì¬·½·¨
+    // é™æ€æ–¹æ³•
     static unsigned int GetNextAvailableSlot();
     static void ReleaseSlot(unsigned int slot);
 };
@@ -120,20 +120,20 @@ public:
 
 /* Example Usage:
 
-// Ä¬ÈÏÉèÖÃ
+// é»˜è®¤è®¾ç½®
 Texture defaultTexture("res/textures/brick1.jpg");
 
-// Ê¹ÓÃ¸÷ÏòÒìĞÔ¹ıÂËµÄÎÆÀí
+// ä½¿ç”¨å„å‘å¼‚æ€§è¿‡æ»¤çš„çº¹ç†
 Texture anisotropicTexture("res/textures/floor.jpg",
     TextureFilterMode::LINEAR,
     TextureFilterMode::LINEAR_MIPMAP_LINEAR,
     TextureWrapMode::REPEAT,
     TextureWrapMode::REPEAT,
-    true,  // Éú³Émipmap
-    true,  // ´¹Ö±·­×ª
-    AnisotropyLevel::HIGH);  // ¸ß¼¶±ğ¸÷ÏòÒìĞÔ¹ıÂË
+    true,  // ç”Ÿæˆmipmap
+    true,  // å‚ç›´ç¿»è½¬
+    AnisotropyLevel::HIGH);  // é«˜çº§åˆ«å„å‘å¼‚æ€§è¿‡æ»¤
 
-// ¼ì²éÊÇ·ñÖ§³Ö¸÷ÏòÒìĞÔ¹ıÂË
+// æ£€æŸ¥æ˜¯å¦æ”¯æŒå„å‘å¼‚æ€§è¿‡æ»¤
 if (Texture::IsAnisotropySupported()) {
     std::cout << "Anisotropic filtering supported! Max level: " 
               << Texture::GetMaxAnisotropy() << "x" << std::endl;

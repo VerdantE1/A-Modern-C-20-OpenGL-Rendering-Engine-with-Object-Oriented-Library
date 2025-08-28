@@ -18,13 +18,13 @@ class ImportedModel :public Shaper
 {
 public:
 	int numVertices;
-	std::vector<float> vertexData;  // ½»´í´æ´¢: pos(3) + texCoord(2) + normal(3) = 8 floats per vertex
+	std::vector<float> vertexData;  // äº¤é”™å­˜å‚¨: pos(3) + texCoord(2) + normal(3) = 8 floats per vertex
 
-	std::vector<float> positionData;    // 3 floats per vertex (ÁÙÊ±´æ´¢Ô­Ê¼Êı¾İ)
-	std::vector<float> textureCoordData; // 2 floats per vertex (ÁÙÊ±´æ´¢Ô­Ê¼Êı¾İ)
-	std::vector<float> normalData;      // 3 floats per vertex (ÁÙÊ±´æ´¢Ô­Ê¼Êı¾İ)
+	std::vector<float> positionData;    // 3 floats per vertex (ä¸´æ—¶å­˜å‚¨åŸå§‹æ•°æ®)
+	std::vector<float> textureCoordData; // 2 floats per vertex (ä¸´æ—¶å­˜å‚¨åŸå§‹æ•°æ®)
+	std::vector<float> normalData;      // 3 floats per vertex (ä¸´æ—¶å­˜å‚¨åŸå§‹æ•°æ®)
 
-	ImportedModel() = delete; // ½ûÖ¹Ä¬ÈÏ¹¹Ôìº¯Êı
+	ImportedModel() = delete; // ç¦æ­¢é»˜è®¤æ„é€ å‡½æ•°
 	ImportedModel(const std::string& filePath);
 	void parseOBJ(const std::string& filePath);
 
@@ -51,7 +51,7 @@ inline ImportedModel::ImportedModel(const std::string& filePath)
 
 #ifdef IMPORTED_MODEL_DEBUG
 
-	// Ìí¼Óµ÷ÊÔĞÅÏ¢
+	// æ·»åŠ è°ƒè¯•ä¿¡æ¯
 	std::cout << "ImportedModel loaded:" << std::endl;
 	std::cout << "  Vertices: " << numVertices << std::endl;
 	std::cout << "  Vertex data size: " << vertexData.size() << std::endl;
@@ -88,7 +88,7 @@ inline void ImportedModel::parseOBJ(const std::string& filePath)
 			positionData.push_back(z);
 			
 			iss >> std::ws;
-			assert(iss.eof()); // È·±£ĞĞÄ©Ã»ÓĞ¶îÍâÊı¾İ
+			assert(iss.eof()); // ç¡®ä¿è¡Œæœ«æ²¡æœ‰é¢å¤–æ•°æ®
 			
 
 		}
@@ -100,7 +100,7 @@ inline void ImportedModel::parseOBJ(const std::string& filePath)
 			textureCoordData.push_back(v);
 
 			iss >> std::ws;
-			assert(iss.eof()); // È·±£ĞĞÄ©Ã»ÓĞ¶îÍâÊı¾İ
+			assert(iss.eof()); // ç¡®ä¿è¡Œæœ«æ²¡æœ‰é¢å¤–æ•°æ®
 		}
 		else if (prefix == "vn")
 		{
@@ -111,15 +111,15 @@ inline void ImportedModel::parseOBJ(const std::string& filePath)
 			normalData.push_back(nz);
 
 			iss >> std::ws;
-			assert(iss.eof()); // È·±£ĞĞÄ©Ã»ÓĞ¶îÍâÊı¾İ
+			assert(iss.eof()); // ç¡®ä¿è¡Œæœ«æ²¡æœ‰é¢å¤–æ•°æ®
 		}
 		else if (prefix == "f")
 		{
 			int posIndex[3], texIndex[3], normIndex[3];
-			char slash; // ÓÃÓÚÌø¹ıĞ±¸Ü
+			char slash; // ç”¨äºè·³è¿‡æ–œæ 
 			for (int i = 0; i < 3; ++i) {
 				iss >> posIndex[i] >> slash >> texIndex[i] >> slash >> normIndex[i];
-				posIndex[i]--; // OBJË÷Òı´Ó1¿ªÊ¼£¬C++´Ó0¿ªÊ¼
+				posIndex[i]--; // OBJç´¢å¼•ä»1å¼€å§‹ï¼ŒC++ä»0å¼€å§‹
 				texIndex[i]--;
 				normIndex[i]--;
 				
@@ -132,10 +132,10 @@ inline void ImportedModel::parseOBJ(const std::string& filePath)
 				vertexData.push_back(normalData[normIndex[i] * 3 + 1]);
 				vertexData.push_back(normalData[normIndex[i] * 3 + 2]);
 			}
-			numVertices += 3; // Ã¿¸öÃæÓĞÈı¸ö¶¥µã
+			numVertices += 3; // æ¯ä¸ªé¢æœ‰ä¸‰ä¸ªé¡¶ç‚¹
 
 			iss >> std::ws;
-			assert(iss.eof()); // È·±£ĞĞÄ©Ã»ÓĞ¶îÍâÊı¾İ
+			assert(iss.eof()); // ç¡®ä¿è¡Œæœ«æ²¡æœ‰é¢å¤–æ•°æ®
 		}
 	}
 		

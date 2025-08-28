@@ -10,15 +10,15 @@ void Renderer::Clear() const
 
 void Renderer::ClearColor()
 {
-	GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // ÉèÖÃ±³¾°ÎªÒ»¸öÉî»ÒÉ«µ÷É«
+	GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f)); // è®¾ç½®èƒŒæ™¯ä¸ºä¸€ä¸ªæ·±ç°è‰²è°ƒè‰²
 }
 
 const Renderer& Renderer::SetPolygonMode(bool mode) const
 {
 	if (mode)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Ïß¿ò
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // çº¿æ¡†
 	else
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Ìî³ä
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // å¡«å……
 	return (*this);
 }
 
@@ -37,11 +37,11 @@ const Renderer& Renderer::SetCullFace(bool enable, bool front, bool back) const
 	{
 		glEnable(GL_CULL_FACE);
 		if (front && back)
-			glCullFace(GL_FRONT_AND_BACK); // ÆôÓÃË«ÃæÌŞ³ı
+			glCullFace(GL_FRONT_AND_BACK); // å¯ç”¨åŒé¢å‰”é™¤
 		else if (front)
-			glCullFace(GL_FRONT); // Ö»ÌŞ³ıÇ°Ãæ
+			glCullFace(GL_FRONT); // åªå‰”é™¤å‰é¢
 		else if (back)
-			glCullFace(GL_BACK); // Ö»ÌŞ³ıºóÃæ
+			glCullFace(GL_BACK); // åªå‰”é™¤åé¢
 	}
 	else
 	{
@@ -59,7 +59,7 @@ const Renderer& Renderer::SetBlend(bool enable) const
 	return (*this);
 }
 
-// ===== Ô­ÓĞµÄË÷ÒıäÖÈ¾·½·¨ =====
+// ===== åŸæœ‰çš„ç´¢å¼•æ¸²æŸ“æ–¹æ³• =====
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
 {
 	BindAll(va, ib, shader);
@@ -83,7 +83,7 @@ void Renderer::DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const
 	GLCall(glDrawElementsInstanced(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, (void*)0, instanceCount));
 }
 
-// ===== ĞÂÔöµÄÈ«Õ¹¿ª¶¥µãäÖÈ¾·½·¨ =====
+// ===== æ–°å¢çš„å…¨å±•å¼€é¡¶ç‚¹æ¸²æŸ“æ–¹æ³• =====
 void Renderer::DrawArrays(const VertexArray& va, const Shader& shader, unsigned int vertexCount) const
 {
 	BindAll(va, shader);

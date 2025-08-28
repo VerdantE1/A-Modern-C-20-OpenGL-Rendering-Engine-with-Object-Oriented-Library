@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -10,6 +10,8 @@ class Scene {
 public:
     virtual ~Scene() = default;
     
+
+
     // 场景生命周期
     virtual void Initialize() = 0;
     virtual void Update(float deltaTime) = 0;
@@ -24,6 +26,7 @@ public:
     void SetCamera(std::unique_ptr<Camera> camera);
     Camera& GetCamera() { return *m_Camera; }
 
+    virtual Renderer& GetRenderer() = 0;
 protected:
     std::vector<std::unique_ptr<Entity>> m_Entities; 
     std::unique_ptr<Camera> m_Camera;

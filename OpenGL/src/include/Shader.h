@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 /* This Class is a wrapper class for OpenGL shader programs.
  * It handles the loading, compiling, and linking of shaders,
  * as well as providing an interface for setting shader uniforms.

@@ -1,7 +1,6 @@
-﻿#include "Globals.h"
+#include "Globals.h"
 #include <memory>
 #include <utility>
-#include "IO/KeyBoard.h"
 
 #include "DrawDemoUtils.h"
 
@@ -11,76 +10,63 @@
 
 
 
-class SceneManager {
-
-};
-
-
-class Engine {
-public:
-    using KeyboardHandler = std::function<void(int key, int action)>;
-
-
-	WindowConfig windowConfig;
-	SceneManager sceneManager;
-
-    void Run();
-    void SetKeyboardHandler(KeyboardHandler handler) { globalInputHandler = handler; }
- 
-protected:
-	KeyboardHandler globalInputHandler = nullptr;
-    
-};
 
 
 class BaseScene : public Scene {
 public:
     using EnityInitializer = std::function<void(Scene*)>;
-	
 
     void Initialize() override {
         // 1. 创建摄像机
         SetCamera(std::make_unique<Camera>(cameraConfig.CreateCamera())); 
 
         // 2. 设置全局光源
-		SetGlobalLight(); 
+        SetGlobalLight(); 
 
         // 3. 初始化实体
-		InlitializeEntities(enityInitializer); 
+        InlitializeEntities(enityInitializer); 
 
         // 4. 全局光应用到所有着色器
-		ApplyGlobalLightToAllShaders(); 
-
-       
+        ApplyGlobalLightToAllShaders(); 
     }
 
-	// 只会更新C++中的逻辑，不会更新GLSL中的任何东西,uniform的更新需要在Render中进行
+    // 只会更新C++中的逻辑，不会更新GLSL中的任何东西,uniform的更新需要在Render中进行
     void Update(float delataTime) override {
-		//1.通用更新
-		UpdateTime();                       // 更新时钟
-		UpdateAllEntity(delataTime);        // 只调用 Component::Update
+        //1.通用更新
+        UpdateAllEntity(delataTime);        // 只调用 Component::Update
 
-		//2.光照更新
-		UpdateDynamicLights(delataTime);    // 更新动态光源位置等
-		
+        //2.光照更新
+        UpdateDynamicLights(delataTime);    // 更新动态光源位置等
+
     }
 
     void Render(const Renderer& renderer) override {
         m_renderer.Clear();     // 清屏
         glm::mat4 view = GetCamera().GetViewMatrix();
         glm::mat4 projection = GetCamera().GetProjectionMatrix();
+
+        // 调用渲染所有实体
+        RenderAllEntities(m_renderer, view, projection);
     }
-    
+
+    // 设置实体初始化器
+    void SetEntityInitializer(EnityInitializer initializer) {
+        enityInitializer = initializer;
+    }
+
+    void Cleanup() override {
+        m_Entities.clear();
+        m_NamedEntities.clear();
+	}
+
+    Renderer& GetRenderer() { return m_renderer; }
 
 private:
     CameraConfig cameraConfig;
     EnityInitializer enityInitializer;
-	GlobalLight m_globalLight;
-	Renderer m_renderer;
+    GlobalLight m_globalLight;
+    Renderer m_renderer;
 
-	float lastFrameTime = 0.0f;
-	float deltaTime = 0.0f;
-	float currentTime = 0.0f;
 
     void RenderAllEntities(const Renderer& renderer, const glm::mat4& view, const glm::mat4& projection)
     {
@@ -89,11 +75,11 @@ private:
             auto transform = entity->GetTransform();
 
             if (renderComp && transform) {
-				//应用全局光照
+                //应用全局光照
                 ApplyGlobalLightToShader(*renderComp);
-				
-				//执行渲染（会自动调用所有组件的 ApplyToShader）
-				renderComp->Render(renderer, projection, view, transform->GetMatrix()); //执行渲染（会自动应用 ShaderDataComponent 的数据）
+
+                //执行渲染（会自动调用所有组件的 ApplyToShader）
+                renderComp->Render(renderer, projection, view, transform->GetMatrix()); //执行渲染（会自动应用 ShaderDataComponent 的数据）
 
             }
 
@@ -107,9 +93,6 @@ private:
         // m_globalLight.SetSpecular(glm::vec3(0.0f, 0.0f, 0.0f));
     }
 
-
-
-
     void ApplyGlobalLightToAllShaders() {
         for (auto& entity : m_Entities) {
             auto renderComp = entity->GetComponent<RenderComponent>();
@@ -119,23 +102,23 @@ private:
                     m_globalLight.ApplyToShader(*shader);
                 }
             }
-		}
+        }
     }
 
 
     void InlitializeEntities(EnityInitializer initializer) {
         enityInitializer = initializer;
-		enityInitializer(this);
-	}
+        enityInitializer(this);
+    }
 
 
     void UpdateAllEntity(float deltaTime) {
         for (auto& entity : m_Entities) {
-			entity->UpdateAllComponent(deltaTime);
+            entity->UpdateAllComponent(deltaTime);
         }
-	}
+    }
 
-	// 可选：更新动态光源位置等
+    // 可选：更新动态光源位置等
     void UpdateDynamicLights(float deltaTime) {
         float currentTime = static_cast<float>(glfwGetTime());
         currentLightPos = glm::vec3(
@@ -152,13 +135,7 @@ private:
         }
     }
 
-    void UpdateTime() {
-        currentTime = static_cast<float>(glfwGetTime());
-        deltaTime = currentTime - lastFrameTime;
-		lastFrameTime = currentTime;
-	}
-
-	void ApplyGlobalLightToShader(RenderComponent& renderComp) {
+    void ApplyGlobalLightToShader(RenderComponent& renderComp) {
         auto shader = renderComp.GetShader();
         if (shader) {
             m_globalLight.ApplyToShader(*shader);
@@ -167,32 +144,189 @@ private:
 };
 
 void enityInitializer_func(Scene* scene) {
-	// 创建Torus实体
+    // 创建Torus实体
     auto E_rightToruhs = scene->CreateEntity("rightTorus");
     auto renderComp = E_rightToruhs->AddComponent<RenderComponent>(
         global_torusPtr,
         gouraudShaderPtr
     );
-	E_rightToruhs->AddComponent<RotationAnimation>(1.75f);
+    E_rightToruhs->AddComponent<RotationAnimation>(1.75f);
     E_rightToruhs->GetTransform()->SetPosition(3.0f, 0.0f, -5.0f);
 
-	// 创建Sphere实体
+    // 创建Sphere实体
     auto E_leftSphere = scene->CreateEntity("leftSphere");
     auto renderComp2 = E_leftSphere->AddComponent<RenderComponent>(
         global_spherePtr,
         gouraudShaderPtr
-	);
+    );
     E_leftSphere->AddComponent<RotationAnimation>(1.75f);
     E_leftSphere->GetTransform()->SetPosition(-3.0f, 0.0f, -5.0f);
 
 
-	// 创建光源实体
+    // 创建光源实体
     auto E_light = scene->CreateEntity("light");
     auto lightComp = E_light->AddComponent<LightComponent>();
     lightComp->SetLightType(LightComponent::LightType::POINT);
     E_light->GetTransform()->SetPosition({ 5.0f, 2.0f, 2.0f });
 
 
+}
+class SceneManager {
+public:
+	SceneManager() = default;
+	~SceneManager() = default;
+
+    //设置当前活动场景
+    void SetActiveScene(std::unique_ptr<Scene> scene) {
+        if (m_currentScene) {
+            m_currentScene->Cleanup();
+        }
+		m_currentScene = std::move(scene);
+        if (m_currentScene) {
+			m_currentScene->Initialize();
+        }
+    }
+
+	//获取当前活动场景
+	Scene* GetActiveScene() const { return m_currentScene.get(); }
+
+	//更新当前场景
+    void Update(float deltaTime){
+        if (m_currentScene) {
+            m_currentScene->Update(deltaTime);
+        }
+	}
+
+    //渲染当前场景
+    void Render() {
+        if (m_currentScene) {
+            m_currentScene->Render(m_currentScene->GetRenderer());
+        }
+    }
+
+	//清理当前场景
+    void Cleanup() {
+        if (m_currentScene) {
+            m_currentScene->Cleanup();
+            m_currentScene.reset();
+        }
+	}
+private:
+	std::unique_ptr<Scene> m_currentScene = nullptr;
+};
+
+
+class Engine {
+public:
+    using KeyboardHandler = std::function<void(int key, int action)>;
+
+	WindowConfig windowConfig;
+	SceneManager sceneManager;
+
+    void Run(GLFWwindow* window) {
+
+
+		auto scene = sceneManager.GetActiveScene();
+        if (!scene)
+        {
+            std::cerr << "No active scene set in SceneManager!" << std::endl;
+			return;
+        }
+
+		//主循环
+        while (!glfwWindowShouldClose(window)) {
+            //更新时间
+            UpdateTime();
+            
+            //处理输入
+            HandleInput(window);
+
+			//通过SceneManager渲染当前场景
+			sceneManager.Update(deltaTime); 
+            sceneManager.Render();
+            
+			glfwSwapBuffers(window);
+			glfwPollEvents();
+
+        }
+		// 清理场景
+		sceneManager.Cleanup();
+    }
+    void SetKeyboardHandler(KeyboardHandler handler) { globalInputHandler = handler; }
+	void SetScene(std::unique_ptr<Scene> scene) { sceneManager.SetActiveScene(std::move(scene)); }
+
+protected:
+	KeyboardHandler globalInputHandler = nullptr;
+
+    float lastTime = 0.0f;
+	float deltaTime = 0.0f;
+	float currentTime = 0.0f;
+    
+    void UpdateTime() {
+        currentTime = static_cast<float>(glfwGetTime());
+        deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
+    }
+
+    void HandleInput(GLFWwindow* window)
+    {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, true);
+        }
+        if (!globalInputHandler) return;
+        // 简单的键盘处理
+        static double lastKeyTime = 0.0;
+        if (currentTime - lastKeyTime > 0.3) { // 防抖
+            if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
+                globalInputHandler(GLFW_KEY_G, GLFW_PRESS);
+                lastKeyTime = currentTime;
+            }
+            else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+                globalInputHandler(GLFW_KEY_P, GLFW_PRESS);
+                lastKeyTime = currentTime;
+            }
+            else if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+                globalInputHandler(GLFW_KEY_C, GLFW_PRESS);
+                lastKeyTime = currentTime;
+            }
+        }
+    }
+};
+
+
+
+
+void DrawShadowMappingWithECS(GLFWwindow* window) {
+
+    InitializeGlobalShaders();
+
+    //创建引擎
+    Engine engine;
+
+    //创建并设置场景
+    auto scene = std::make_unique<BaseScene>();
+    scene->SetEntityInitializer(enityInitializer_func);
+
+    // 设置键盘处理
+    engine.SetKeyboardHandler([&](int key, int action) {
+        switch (key) {
+        case GLFW_KEY_G:
+            glfwSetWindowTitle(window, "全部使用 Gouraud 着色（ECS版本）");
+            // TODO: 实现切换着色器逻辑
+            break;
+        case GLFW_KEY_P:
+            glfwSetWindowTitle(window, "全部使用 Phong 着色（ECS版本）");
+            // TODO: 实现切换着色器逻辑
+            break;
+        case GLFW_KEY_C:
+            glfwSetWindowTitle(window, "对比模式（ECS版本）");
+            // TODO: 恢复原始着色器
+            break;
+        }
+        });
+    
+	engine.SetScene(std::move(scene));
+    engine.Run(window);
 }
 
 void DrawShadowMapping(GLFWwindow* window)

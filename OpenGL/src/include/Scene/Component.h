@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class Entity; // 前向声明
 class Shader; // 前向声明

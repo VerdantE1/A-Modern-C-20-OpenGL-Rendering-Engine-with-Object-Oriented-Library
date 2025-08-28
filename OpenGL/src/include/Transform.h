@@ -14,7 +14,7 @@ public:
 
     Transform() = default;
     Transform(glm::mat4 rhs ) {
-		setMatrix(rhs); // Ä¬ÈÏ¹¹Ôìº¯Êı£¬ÔÊĞímat4->Transform×ª»»
+		setMatrix(rhs); // é»˜è®¤æ„é€ å‡½æ•°ï¼Œå…è®¸mat4->Transformè½¬æ¢
     }
 
     void setPosition(float x, float y, float z) { 
@@ -43,7 +43,7 @@ public:
 
 
     
-    // Éú³É»ò·µ»Ø±ä»»¾ØÕó
+    // ç”Ÿæˆæˆ–è¿”å›å˜æ¢çŸ©é˜µ
     const glm::mat4& getMatrix() const {
         if (dirty) {
             mat = glm::mat4(1.0f);
@@ -60,9 +60,9 @@ public:
    
     Transform operator*(const Transform& rhs) const {
         Transform result;
-        // ÏÈ»ñµÃ¸÷×ÔµÄ¾ØÕó
+        // å…ˆè·å¾—å„è‡ªçš„çŸ©é˜µ
         glm::mat4 m = getMatrix() * rhs.getMatrix();
-        // ÌáÈ¡ĞÂ±ä»»²ÎÊı£¨¼òµ¥ÊµÏÖ£ºÖ»´æ¾ØÕó£¬²»·Ö½â²ÎÊı£©
+        // æå–æ–°å˜æ¢å‚æ•°ï¼ˆç®€å•å®ç°ï¼šåªå­˜çŸ©é˜µï¼Œä¸åˆ†è§£å‚æ•°ï¼‰
         result.setMatrix(m);
         return result;
     }
@@ -74,12 +74,12 @@ public:
 
 
 private:
-    glm::vec3 position{ 0.0f, 0.0f, 0.0f };    // Î»ÖÃ
-    glm::vec3 rotation{ 0.0f, 0.0f, 0.0f };    // Å·À­½Ç£ºx=Pitch, y=Yaw, z=Roll£¨µ¥Î»£º»¡¶È£©
-    glm::vec3 scale{ 1.0f, 1.0f, 1.0f };       // Ëõ·Å
+    glm::vec3 position{ 0.0f, 0.0f, 0.0f };    // ä½ç½®
+    glm::vec3 rotation{ 0.0f, 0.0f, 0.0f };    // æ¬§æ‹‰è§’ï¼šx=Pitch, y=Yaw, z=Rollï¼ˆå•ä½ï¼šå¼§åº¦ï¼‰
+    glm::vec3 scale{ 1.0f, 1.0f, 1.0f };       // ç¼©æ”¾
 
-    mutable glm::mat4 mat{ 1.0f };             // »º´æÓÃµÄmat4
-    mutable bool dirty{ true };                // ²ÎÊı±ä»¯Ê±dirty£¬×Ô¶¯¸üĞÂmat
+    mutable glm::mat4 mat{ 1.0f };             // ç¼“å­˜ç”¨çš„mat4
+    mutable bool dirty{ true };                // å‚æ•°å˜åŒ–æ—¶dirtyï¼Œè‡ªåŠ¨æ›´æ–°mat
 };
 
 //Support for Transform multiplication with glm::mat4

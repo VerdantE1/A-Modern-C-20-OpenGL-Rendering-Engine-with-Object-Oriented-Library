@@ -2,23 +2,23 @@
 #include "vendor/stb_image/stb_image.h"
 #include "Utility.h"
 
-// ³õÊ¼»¯¾²Ì¬³ÉÔ±
+// åˆå§‹åŒ–é™æ€æˆå‘˜
 std::unordered_set<unsigned int> Texture::s_AvailableSlots;
 unsigned int Texture::s_MaxSlotUsed = 0;
 bool Texture::s_AnisotropyChecked = false;
 bool Texture::s_AnisotropySupported = false;
 float Texture::s_MaxAnisotropy = 1.0f;
 
-// ¼ì²é¸÷ÏòÒìĞÔ¹ıÂËÖ§³Ö
+// æ£€æŸ¥å„å‘å¼‚æ€§è¿‡æ»¤æ”¯æŒ
 void Texture::CheckAnisotropySupport()
 {
     if (s_AnisotropyChecked) return;
     
-    // ¼ì²éÊÇ·ñÖ§³Ö¸÷ÏòÒìĞÔ¹ıÂËÀ©Õ¹
+    // æ£€æŸ¥æ˜¯å¦æ”¯æŒå„å‘å¼‚æ€§è¿‡æ»¤æ‰©å±•
     s_AnisotropySupported = glewIsSupported("GL_EXT_texture_filter_anisotropic");
     
     if (s_AnisotropySupported) {
-        // »ñÈ¡×î´óÖ§³ÖµÄ¸÷ÏòÒìĞÔ¼¶±ğ
+        // è·å–æœ€å¤§æ”¯æŒçš„å„å‘å¼‚æ€§çº§åˆ«
         GLCall(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &s_MaxAnisotropy));
     }
     
@@ -66,22 +66,22 @@ Texture::Texture(const std::string& filepath,
     : m_FilePath(filepath), m_LocalBuffer(nullptr), m_Width(0), m_Height(0), m_Bpp(0), 
       m_AssignedSlot(GetNextAvailableSlot())
 {
-    // È·±£ÒÑ¼ì²é¸÷ÏòÒìĞÔ¹ıÂËÖ§³Ö
+    // ç¡®ä¿å·²æ£€æŸ¥å„å‘å¼‚æ€§è¿‡æ»¤æ”¯æŒ
     if (!s_AnisotropyChecked) {
         CheckAnisotropySupport();
     }
     
-    // ÉèÖÃ¸÷ÏòÒìĞÔ¹ıÂË¼¶±ğ
+    // è®¾ç½®å„å‘å¼‚æ€§è¿‡æ»¤çº§åˆ«
     m_AnisotropyLevel = static_cast<float>(anisotropy);
     if (m_AnisotropyLevel > s_MaxAnisotropy) {
         m_AnisotropyLevel = s_MaxAnisotropy;
     }
     
-    // ÉèÖÃÊÇ·ñ´¹Ö±·­×ªÎÆÀí
+    // è®¾ç½®æ˜¯å¦å‚ç›´ç¿»è½¬çº¹ç†
     stbi_set_flip_vertically_on_load(flipVertically);
     
-    // ¼ÓÔØÍ¼ÏñÊı¾İ
-    m_LocalBuffer = stbi_load(filepath.c_str(), &m_Width, &m_Height, &m_Bpp, 4); // 4±íÊ¾RGBA¸ñÊ½
+    // åŠ è½½å›¾åƒæ•°æ®
+    m_LocalBuffer = stbi_load(filepath.c_str(), &m_Width, &m_Height, &m_Bpp, 4); // 4è¡¨ç¤ºRGBAæ ¼å¼
     
     if (!m_LocalBuffer)
     {
@@ -89,36 +89,36 @@ Texture::Texture(const std::string& filepath,
         return;
     }
 
-    // ´´½¨ÎÆÀí¶ÔÏó
+    // åˆ›å»ºçº¹ç†å¯¹è±¡
     GLCall(glGenTextures(1, &m_id));
     GLCall(glBindTexture(GL_TEXTURE_2D, m_id));
     
-    // ÉèÖÃÎÆÀí¹ıÂË²ÎÊı
+    // è®¾ç½®çº¹ç†è¿‡æ»¤å‚æ•°
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GetGLFilterMode(magFilter)));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GetGLFilterMode(minFilter)));
     
-    // ÉèÖÃÎÆÀí»·ÈÆ·½Ê½
+    // è®¾ç½®çº¹ç†ç¯ç»•æ–¹å¼
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetGLWrapMode(wrapS)));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetGLWrapMode(wrapT)));
     
-    // Èç¹ûÖ§³Ö²¢ÆôÓÃÁË¸÷ÏòÒìĞÔ¹ıÂË
+    // å¦‚æœæ”¯æŒå¹¶å¯ç”¨äº†å„å‘å¼‚æ€§è¿‡æ»¤
     if (s_AnisotropySupported && m_AnisotropyLevel > 1.0f) {
         GLCall(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, m_AnisotropyLevel));
     }
     
-    // ½«Í¼ÏñÊı¾İ°ó¶¨µ½GPUÄÚ´æ
+    // å°†å›¾åƒæ•°æ®ç»‘å®šåˆ°GPUå†…å­˜
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer));
     
-    // ¸ù¾İĞèÒªÉú³Émipmap
+    // æ ¹æ®éœ€è¦ç”Ÿæˆmipmap
     if (generateMipmaps) {
         GLCall(glGenerateMipmap(GL_TEXTURE_2D));
     }
 
-    // ¼¤»îÎÆÀíµ¥Ôª²¢°ó¶¨ÎÆÀí
+    // æ¿€æ´»çº¹ç†å•å…ƒå¹¶ç»‘å®šçº¹ç†
     GLCall(glActiveTexture(GL_TEXTURE0 + m_AssignedSlot));
     GLCall(glBindTexture(GL_TEXTURE_2D, m_id));
 
-    // ÊÍ·Å±¾µØ»º³å
+    // é‡Šæ”¾æœ¬åœ°ç¼“å†²
     if (m_LocalBuffer)
     {
         stbi_image_free(m_LocalBuffer);
@@ -152,14 +152,14 @@ void Texture::Unbind() const
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-// ÉèÖÃ±ß¿òÑÕÉ«
+// è®¾ç½®è¾¹æ¡†é¢œè‰²
 void Texture::SetBorderColor(const glm::vec4& color)
 {
     GLCall(glBindTexture(GL_TEXTURE_2D, m_id));
     GLCall(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &color[0]));
 }
 
-// ÉèÖÃ¸÷ÏòÒìĞÔ¹ıÂË¼¶±ğ (Ã¶¾Ù°æ±¾)
+// è®¾ç½®å„å‘å¼‚æ€§è¿‡æ»¤çº§åˆ« (æšä¸¾ç‰ˆæœ¬)
 void Texture::SetAnisotropyLevel(AnisotropyLevel level)
 {
     if (!s_AnisotropyChecked) {
@@ -167,7 +167,7 @@ void Texture::SetAnisotropyLevel(AnisotropyLevel level)
     }
     
     if (!s_AnisotropySupported) {
-        return; // Èç¹û²»Ö§³Ö£¬ÔòÖ±½Ó·µ»Ø
+        return; // å¦‚æœä¸æ”¯æŒï¼Œåˆ™ç›´æ¥è¿”å›
     }
     
     float newLevel = static_cast<float>(level);
@@ -183,7 +183,7 @@ void Texture::SetAnisotropyLevel(AnisotropyLevel level)
     }
 }
 
-// ÉèÖÃ¸÷ÏòÒìĞÔ¹ıÂË¼¶±ğ (¸¡µã°æ±¾)
+// è®¾ç½®å„å‘å¼‚æ€§è¿‡æ»¤çº§åˆ« (æµ®ç‚¹ç‰ˆæœ¬)
 void Texture::SetAnisotropyLevel(float level)
 {
     if (!s_AnisotropyChecked) {
@@ -191,11 +191,11 @@ void Texture::SetAnisotropyLevel(float level)
     }
     
     if (!s_AnisotropySupported) {
-        return; // Èç¹û²»Ö§³Ö£¬ÔòÖ±½Ó·µ»Ø
+        return; // å¦‚æœä¸æ”¯æŒï¼Œåˆ™ç›´æ¥è¿”å›
     }
     
-    if (level < 1.0f) level = 1.0f; // ÖÁÉÙÎª1.0
-    if (level > s_MaxAnisotropy) level = s_MaxAnisotropy; // ²»³¬¹ı×î´óÖ§³Ö¼¶±ğ
+    if (level < 1.0f) level = 1.0f; // è‡³å°‘ä¸º1.0
+    if (level > s_MaxAnisotropy) level = s_MaxAnisotropy; // ä¸è¶…è¿‡æœ€å¤§æ”¯æŒçº§åˆ«
     
     if (m_AnisotropyLevel != level) {
         m_AnisotropyLevel = level;
@@ -205,7 +205,7 @@ void Texture::SetAnisotropyLevel(float level)
     }
 }
 
-// ½«Ã¶¾Ù×ª»»ÎªOpenGL¹ıÂËÄ£Ê½³£Á¿
+// å°†æšä¸¾è½¬æ¢ä¸ºOpenGLè¿‡æ»¤æ¨¡å¼å¸¸é‡
 GLint Texture::GetGLFilterMode(TextureFilterMode mode) const
 {
     switch (mode)
@@ -227,7 +227,7 @@ GLint Texture::GetGLFilterMode(TextureFilterMode mode) const
     }
 }
 
-// ½«Ã¶¾Ù×ª»»ÎªOpenGL»·ÈÆÄ£Ê½³£Á¿
+// å°†æšä¸¾è½¬æ¢ä¸ºOpenGLç¯ç»•æ¨¡å¼å¸¸é‡
 GLint Texture::GetGLWrapMode(TextureWrapMode mode) const
 {
     switch (mode)

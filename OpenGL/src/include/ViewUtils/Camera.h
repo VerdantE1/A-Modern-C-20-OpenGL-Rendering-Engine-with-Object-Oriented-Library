@@ -42,7 +42,7 @@ public:
 
 
 
-	// 给定任意z，计算该z平面上的裁剪范围
+	// 缁欏畾浠绘剰z锛岃绠楄z骞抽潰涓婄殑瑁佸壀鑼冨洿
 	FrustumRect GetFrustumRectAtZ(float z) const {
 		float half_fovy = glm::radians(fov) * 0.5f;
 		float tan_half_fovy = tan(half_fovy);
@@ -57,12 +57,12 @@ public:
 		};
 	}
 
-	// 返回近平面的FrustumRect
+	// 杩斿洖杩戝钩闈㈢殑FrustumRect
 	FrustumRect GetNearFrustumRect() const {
 		return GetFrustumRectAtZ(-near);
 	}
 
-	// 返回远平面的FrustumRect
+	// 杩斿洖杩滃钩闈㈢殑FrustumRect
 	FrustumRect GetFarFrustumRect() const {
 		return GetFrustumRectAtZ(-far);
 	}

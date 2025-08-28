@@ -1040,10 +1040,10 @@
     <ClInclude Include="src\include\Scene\Components\MaterialComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\IO\KeyBoard.h">
+    <ClInclude Include="src\include\Scene\Components\ShaderDataComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\Scene\Components\ShaderDataComponent.h">
+    <ClInclude Include="src\include\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

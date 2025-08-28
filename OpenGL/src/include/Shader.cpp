@@ -1,4 +1,4 @@
-﻿#include <Shader.h>
+#include <Shader.h>
 #include "Utility.h"
 #include <fstream>
 #include <sstream>

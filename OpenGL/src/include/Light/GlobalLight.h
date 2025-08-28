@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "glm/fwd.hpp"
-#include "LightShader.h"
+#include "Shader.h"
 
 class GlobalLight {
 public:
@@ -8,7 +8,7 @@ public:
 	glm::vec3 diffuse = glm::vec3(0.0f);  // 可选，通常全局光只用 ambient
 	glm::vec3 specular = glm::vec3(0.0f); // 可选
 
-	void ApplyToShader(LightShader& shader) const {
+	void ApplyToShader(Shader& shader) const {
 		shader.SetUniform3f("globalAmbient", ambient.x, ambient.y, ambient.z);
 	}
 	void SetAmbient(const glm::vec3& amb) {

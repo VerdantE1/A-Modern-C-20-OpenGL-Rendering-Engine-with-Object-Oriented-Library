@@ -12,40 +12,40 @@ public:
 
 	void Clear() const;
 
-	// ===== Ô­ÓĞµÄË÷ÒıäÖÈ¾·½·¨ =====
-	// Í¨ÓÃµÄÓÃVertexArray, IndexBufferºÍShader½øĞĞäÖÈ¾£¬ÕâÀïÖ÷ÒªÎªÍ¼Ôª½øĞĞäÖÈ¾ÉèÖÃ
-	// ¸Ãº¯Êı»á×Ô¶¯°ó¶¨VAO, IBOºÍShader£¬²¢½øĞĞÉèÖÃ
+	// ===== åŸæœ‰çš„ç´¢å¼•æ¸²æŸ“æ–¹æ³• =====
+	// é€šç”¨çš„ç”¨VertexArray, IndexBufferå’ŒShaderè¿›è¡Œæ¸²æŸ“ï¼Œè¿™é‡Œä¸»è¦ä¸ºå›¾å…ƒè¿›è¡Œæ¸²æŸ“è®¾ç½®
+	// è¯¥å‡½æ•°ä¼šè‡ªåŠ¨ç»‘å®šVAO, IBOå’ŒShaderï¼Œå¹¶è¿›è¡Œè®¾ç½®
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
 	void Draw(const Shaper& sp, const Shader& shader) const;
-	void Draw(const Shaper& sp, const Shader& shader, const Texture& texture) const; // ¸Ãº¯Êı»á×Ô¶¯°ó¶¨VAO, IBOºÍShader£¬²¢½øĞĞäÖÈ¾Ç°ÉèÖÃ
+	void Draw(const Shaper& sp, const Shader& shader, const Texture& texture) const; // è¯¥å‡½æ•°ä¼šè‡ªåŠ¨ç»‘å®šVAO, IBOå’ŒShaderï¼Œå¹¶è¿›è¡Œæ¸²æŸ“å‰è®¾ç½®
 
-	void DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const; // ĞèÒªÓÃ»§È·±£shader°üº¬instanceÏà¹Ø
+	void DrawInstanced(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, unsigned int instanceCount) const; // éœ€è¦ç”¨æˆ·ç¡®ä¿shaderåŒ…å«instanceç›¸å…³
 
-	// ===== ĞÂÔöµÄÈ«Õ¹¿ª¶¥µãäÖÈ¾·½·¨ =====
-	// ÓÃÓÚäÖÈ¾ÍêÈ«Õ¹¿ªµÄ¶¥µãÊı¾İ£¨²»Ê¹ÓÃË÷Òı»º³å£©
+	// ===== æ–°å¢çš„å…¨å±•å¼€é¡¶ç‚¹æ¸²æŸ“æ–¹æ³• =====
+	// ç”¨äºæ¸²æŸ“å®Œå…¨å±•å¼€çš„é¡¶ç‚¹æ•°æ®ï¼ˆä¸ä½¿ç”¨ç´¢å¼•ç¼“å†²ï¼‰
 	void DrawArrays(const VertexArray& va, const Shader& shader, unsigned int vertexCount) const;
 	void DrawArrays(const VertexArray& va, const Shader& shader, const Texture& texture, unsigned int vertexCount) const;
 	void DrawArrays(const Shaper& sp, const Shader& shader, unsigned int vertexCount) const;
 	void DrawArrays(const Shaper& sp, const Shader& shader, const Texture& texture, unsigned int vertexCount) const;
 
 	
-	// ÊµÀı»¯äÖÈ¾µÄÊı×é°æ±¾
+	// å®ä¾‹åŒ–æ¸²æŸ“çš„æ•°ç»„ç‰ˆæœ¬
 	void DrawArraysInstanced(const VertexArray& va, const Shader& shader, unsigned int vertexCount, unsigned int instanceCount) const;
 
 	void ClearColor();
 
-	// ÊÇ·ñÊ¹ÓÃÏß¿òÄ£Ê½ºÍÉî¶È²âÊÔ£¬¿É¶ÁĞ´µÄ
+	// æ˜¯å¦ä½¿ç”¨çº¿æ¡†æ¨¡å¼å’Œæ·±åº¦æµ‹è¯•ï¼Œå¯è¯»å†™çš„
 	mutable bool UsePolygonMode = false;
 	mutable bool UseDepthTest = false;
 	mutable bool UseCullFace = false;
 
-	// ÉèÖÃÏß¿òÄ£Ê½£¨mode=trueÎªÏß¿òfalseÎªÌî³ä£©
+	// è®¾ç½®çº¿æ¡†æ¨¡å¼ï¼ˆmode=trueä¸ºçº¿æ¡†falseä¸ºå¡«å……ï¼‰
 	const Renderer& SetPolygonMode(bool mode) const;
 
-	// ÉèÖÃÊÇ·ñÆôÓÃÉî¶È²âÊÔ
+	// è®¾ç½®æ˜¯å¦å¯ç”¨æ·±åº¦æµ‹è¯•
 	const Renderer& SetDepthTest(bool enable) const;
 
-	// ÉèÖÃ±³ÃæÌŞ³ı£¨enable=trueÆôÓÃ£¬frontºÍback·Ö±ğ±íÊ¾ÊÇ·ñÌŞ³ıÇ°ÃæºÍºóÃæ£©
+	// è®¾ç½®èƒŒé¢å‰”é™¤ï¼ˆenable=trueå¯ç”¨ï¼Œfrontå’Œbackåˆ†åˆ«è¡¨ç¤ºæ˜¯å¦å‰”é™¤å‰é¢å’Œåé¢ï¼‰
 	const Renderer& SetCullFace(bool enable, bool front=false, bool back = true) const;
 
 	const Renderer& SetBlend(bool enable) const;

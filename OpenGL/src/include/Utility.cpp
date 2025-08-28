@@ -1,4 +1,4 @@
-﻿#include "Utility.h"
+#include "Utility.h"
 #include "Globals.h"
 #include "Shader.h"
 

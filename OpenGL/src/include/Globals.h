@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Light/Utils.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -26,6 +26,8 @@
 #include "Transform.h"
 #include <memory>
 
+#include "spdlog/spdlog.h"
+
 
 
 
@@ -43,16 +45,48 @@
 #define SHADOW_MAPPING_SHADER_PATH "res/shaders/ShadowShader/ShadowPass.shader"
 #define SHADOW_MAPPING_RENDER_SHADER_PATH "res/shaders/ShadowShader/RenderPass.shader"
 
-std::shared_ptr<Shader> gouraudShaderPtr = std::make_shared<Shader>(GOURAUD_SHADER_PATH);
-std::shared_ptr<Shader> blinnPhongShaderPtr = std::make_shared<Shader>(BLINN_PHONG_SHADER_PATH);
-std::shared_ptr<Shader> phongShaderPtr = std::make_shared<Shader>(PHONG_SHADER_PATH);
-std::shared_ptr<Shader> shadowMappingShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_SHADER_PATH);
-std::shared_ptr<Shader> shadowMappingRenderShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_RENDER_SHADER_PATH);
+// 需要OpenGL上下文
+inline std::shared_ptr<Shader> gouraudShaderPtr = nullptr;
+inline std::shared_ptr<Shader> blinnPhongShaderPtr = nullptr;
+inline std::shared_ptr<Shader> phongShaderPtr = nullptr;
+inline std::shared_ptr<Shader> shadowMappingShaderPtr = nullptr;
+inline std::shared_ptr<Shader> shadowMappingRenderShaderPtr = nullptr;
 
+inline void InitializeGlobalShaders() {
+	static bool initialized = false;
+	if (initialized) return; // 防止重复初始化
 
+	std::cout << "Initializing global shaders..." << std::endl;
+
+	try {
+		gouraudShaderPtr = std::make_shared<Shader>(GOURAUD_SHADER_PATH);
+		blinnPhongShaderPtr = std::make_shared<Shader>(BLINN_PHONG_SHADER_PATH);
+		phongShaderPtr = std::make_shared<Shader>(PHONG_SHADER_PATH);
+		shadowMappingShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_SHADER_PATH);
+		shadowMappingRenderShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_RENDER_SHADER_PATH);
+
+		initialized = true;
+		std::cout << "Global shaders initialized successfully!" << std::endl;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Failed to initialize global shaders: " << e.what() << std::endl;
+		throw;
+	}
+}
 /******************************************* 3D模型全局变量  *************************************************/
-std::shared_ptr<Sphere> global_spherePtr = std::make_shared<Sphere>();
-std::shared_ptr<Torus> global_torusPtr = std::make_shared<Torus>();
+inline std::shared_ptr<Sphere> global_spherePtr = nullptr;
+inline std::shared_ptr<Torus> global_torusPtr = nullptr;
+
+// ✅ 添加延迟初始化函数
+inline void InitializeGlobalObjects() {
+	static bool initialized = false;
+	if (initialized) return;
+
+	global_spherePtr = std::make_shared<Sphere>();
+	global_torusPtr = std::make_shared<Torus>();
+
+	initialized = true;
+}
 
 
 /******************************************* 全局Render变量  *************************************************/
@@ -100,8 +134,7 @@ struct RenderConfig {
 		return renderer;
 	}
 };
-RenderConfig default_renderConfig = RenderConfig().SetDefault();
-std::shared_ptr<Renderer> global_rendererPtr = default_renderConfig.CreateConfiguredRenderer();
+
 
 /******************************************* 全局光变量  *************************************************/
 
