@@ -183,6 +183,7 @@
     <ClInclude Include="doc\Camera.md" />
     <ClInclude Include="src\DrawDemo.h" />
     <ClInclude Include="src\include\DrawDemoUtils.h" />
+    <ClInclude Include="src\include\IO\KeyBoard.h" />
     <ClInclude Include="src\include\Light\GlobalLight.h" />
     <ClInclude Include="src\include\Light\Utils.h" />
     <ClInclude Include="src\include\3D\ImportedModel.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="src\include\Scene\Components\OrbitAnimation.h" />
     <ClInclude Include="src\include\Scene\Components\RenderComponent.h" />
     <ClInclude Include="src\include\Scene\Components\RotationAnimation.h" />
+    <ClInclude Include="src\include\Scene\Components\ShaderDataComponent.h" />
     <ClInclude Include="src\include\Scene\Components\TransformComponent.h" />
     <ClInclude Include="src\include\Scene\Entity.h" />
     <ClInclude Include="src\include\Scene\Scene.h" />

@@ -1,5 +1,7 @@
 ﻿#include "Globals.h"
 #include <memory>
+#include <utility>
+#include "IO/KeyBoard.h"
 
 #include "DrawDemoUtils.h"
 
@@ -16,42 +18,96 @@ class SceneManager {
 
 class Engine {
 public:
+    using KeyboardHandler = std::function<void(int key, int action)>;
+
+
 	WindowConfig windowConfig;
 	SceneManager sceneManager;
+
     void Run();
+    void SetKeyboardHandler(KeyboardHandler handler) { globalInputHandler = handler; }
+ 
+protected:
+	KeyboardHandler globalInputHandler = nullptr;
+    
 };
 
 
-class BaseScene :public Scene {
+class BaseScene : public Scene {
 public:
     using EnityInitializer = std::function<void(Scene*)>;
+	
 
     void Initialize() override {
-        SetCamera(std::make_unique<Camera>(cameraConfig.CreateCamera())); // 创建摄像机
-		SetGlobalLight(); // 设置全局光
+        // 1. 创建摄像机
+        SetCamera(std::make_unique<Camera>(cameraConfig.CreateCamera())); 
 
-		InlitializeEntities(enityInitializer); // 初始化实体
-		ApplyGlobalLightToAllShaders(); // 将全局光应用到所有着色器
+        // 2. 设置全局光源
+		SetGlobalLight(); 
+
+        // 3. 初始化实体
+		InlitializeEntities(enityInitializer); 
+
+        // 4. 全局光应用到所有着色器
+		ApplyGlobalLightToAllShaders(); 
 
        
     }
+
+	// 只会更新C++中的逻辑，不会更新GLSL中的任何东西,uniform的更新需要在Render中进行
     void Update(float delataTime) override {
-		UpdateAllEnity(delataTime);
+		//1.通用更新
+		UpdateTime();                       // 更新时钟
+		UpdateAllEntity(delataTime);        // 只调用 Component::Update
+
+		//2.光照更新
+		UpdateDynamicLights(delataTime);    // 更新动态光源位置等
+		
     }
 
+    void Render(const Renderer& renderer) override {
+        m_renderer.Clear();     // 清屏
+        glm::mat4 view = GetCamera().GetViewMatrix();
+        glm::mat4 projection = GetCamera().GetProjectionMatrix();
+    }
+    
 
 private:
     CameraConfig cameraConfig;
     EnityInitializer enityInitializer;
 	GlobalLight m_globalLight;
+	Renderer m_renderer;
+
+	float lastFrameTime = 0.0f;
+	float deltaTime = 0.0f;
+	float currentTime = 0.0f;
+
+    void RenderAllEntities(const Renderer& renderer, const glm::mat4& view, const glm::mat4& projection)
+    {
+        for (auto& entity : m_Entities) {
+            auto renderComp = entity->GetComponent<RenderComponent>();
+            auto transform = entity->GetTransform();
+
+            if (renderComp && transform) {
+				//应用全局光照
+                ApplyGlobalLightToShader(*renderComp);
+				
+				//执行渲染（会自动调用所有组件的 ApplyToShader）
+				renderComp->Render(renderer, projection, view, transform->GetMatrix()); //执行渲染（会自动应用 ShaderDataComponent 的数据）
+
+            }
+
+        }
+    }
 
     void SetGlobalLight() {
         // 设置全局环境光
         m_globalLight.SetAmbient(glm::vec3(0.2f, 0.2f, 0.2f)); // 设置合适的环境光
-        // 可选：设置其他属性
         // m_globalLight.SetDiffuse(glm::vec3(0.1f, 0.1f, 0.1f));
         // m_globalLight.SetSpecular(glm::vec3(0.0f, 0.0f, 0.0f));
     }
+
+
 
 
     void ApplyGlobalLightToAllShaders() {
@@ -73,13 +129,41 @@ private:
 	}
 
 
-    void UpdateAllEnity(float deltaTime) {
-        for (auto& enity : m_Entities) {
-			enity->UpdateAllComponent(deltaTime);
+    void UpdateAllEntity(float deltaTime) {
+        for (auto& entity : m_Entities) {
+			entity->UpdateAllComponent(deltaTime);
         }
 	}
 
+	// 可选：更新动态光源位置等
+    void UpdateDynamicLights(float deltaTime) {
+        float currentTime = static_cast<float>(glfwGetTime());
+        currentLightPos = glm::vec3(
+            initialLightLoc.x + sin(currentTime * 0.8f) * 3.0f,
+            initialLightLoc.y + cos(currentTime * 0.6f) * 2.0f,
+            initialLightLoc.z
+        );
+        // 更新所有光源组件的位置
+        for (auto& entity : m_Entities) {
+            auto lightComp = entity->GetComponent<LightComponent>();
+            if (lightComp) {
+                entity->GetTransform()->SetPosition(currentLightPos);
+            }
+        }
+    }
 
+    void UpdateTime() {
+        currentTime = static_cast<float>(glfwGetTime());
+        deltaTime = currentTime - lastFrameTime;
+		lastFrameTime = currentTime;
+	}
+
+	void ApplyGlobalLightToShader(RenderComponent& renderComp) {
+        auto shader = renderComp.GetShader();
+        if (shader) {
+            m_globalLight.ApplyToShader(*shader);
+        }
+    }
 };
 
 void enityInitializer_func(Scene* scene) {

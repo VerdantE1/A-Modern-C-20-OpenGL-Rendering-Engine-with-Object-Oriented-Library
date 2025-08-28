@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class Entity; // 前向声明
+class Shader; // 前向声明
 
 /*
 * Component 是所有组件的基类. 
@@ -16,7 +17,13 @@ public:
     
     // 组件生命周期方法
     virtual void Initialize() {}
+    
+    // Update：只处理 CPU 中的数据，不涉及 GPU 状态,只把数据准备好
     virtual void Update(float deltaTime) {}
+    
+    // ApplyToShader：专门用于渲染时传递 uniform 数据到 Shader
+    virtual void ApplyToShader(Shader& shader) {}
+    
     virtual void Destroy() {}
     
     // 获取拥有该组件的实体

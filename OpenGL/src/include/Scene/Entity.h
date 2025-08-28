@@ -55,6 +55,10 @@ public:
 
     const std::string& GetName() const { return m_Name; }
 
+    const std::unordered_map<std::type_index, std::unique_ptr<Component>>& GetAllComponents() const {
+        return m_Components;
+	}
+
 private:
     std::string m_Name;
     std::unordered_map<std::type_index, std::unique_ptr<Component>> m_Components;
