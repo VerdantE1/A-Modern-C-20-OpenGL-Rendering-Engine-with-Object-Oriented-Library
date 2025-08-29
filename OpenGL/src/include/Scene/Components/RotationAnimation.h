@@ -10,12 +10,17 @@ public:
         : m_Speed(speed), m_Axis(axis) {}
     
     void Update(float deltaTime) override {
-        if (!GetOwner()) return;
+        if (!GetOwner()) {
+			LOG_ERROR("RotationAnimation: Owner entity is null.");
+            return;
+        }
         
         auto transform = GetOwner()->GetTransform();
 
-        if (!transform) return;
-        
+        if (!transform) {
+			LOG_ERROR("RotationAnimation: Transform component is missing.");
+            return;
+        }
         // 累积旋转角度
         m_CurrentRotation += m_Speed * deltaTime;
         

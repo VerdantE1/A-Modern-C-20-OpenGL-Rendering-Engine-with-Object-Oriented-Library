@@ -9,59 +9,68 @@
 
 #include "spdlog/spdlog.h"
 
+
+
+
 int main(void)
 {
-    // 在程序开始时初始化日志系统
-    Logger::Initialize();
-    LOG_START();
-
-    LOG_SECTION("初始化");
     
+    Logger::Initialize();
+    LOG_START(); // 程序启动
 
-    LOG_LEVEL_INFO(0, "开始 GLFW 初始化");
+    LOG_INFO("ReduxGL Starting - Version 1.0");
+
+    // 初始化 GLFW
     if (!glfwInit()) {
-        LOG_LEVEL_ERROR(1, "GLFW 初始化失败");
+        LOG_ERROR("GLFW initialization failed");
+        Logger::Shutdown();
         return -1;
     }
-    LOG_LEVEL_INFO(1, "GLFW 初始化成功");
+    LOG_SUCCESS("GLFW initialized successfully");
 
-    LOG_LEVEL_INFO(0, "配置 OpenGL 上下文");
+    // 配置 OpenGL 上下文
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    LOG_LEVEL_INFO(1, "OpenGL 版本: 3.3 Core Profile");
 
-    LOG_LEVEL_INFO(0, "创建窗口");
-    GLFWwindow* window = glfwCreateWindow(2560, 1660, "Hello World", NULL, NULL);
+    // 创建窗口
+    GLFWwindow* window = glfwCreateWindow(2560, 1660, "ReduxGL - Shadow Mapping Demo", nullptr, nullptr);
     if (!window) {
-        LOG_LEVEL_ERROR(1, "窗口创建失败");
+        LOG_ERROR("Window creation failed (2560x1660)");
         glfwTerminate();
+        Logger::Shutdown();
         return -1;
     }
-    LOG_LEVEL_INFO(1, "窗口创建成功: 2560x1660");
+    LOG_SUCCESS("Window created successfully (2560x1660)");
 
-    LOG_LEVEL_INFO(0, "设置 OpenGL 上下文");
+    // 设定上下文和 VSync
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-    LOG_LEVEL_INFO(1, "上下文设置完成，VSync 已启用");
 
-    LOG_LEVEL_INFO(0, "初始化 GLEW");
+    // 初始化 GLEW
     if (glewInit() != GLEW_OK) {
-        LOG_LEVEL_ERROR(1, "GLEW 初始化失败");
+        LOG_ERROR("GLEW initialization failed");
+        glfwTerminate();
+        Logger::Shutdown();
         return -1;
     }
-    LOG_LEVEL_INFO(1, "GLEW 初始化成功");
-    LOG_LEVEL_INFO(1, "OpenGL 版本: {}", (const char*)glGetString(GL_VERSION));
 
-    LOG_SECTION("主渲染");
-    LOG_LEVEL_INFO(0, "启动阴影映射与 ECS");
+    // 环境摘要
+    LOG_SUCCESS("OpenGL Environment Ready - Version: {}", (const char*)glGetString(GL_VERSION));
+    LOG_INFO("Context: OpenGL 3.3 Core, VSync=ON, Resolution=2560x1660");
+
+    // 渲染主流程
+    LOG_SECTION("SHADOW MAPPING WITH ECS");
+    LOG_INFO("Starting render loop...");
+    
     DrawShadowMappingWithECS(window);
-    LOG_LEVEL_INFO(0, "渲染完成");
+    
+    LOG_SUCCESS("Render loop completed");
 
-    LOG_SECTION("清理");
-    LOG_LEVEL_INFO(0, "终止 GLFW");
+    // 清理
+    LOG_INFO("Cleaning up resources...");
     glfwTerminate();
-
+    LOG_SUCCESS("Application shutdown complete");
     Logger::Shutdown();
     return 0;
 }

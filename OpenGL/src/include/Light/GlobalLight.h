@@ -1,6 +1,7 @@
 #pragma once
 #include "glm/fwd.hpp"
 #include "Shader.h"
+#include "Logger.h"
 
 class GlobalLight {
 public:
@@ -9,7 +10,7 @@ public:
 	glm::vec3 specular = glm::vec3(0.0f); // 可选
 
 	void ApplyToShader(Shader& shader) const {
-		shader.SetUniform3f("globalAmbient", ambient.x, ambient.y, ambient.z);
+		shader.SetUniform4f("globalAmbient", ambient.x, ambient.y, ambient.z,1.0f);
 	}
 	void SetAmbient(const glm::vec3& amb) {
 		ambient = amb;
@@ -19,6 +20,9 @@ public:
 	}
 	void SetSpecular(const glm::vec3& spec) {
 		specular = spec;
+	}
+	void GetAmbient(glm::vec3& outAmb) const {
+		outAmb = ambient;
 	}
 
 };

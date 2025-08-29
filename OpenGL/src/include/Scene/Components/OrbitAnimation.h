@@ -9,10 +9,16 @@ public:
         : m_Radius(radius), m_Speed(speed), m_Center(center) {}
     
     void Update(float deltaTime) override {
-        if (!GetOwner()) return;
+        if (!GetOwner()) {
+			LOG_ERROR("OrbitAnimation: Owner entity is null.");
+            return;
+        }
         
         auto transform = GetOwner()->GetTransform();
-        if (!transform) return;
+        if (!transform) {
+			LOG_ERROR("OrbitAnimation: Transform component is missing.");
+            return;
+        }
         
         m_CurrentAngle += m_Speed * deltaTime;
         

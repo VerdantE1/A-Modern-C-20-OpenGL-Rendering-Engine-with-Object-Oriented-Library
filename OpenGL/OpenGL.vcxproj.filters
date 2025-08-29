@@ -60,6 +60,9 @@
     <ClCompile Include="src\DrawShadowMapping.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\BaseScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\Resource.h">
@@ -1044,6 +1047,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\include\Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\BaseScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

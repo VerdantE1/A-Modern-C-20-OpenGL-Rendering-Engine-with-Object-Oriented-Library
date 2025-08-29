@@ -176,6 +176,7 @@
     <ClCompile Include="src\include\Renderer.cpp" />
     <ClCompile Include="src\include\Shader.cpp" />
     <ClCompile Include="src\include\Utility.cpp" />
+    <ClCompile Include="src\Scene\BaseScene.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\glm\glm.cppm" />
     <ClCompile Include="src\vendor\stb_image\stb_image.cpp" />
@@ -188,6 +189,7 @@
   <ItemGroup>
     <ClInclude Include="doc\Camera.md" />
     <ClInclude Include="src\DrawDemo.h" />
+    <ClInclude Include="src\include\BaseScene.h" />
     <ClInclude Include="src\include\DrawDemoUtils.h" />
     <ClInclude Include="src\include\Light\GlobalLight.h" />
     <ClInclude Include="src\include\Light\Utils.h" />

@@ -63,11 +63,25 @@ inline void InitializeGlobalShaders() {
 		gouraudShaderPtr = std::make_shared<Shader>(GOURAUD_SHADER_PATH);
 		blinnPhongShaderPtr = std::make_shared<Shader>(BLINN_PHONG_SHADER_PATH);
 		phongShaderPtr = std::make_shared<Shader>(PHONG_SHADER_PATH);
-		shadowMappingShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_SHADER_PATH);
-		shadowMappingRenderShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_RENDER_SHADER_PATH);
+		//shadowMappingShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_SHADER_PATH);
+		//shadowMappingRenderShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_RENDER_SHADER_PATH);
 
 		initialized = true;
-		LOG_INFO("Global shaders initialized successfully.");
+		if (!gouraudShaderPtr)  LOG_ERROR("gouraudShaderPtr is null after initialization!");
+		else LOG_LEVEL_INFO(1,"Gouraud shader initialized successfully.");
+
+		if (!blinnPhongShaderPtr) LOG_ERROR("blinnPhongShaderPtr is null after initialization!");
+		else LOG_LEVEL_INFO(1,"Blinn-Phong shader initialized successfully.");
+
+		if (!phongShaderPtr) LOG_ERROR("phongShaderPtr is null after initialization!");
+		else LOG_LEVEL_INFO(1,"Phong shader initialized successfully.");
+
+		if (!shadowMappingShaderPtr) LOG_ERROR("shadowMappingShaderPtr is null after initialization!");
+		else LOG_LEVEL_INFO(1,"Shadow Mapping shader initialized successfully.");
+
+		if (!shadowMappingRenderShaderPtr) LOG_ERROR("shadowMappingRenderShaderPtr is null after initialization!");
+		else LOG_LEVEL_INFO(1,"Shadow Mapping Render shader initialized successfully.");
+
 	}
 	catch (const std::exception& e) {
 		LOG_ERROR("Failed to initialize global shaders: {}", e.what());

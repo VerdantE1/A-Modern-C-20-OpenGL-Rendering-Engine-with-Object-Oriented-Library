@@ -1,6 +1,8 @@
 #include "Utility.h"
 #include "Globals.h"
-#include "Shader.h"
+#include "Shader.h"  // 在这里包含Shader.h，避免在头文件中的循环依赖
+#include "Logger.h"  // 添加日志支持
+
 
 void GLClearError()
 {
@@ -11,15 +13,13 @@ bool GLLogCall(const char* function, const char* file, int line)
 {
 	while (GLenum error = glGetError())
 	{
-		std::cerr << "[OpenGL Error] (" << error << "): " << "in "
-			<< function << " " << file << ":" << line << std::endl;
+		LOG_ERROR("OpenGL Error ({}): {} in {} at line {}", error, function, file, line);
 		return false;
 	}
 	return true;
 }
 
-
-void installLights(const glm::mat4 vMatrix,Shader& shader)
+void installLights(const glm::mat4& vMatrix, Shader& shader)  // 修正函数签名
 {
 	//将光源位置从世界空间转换到视图空间坐标,并存入浮点数组
 	lightPosV = glm::vec3(vMatrix * glm::vec4(currentLightPos, 1.0));
@@ -43,6 +43,7 @@ void installLights(const glm::mat4 vMatrix,Shader& shader)
 	shader.SetUniform1f("material.shininess", matShi);
 
 }
+
 /*
  * Copyright (c) 2025 
  * Email: 2523877046@qq.com

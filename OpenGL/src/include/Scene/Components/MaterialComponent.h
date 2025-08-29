@@ -41,6 +41,7 @@ public:
         shader.SetUniform4f("material.specular",
             specular.r, specular.g, specular.b, specular.a);
         shader.SetUniform1f("material.shininess", shininess);
+		LOG_LEVEL_DEBUG(2, "MaterialComponent: Applied material properties to shader.");
     }
 
     // 设置预定义材质

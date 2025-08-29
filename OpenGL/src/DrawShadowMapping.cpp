@@ -2,12 +2,16 @@
 #include <memory>
 #include <utility>
 
-#include "DrawDemoUtils.h"
+#include "Logger.h"
 
 #include "Entity.h"
-#include "Scene.h"
+#include "Scene.h" 
 #include "LightComponent.h"
-
+#include "RenderComponent.h"    
+#include "RotationAnimation.h"  
+#include "Camera.h"             
+#include "GlobalLight.h"        
+#include "Renderer.h"           
 
 
 
@@ -17,17 +21,26 @@ public:
     using EnityInitializer = std::function<void(Scene*)>;
 
     void Initialize() override {
-        // 1. 创建摄像机
-        SetCamera(std::make_unique<Camera>(cameraConfig.CreateCamera())); 
+		LOG_INFO("BaseScene: Initializing scene...");
 
-        // 2. 设置全局光源
-        SetGlobalLight(); 
+        // 1. Configure renderer first
+        m_renderer.SetPolygonMode(false).SetDepthTest(true);  // ← ADD THIS LINE
 
-        // 3. 初始化实体
-        InlitializeEntities(enityInitializer); 
+        // 2. 创建摄像机
+        SetCamera(std::make_unique<Camera>(cameraConfig.CreateCamera()));
 
-        // 4. 全局光应用到所有着色器
-        ApplyGlobalLightToAllShaders(); 
+        // 3. 设置全局光源
+        SetGlobalLight();
+
+        // 4. 初始化实体
+        InlitializeEntities(enityInitializer);
+
+        // 5. 建立光源索引
+        BuildLightIndex();
+
+        LOG_INFO("\tEntities initialized: Count={}", m_Entities.size());
+        LOG_INFO("\tLights indexed: Count={}", m_lightIndex.size());
+
     }
 
     // 只会更新C++中的逻辑，不会更新GLSL中的任何东西,uniform的更新需要在Render中进行
@@ -35,18 +48,24 @@ public:
         //1.通用更新
         UpdateAllEntity(delataTime);        // 只调用 Component::Update
 
+
         //2.光照更新
         UpdateDynamicLights(delataTime);    // 更新动态光源位置等
+
 
     }
 
     void Render(const Renderer& renderer) override {
-        m_renderer.Clear();     // 清屏
+        LOG_TRACE("BaseScene: Starting render");
+
+        renderer.Clear();     // 使用传入的 renderer
         glm::mat4 view = GetCamera().GetViewMatrix();
         glm::mat4 projection = GetCamera().GetProjectionMatrix();
 
-        // 调用渲染所有实体
-        RenderAllEntities(m_renderer, view, projection);
+        // 使用传入的 renderer
+        RenderAllEntities(renderer, view, projection);
+
+        LOG_TRACE("BaseScene: Render complete");
     }
 
     // 设置实体初始化器
@@ -66,25 +85,111 @@ private:
     EnityInitializer enityInitializer;
     GlobalLight m_globalLight;
     Renderer m_renderer;
+	std::unordered_map<std::string, LightComponent*> m_lightIndex; // 局部光源索引
 
 
     void RenderAllEntities(const Renderer& renderer, const glm::mat4& view, const glm::mat4& projection)
     {
+        LOG_DEBUG("\tRendering {} entities", m_Entities.size());
+
         for (auto& entity : m_Entities) {
             auto renderComp = entity->GetComponent<RenderComponent>();
             auto transform = entity->GetTransform();
 
-            if (renderComp && transform) {
-                //应用全局光照
-                ApplyGlobalLightToShader(*renderComp);
-
-                //执行渲染（会自动调用所有组件的 ApplyToShader）
-                renderComp->Render(renderer, projection, view, transform->GetMatrix()); //执行渲染（会自动应用 ShaderDataComponent 的数据）
-
+            // 跳过没有RenderComponent的Entity（如光源Entity）
+            if (!renderComp || !transform) {
+                continue;
             }
 
+            auto shader = renderComp->GetShader();
+            auto geometry = renderComp->GetGeometry();
+
+            if (!shader || !geometry || shader->GetID() == 0) {
+                LOG_ERROR("\t\tEntity '{}' has invalid render components", entity->GetName());
+                continue;
+            }
+
+            shader->Bind();
+            LOG_DEBUG("\t\tRendering entity '{}' with shader ID {}", entity->GetName(), shader->GetID());
+
+          
+            // 应用全局光照
+            ApplyGlobalLightToShader(*renderComp);
+
+            // 快速应用局部光源数据（无需遍历）
+            ApplyIndexedLightsToShader(*shader, view);
+
+            // 执行渲染
+            renderComp->Render(renderer, projection, view, transform->GetMatrix());
+            LOG_DEBUG("\t\tEntity '{}' rendered successfully", entity->GetName());
+        }
+        LOG_DEBUG("\tAll entities rendered");
+    }
+
+    void BuildLightIndex() {
+        m_lightIndex.clear();
+        for (auto& entity : m_Entities) {
+            auto lightComp = entity->GetComponent<LightComponent>();
+            if (lightComp) {
+                m_lightIndex[entity->GetName()] = lightComp;
+                LOG_DEBUG("Indexed light: {}", entity->GetName());
+            }
         }
     }
+
+    //  使用索引快速应用光源
+    void ApplyIndexedLightsToShader(Shader& shader, const glm::mat4& view) {
+        if (m_lightIndex.empty()) {
+            LOG_WARNING("No indexed lights found");
+            return;
+        }
+
+        // 取第一个光源（可扩展为多光源支持）
+        auto lightIt = m_lightIndex.begin();
+        auto* lightComp = lightIt->second;
+
+        if (lightComp && lightComp->enabled) {
+            auto* lightEntity = lightComp->GetOwner();
+
+            // 获取光源位置并转换到视图空间
+            if (auto transform = lightEntity->GetTransform()) {
+                glm::vec3 worldPos = transform->GetPosition();
+                glm::vec3 viewPos = glm::vec3(view * glm::vec4(worldPos, 1.0f));
+
+				//TODO: 目前只支持多个LightComponent,但它们会重复覆盖同一个"light.position" uniform
+				//后续要改成数组形式的 uniform 来支持多个光源
+                shader.SetUniform3f("light.position", viewPos.x, viewPos.y, viewPos.z);
+                LOG_DEBUG("\t\t\tLight '{}' position (view): ({}, {}, {})",
+                    lightEntity->GetName(), viewPos.x, viewPos.y, viewPos.z);
+            }
+
+            // 应用光源属性
+            shader.SetUniform4f("light.ambient",
+                lightComp->ambient.r * lightComp->intensity,
+                lightComp->ambient.g * lightComp->intensity,
+                lightComp->ambient.b * lightComp->intensity,
+                lightComp->ambient.a);
+            shader.SetUniform4f("light.diffuse",
+                lightComp->diffuse.r * lightComp->intensity,
+                lightComp->diffuse.g * lightComp->intensity,
+                lightComp->diffuse.b * lightComp->intensity,
+                lightComp->diffuse.a);
+            shader.SetUniform4f("light.specular",
+                lightComp->specular.r * lightComp->intensity,
+                lightComp->specular.g * lightComp->intensity,
+                lightComp->specular.b * lightComp->intensity,
+                lightComp->specular.a);
+        }
+    }
+
+    void AddLightToIndex(const std::string& name, LightComponent* lightComp) {
+        m_lightIndex[name] = lightComp;
+    }
+
+    void RemoveLightFromIndex(const std::string& name) {
+        m_lightIndex.erase(name);
+    }
+
 
     void SetGlobalLight() {
         // 设置全局环境光
@@ -137,9 +242,12 @@ private:
 
     void ApplyGlobalLightToShader(RenderComponent& renderComp) {
         auto shader = renderComp.GetShader();
-        if (shader) {
-            m_globalLight.ApplyToShader(*shader);
-        }
+        if(!shader) {
+            LOG_ERROR("RenderComponent has no shader to apply global light.");
+            return;
+		}
+        m_globalLight.ApplyToShader(*shader);
+        
     }
 };
 
@@ -151,15 +259,17 @@ void enityInitializer_func(Scene* scene) {
         gouraudShaderPtr
     );
     E_rightToruhs->AddComponent<RotationAnimation>(1.75f);
+    E_rightToruhs->AddComponent<MaterialComponent>(MaterialComponent::MaterialType::GOLD);
     E_rightToruhs->GetTransform()->SetPosition(3.0f, 0.0f, -5.0f);
 
     // 创建Sphere实体
     auto E_leftSphere = scene->CreateEntity("leftSphere");
     auto renderComp2 = E_leftSphere->AddComponent<RenderComponent>(
         global_spherePtr,
-        gouraudShaderPtr
+        blinnPhongShaderPtr
     );
     E_leftSphere->AddComponent<RotationAnimation>(1.75f);
+    E_leftSphere->AddComponent<MaterialComponent>(MaterialComponent::MaterialType::SILVER);
     E_leftSphere->GetTransform()->SetPosition(-3.0f, 0.0f, -5.0f);
 
 
@@ -167,10 +277,14 @@ void enityInitializer_func(Scene* scene) {
     auto E_light = scene->CreateEntity("light");
     auto lightComp = E_light->AddComponent<LightComponent>();
     lightComp->SetLightType(LightComponent::LightType::POINT);
+    lightComp->SetAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+    lightComp->SetDiffuse(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));  // 白光
+    lightComp->SetSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    lightComp->SetIntensity(1.0f);
+    
     E_light->GetTransform()->SetPosition({ 5.0f, 2.0f, 2.0f });
-
-
 }
+
 class SceneManager {
 public:
 	SceneManager() = default;
@@ -235,23 +349,29 @@ public:
 
 		//主循环
         while (!glfwWindowShouldClose(window)) {
-			LOG_INFO("  New frame start.");
+			LOG_SUCCESS("New frame start.");
 
-            //更新时间
-            UpdateTime();
             
-            //处理输入
+            LOG_LEVEL_INFO(1,"Engine: Processing UpdateTime and Input ");
+            UpdateTime();
             HandleInput(window);
+			LOG_INFO("\tEngine: Compelete UpdateTime and Input. DeltaTime = {}", deltaTime);
 
             
 			//通过SceneManager渲染当前场景
+            LOG_LEVEL_INFO(1, "Engine: Updating Data in CPU");
 			sceneManager.Update(deltaTime); 
+            LOG_LEVEL_INFO(1, "Engine: Finished Data in CPU");
+
+
+			LOG_LEVEL_INFO(1, "Engine: Rendering Scene in GPU");
             sceneManager.Render();
+			LOG_LEVEL_INFO(1, "Engine: Finished Rendering Scene in GPU");
             
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 
-			LOG_INFO("  Frame end.");
+            LOG_SUCCESS("Frame end.");
 
         }
 		// 清理场景
@@ -303,23 +423,18 @@ protected:
 
 void DrawShadowMappingWithECS(GLFWwindow* window) {
 
-	LOG_INFO("Starting DrawShadowMappingWithECS...");
     InitializeGlobalShaders();
+    InitializeGlobalObjects(); 
+
 
     //创建引擎
-	LOG_INFO("Creating Engine...");
     Engine engine;
 
     //创建并设置场景
-	LOG_INFO("Creating and setting up Scene...");
     auto scene = std::make_unique<BaseScene>();
-	LOG_INFO("Scene created.");
 
     scene->SetEntityInitializer(enityInitializer_func);
-	LOG_INFO("Scene setup complete.");
 
-
-	LOG_INFO("Initializing Keyboard Handler...");
     // 设置键盘处理
     engine.SetKeyboardHandler([&](int key, int action) {
         switch (key) {
@@ -337,132 +452,10 @@ void DrawShadowMappingWithECS(GLFWwindow* window) {
             break;
         }
         });
-	LOG_INFO("Keyboard Handler setup complete.");
+
     
 	
 	engine.SetScene(std::move(scene));
-	LOG_INFO("Scene have moved to SceneManager in Engine");
-
-    LOG_INFO("Starting Engine Run...");
     engine.Run(window);
-	LOG_INFO("Engine Run complete.");
-}
-
-void DrawShadowMapping(GLFWwindow* window)
-{
-    // 创建两个着色器
-    Shader gouraudShader("res/shaders/Gouraud.shader");
-    Shader phongShader("res/shaders/Blinn-Phong.Shader");
-
-    // 创建两个 Torus 对象
-    Sphere leftsphere;   // 左侧用 Gouraud
-    Torus rightTorus;  // 右侧用 Phong
-
-    int width, height;
-    GLCall(glfwGetFramebufferSize(window, &width, &height));
-    float aspect = (float)width / (float)height;
-
-    // 摄像机初始化
-    Camera camera(
-        glm::vec3(0, 0, 8), // 后退更远以便看到两个 torus
-        glm::vec3(0, 0, 0),
-        glm::vec3(0, 1, 0),
-        70.0f, aspect, 0.1f, 100.0f
-    );
-
-    // 左侧 Torus (Gouraud)
-    Transform leftsphereTransform;
-    leftsphereTransform.setPosition(-3.0f, 0.0f, -5.0f);
-
-    // 右侧 Torus (Phong)  
-    Transform rightTorusTransform;
-    rightTorusTransform.setPosition(3.0f, 0.0f, -5.0f);
-
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 projection = camera.GetProjectionMatrix();
-
-    Renderer renderer;
-    renderer.SetPolygonMode(false).SetDepthTest(true);
-
-    // 跟踪当前使用的着色器
-    bool useGouraudForBoth = false;
-    bool usePhongForBoth = false;
-    double lastKeyPressTime = 0.0;
-
-    // 设置初始窗口标题
-    glfwSetWindowTitle(window, "Gouraud vs Phong | [G]All Gouraud | [P]All Phong | [C]Compare Pattern | [SPACE]Toggle Light");
-
-    while (!glfwWindowShouldClose(window))
-    {
-        renderer.Clear();
-        float currentTime = static_cast<float>(glfwGetTime());
-
-        // 键盘输入处理
-        if ((currentTime - lastKeyPressTime) > 0.3) {
-            if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
-                useGouraudForBoth = true;
-                usePhongForBoth = false;
-                glfwSetWindowTitle(window, "全部使用 Gouraud 着色 | [C]返回对比模式");
-                lastKeyPressTime = currentTime;
-            }
-            else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-                useGouraudForBoth = false;
-                usePhongForBoth = true;
-                glfwSetWindowTitle(window, "全部使用 Phong 着色 | [C]返回对比模式");
-                lastKeyPressTime = currentTime;
-            }
-            else if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
-                useGouraudForBoth = false;
-                usePhongForBoth = false;
-                glfwSetWindowTitle(window, "对比模式: 左侧Gouraud | 右侧Phong");
-                lastKeyPressTime = currentTime;
-            }
-        }
-
-        // 动画计算
-        float animX = sin(0.35f * currentTime) * 0.5f;  // 减小旋转幅度
-
-        // 更新两个 Torus 的变换
-        leftsphereTransform.setRotation(animX, currentTime * 0.5f, 0.0f);
-        rightTorusTransform.setRotation(animX, currentTime * 0.5f, 0.0f);
-
-        // 设置光源
-        currentLightPos = glm::vec3(
-            initialLightLoc.x + sin(currentTime * 0.8f) * 3.0f,  // 光源左右移动
-            initialLightLoc.y + cos(currentTime * 0.6f) * 2.0f,  // 光源上下移动
-            initialLightLoc.z
-        );
-
-        // ===== 绘制左侧 Torus =====
-        glm::mat4 leftMv = view * leftsphereTransform.getMatrix();
-        glm::mat4 leftNormal = glm::transpose(glm::inverse(leftMv));
-
-        // 选择左侧使用的着色器
-        Shader* leftShader = &gouraudShader;
-        if (usePhongForBoth) leftShader = &phongShader;
-
-        installLights(view, *leftShader);
-        leftShader->SetUniformMat4fv("mv_matrix", leftMv);
-        leftShader->SetUniformMat4fv("proj_matrix", projection);
-        leftShader->SetUniformMat4fv("norm_matrix", leftNormal);
-        renderer.Draw(leftsphere, *leftShader);
-
-        // ===== 绘制右侧 Torus =====
-        glm::mat4 rightMv = view * rightTorusTransform.getMatrix();
-        glm::mat4 rightNormal = glm::transpose(glm::inverse(rightMv));
-
-        // 选择右侧使用的着色器
-        Shader* rightShader = &phongShader;
-        if (useGouraudForBoth) rightShader = &gouraudShader;
-
-        installLights(view, *rightShader);
-        rightShader->SetUniformMat4fv("mv_matrix", rightMv);
-        rightShader->SetUniformMat4fv("proj_matrix", projection);
-        rightShader->SetUniformMat4fv("norm_matrix", rightNormal);
-        renderer.Draw(rightTorus, *rightShader);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
 
 }

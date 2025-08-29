@@ -6,6 +6,13 @@
 #include <filesystem>
 #include <string>
 
+// 定义颜色宏
+#define RESET   "\033[0m"
+#define GREEN   "\033[32m"
+#define RED     "\033[31m"
+#define YELLOW  "\033[33m"
+#define BLUE	"\033[34m"
+
 
 
 // 便捷宏定义
@@ -16,9 +23,40 @@
 #define LOG_ERROR(...)    spdlog::error(__VA_ARGS__)
 #define LOG_CRITICAL(...) spdlog::critical(__VA_ARGS__)
 
+// 自定义日志宏
+#define LOG_SUCCESS(message, ...) \
+    spdlog::info(GREEN message RESET, ##__VA_ARGS__)
+
+#define LOG_WARNING(message, ...) \
+    spdlog::warn(YELLOW message RESET, ##__VA_ARGS__)
+
+#define LOG_FAILED(message, ...) \
+    spdlog::error(RED message RESET, ##__VA_ARGS__)
+
 // 新增宏定义
 #define LOG_START()       Logger::LogStart()
 #define LOG_SECTION(name) Logger::LogSection(name)
+
+
+// 辅助函数: 计算两个字符串的总长度
+constexpr size_t Strlen(const char* str) {
+    size_t len = 0;
+    while (str[len] != '\0') {
+        ++len;
+    }
+    return len;
+}
+template<size_t N1, size_t N2>
+constexpr auto ConcatStrings(const char (& str1)[N1], const char (& str2)[N2]) {
+    constexpr std::array<char, N1 + N2 - 1> result{};  // N1 和 N2 都包含 '\0'，所以减 1
+    for (size_t i = 0; i < N1 - 1; ++i) {
+        result[i] = str1[i];  // 复制 str1
+    }
+    for (size_t i = 0; i < N2; ++i) {
+        result[N1 - 1 + i] = str2[i];  // 复制 str2，包括 '\0'
+    }
+    return result;
+}
 
 class Logger {
 private:
@@ -27,6 +65,20 @@ private:
         int actualLevel = (level == -1) ? s_indentLevel : level;
         return std::string(actualLevel, '\t'); // 使用 Tab 字符
     }
+    
+    // 简单的编译时缩进字符串
+    static constexpr const char* GetIndentString(int level) {
+        switch (level) {
+        case 0: return "";
+        case 1: return "\t";
+        case 2: return "\t\t";
+        case 3: return "\t\t\t";
+        case 4: return "\t\t\t\t";
+        case 5: return "\t\t\t\t\t";
+        default: return "\t\t\t\t\t"; // 最多5级
+        }
+    }
+
 
 public:
     static void Initialize() {
@@ -76,25 +128,17 @@ public:
         LOG_INFO("═════════════════════════════════════════");
     }
 
-    // 层级日志函数
-    template<typename... Args>
-    static void LogWithLevel(
-        int level,
-        spdlog::level::level_enum logLevel,
-        const char* fmt,
-        Args&&... args)
-    {
-        std::string indentedFormat = GetIndent(level) + std::string(fmt);
-        spdlog::default_logger()->log(logLevel, indentedFormat, std::forward<Args>(args)...);
-    }
 
-
-    // 层级日志函数 - 支持无参数情况
+    //层级日志函数 - 支持无参数情况
     static void LogWithLevel(int level, spdlog::level::level_enum logLevel, const char* fmt) 
     {
         std::string indentedFormat = GetIndent(level) + std::string(fmt);
         spdlog::default_logger()->log(logLevel, indentedFormat);
     }
+    
+
+
+
 
     // 增加/减少缩进层级
     static void IncreaseIndent() { s_indentLevel++; }
@@ -118,7 +162,7 @@ public:
     }
 };
 
-// 新增层级日志宏
+// 层级日志宏
 #define LOG_LEVEL_TRACE(_level, fmt, ...) \
     Logger::LogWithLevel(_level, spdlog::level::trace, fmt)
 
@@ -134,6 +178,12 @@ public:
 #define LOG_LEVEL_ERROR(_level, fmt, ...) \
     Logger::LogWithLevel(_level, spdlog::level::err, fmt)
 
+
+
+
+
+#define LOG_LEVEL_INFO_W(_level, fmt, ...) \
+    Logger::LogWithLevel(_level, spdlog::level::info, fmt, ##__VA_ARGS__)
 
 // OpenGL 专用宏
 #define LOG_GL_ERROR(msg) \

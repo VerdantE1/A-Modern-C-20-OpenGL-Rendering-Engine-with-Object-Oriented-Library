@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "Component.h"
 #include <TransformComponent.h>
+#include "Logger.h"
 
 /*
 每个实体(Entity)代表场景中的一个对象,可以包含多个组件(Component)来定义其行为和属性.
@@ -27,8 +28,14 @@ public:
         auto component = std::make_unique<T>(std::forward<Args>(args)...);
         T* ptr = component.get();
         component->m_Owner = this;
+
+        if (ptr == nullptr) {
+			LOG_ERROR("Entity [{}]: Failed to create component of type {}", m_Name, typeid(T).name());
+            return nullptr;
+        }
         
         m_Components[std::type_index(typeid(T))] = std::move(component);
+
         return ptr;
     }
     

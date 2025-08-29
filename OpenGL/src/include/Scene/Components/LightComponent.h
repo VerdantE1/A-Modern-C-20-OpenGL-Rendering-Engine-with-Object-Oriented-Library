@@ -38,21 +38,33 @@ public:
 	void SetSpecular(const glm::vec4& color) { specular = color; }
 	void SetIntensity(float inten) { intensity = inten; }
 
+    // 保持原有的ApplyToShader重载（用于不需要坐标转换的情况）
     void ApplyToShader(Shader& shader) override {
-        if (!enabled) return;
+        ApplyToShader(shader, glm::mat4(1.0f)); // 使用单位矩阵（世界空间）
+    }
+
+    void ApplyToShader(Shader& shader, const glm::mat4& viewMatrix) {
+        if (!enabled) {
+			LOG_WARNING("LightComponent: Light is disabled, skipping shader application.");
+            return;
+        }
         
         // 获取光源位置（从 Transform 组件）
         if (auto transform = GetOwner()->GetTransform()) {
-            glm::vec3 position = transform->GetPosition();
-            shader.SetUniform3f("light.position", position.x, position.y, position.z);
+            glm::vec3 worldPos = transform->GetPosition();
+            glm::vec3 viewPos = glm::vec3(viewMatrix * glm::vec4(worldPos, 1.0f));
+            shader.SetUniform3f("light.position", viewPos.x, viewPos.y, viewPos.z);
         }
         
-        shader.SetUniform4f("light.ambient", 
+        // 设置光源颜色属性
+        shader.SetUniform4f("light.ambient",
             ambient.r * intensity, ambient.g * intensity, ambient.b * intensity, ambient.a);
-        shader.SetUniform4f("light.diffuse", 
+        shader.SetUniform4f("light.diffuse",
             diffuse.r * intensity, diffuse.g * intensity, diffuse.b * intensity, diffuse.a);
-        shader.SetUniform4f("light.specular", 
+        shader.SetUniform4f("light.specular",
             specular.r * intensity, specular.g * intensity, specular.b * intensity, specular.a);
+
+		LOG_LEVEL_DEBUG(2, "LightComponent: Applied light properties to shader.");
     }
 
 private:

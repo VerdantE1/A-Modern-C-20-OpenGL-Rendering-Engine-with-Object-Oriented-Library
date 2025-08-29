@@ -7,6 +7,8 @@
 #include <Resource.h>
 #include <unordered_map>
 #include <glm/ext/matrix_float4x4.hpp>
+#include <fstream>
+#include <sstream>
 
 
 struct ShaderProgramSource

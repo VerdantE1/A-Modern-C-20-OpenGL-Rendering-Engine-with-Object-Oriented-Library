@@ -1,17 +1,29 @@
 #include <Shader.h>
-#include "Utility.h"
+#include "Logger.h"  // 先包含Logger
+#include "Utility.h" // 后包含Utility，避免循环依赖问题
 #include <fstream>
 #include <sstream>
 
 
-
 Shader::Shader(const std::string& file_path):m_FilePath(file_path)
 {
+	LOG_DEBUG("Creating shader from: {}", file_path);
 	
 	ShaderProgramSource source = ParseShaderSource(file_path);
-	m_id = CreateShader(source.vertexShader, source.fragmentShader); //Create and Compile 
-	GLCall(glUseProgram(m_id));
-
+	m_id = CreateShader(source.vertexShader, source.fragmentShader);
+	
+	if (m_id == 0) {
+		LOG_CRITICAL("Shader creation failed for: {}", file_path);
+		throw std::runtime_error("Shader creation failed");
+	}
+	
+	glUseProgram(m_id);
+	GLenum error = glGetError();
+	if (error != GL_NO_ERROR) {
+		LOG_ERROR("OpenGL error using shader {}: {}", m_id, error);
+	}
+	
+	LOG_INFO("Shader created successfully: {}", file_path);
 }
 
 Shader::~Shader()
@@ -77,7 +89,7 @@ ShaderProgramSource Shader::ParseShaderSource(const std::string filepath)
 	std::ifstream stream(filepath, std::ios::in);
 	if (!stream.is_open())
 	{
-		std::cerr << "Error opening shader file: " << filepath << std::endl;
+		LOG_ERROR("	Shader:	Error opening shader file: {}", filepath);
 		return {};
 	}
 	std::string line;
@@ -90,13 +102,13 @@ ShaderProgramSource Shader::ParseShaderSource(const std::string filepath)
 			if (line.find("vertex") != std::string::npos)
 			{
 				currentShaderType = ShaderType::Vertex;
-				std::cout << "Vertex Shader found" << std::endl;
+				LOG_INFO("\t\t\tShader: Vertex Shader found in file: {}", filepath);
 				// Handle vertex shader code
 			}
 			else if (line.find("fragment") != std::string::npos)
 			{
 				currentShaderType = ShaderType::Fragment;
-				std::cout << "Fragment Shader found" << std::endl;
+				LOG_INFO("\t\t\tShader:	Fragment Shader found in file: {}", filepath);
 				// Handle fragment shader code
 			}
 		}
@@ -114,7 +126,7 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 	unsigned int program_id = glCreateProgram(); // Create a new program object and return its ID
 	if (program_id == 0)
 	{
-		std::cerr << "Error creating program" << std::endl;
+		LOG_ERROR("Shader:	Error creating shader program");
 		return 0;
 	}
 
@@ -126,7 +138,7 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 		vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
 		if (vs == 0)
 		{
-			std::cout << "Vertex shader compilation failed" << std::endl;
+			LOG_ERROR("Shader:	Vertex shader compilation failed");
 			glDeleteProgram(program_id);
 			return 0;
 		}
@@ -137,7 +149,7 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 		fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
 		if (fs == 0)
 		{
-			std::cout << "Fragment shader compilation failed" << std::endl;
+			LOG_ERROR("Shader:	Fragment shader compilation failed");
 			glDeleteProgram(program_id);
 			return 0;
 		}
@@ -154,7 +166,7 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 
 	if (linkStatus == GL_FALSE)
 	{
-		std::cerr << "Error linking program" << std::endl;
+		LOG_ERROR("Shader:	Error linking shader program");
 		glDeleteProgram(program_id);
 		return 0;
 	}
@@ -167,7 +179,7 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 			glDeleteShader(shader);
 		}
 	}
-
+	LOG_SUCCESS("Shader: Shader program created successfully with ID {}", program_id);
 	return program_id;
 }
 
@@ -176,7 +188,7 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 	unsigned int shader_id = 0;
 	if (!(shader_id = glCreateShader(type)))
 	{
-		std::cerr << "Error creating shader" << std::endl;
+		LOG_ERROR("Shader:	Error creating shader of type {}", type);
 		return 0;
 	}
 	const char* src = source.c_str();
@@ -192,12 +204,10 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 
 		char* message = (char*)alloca(length * sizeof(char));
 		glGetShaderInfoLog(shader_id, length, &length, message);
-		// Print the error message to standard error
-		std::cerr << "Error compiling shader: " <<
-			(type == GL_VERTEX_SHADER ? "Vertex Shader" : "Fragment Shader")
-			<< " shader!" << std::endl;
 
-		std::cout << message << std::endl;
+		LOG_FAILED("	Shader: Error compiling {} shader! {}",
+			(type == GL_VERTEX_SHADER ? "Vertex" : "Fragment"), message);
+
 		glDeleteShader(shader_id);
 		return 0;
 
@@ -215,7 +225,7 @@ int Shader::GetUniformLocation(const std::string& name) const
 
 	GLCall(int location =glGetUniformLocation(m_id, name.c_str())); 
 	if (location == -1)
-		std::cout << "Warning: uniform " << name << " doesn't exist!" << std::endl;
+		LOG_WARN("Shader:Warning: uniform {} doesn't exist!", name);
 	
 	m_UniformLocationCache[name] = location;
 	return location;

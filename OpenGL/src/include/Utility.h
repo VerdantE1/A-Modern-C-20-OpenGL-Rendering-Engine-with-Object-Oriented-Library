@@ -6,14 +6,13 @@
 #include <IndexBuffer.h>
 #include <Shader.h>
 #include <Texture.h>
-
+#include <glm/glm.hpp>  // 添加glm头文件
 
 /* For General */
-#define ASSERT(X) if (!(X)) __debugbreak(); // Accept one predicate expression X and break if it is false
+#define ASSERT(X) if (!(X)) __debugbreak(); 
 #define GLCall(X) GLClearError();\
     X;\
     ASSERT(GLLogCall(#X,__FILE__,__LINE__));\
-
 
 
 /*
@@ -24,15 +23,11 @@
 template<typename... Args>void BindAll(const Args&...  args);
 template<typename... Args>void UnbindAll(const Args&...  args);
 
-
-void GLClearError();                                              // Clear all OpenGL errors from the error queue
-bool GLLogCall(const char* function, const char* file, int line); // Log OpenGL errors, return true if no error, false if there is an error
-void installLights(const glm::mat4 viewMatrix,Shader&);    // Setup a simple light in the scene
+void GLClearError();
+bool GLLogCall(const char* function, const char* file, int line);
+void installLights(const glm::mat4& viewMatrix, Shader& shader);  // 修正函数签名，添加引用符号
 template <typename T> constexpr bool has_unbind_v = requires(T t) { t.Unbind(); };
 template <typename T> constexpr bool has_bind_v = requires (T t) { t.Bind(); };
-
-
-
 
 /*
 * Template Implement
@@ -49,9 +44,7 @@ void UnbindAll(const Args&...  args)
 			std::cout << "Warning! " << idx << " parameter don't have Unbind Member!" << std::endl;
 		};
 	(lambda(args), ...);
-
 }
-
 
 template<typename... Args>
 void BindAll(const Args&...  args)
@@ -63,16 +56,9 @@ void BindAll(const Args&...  args)
 			a.Bind();
 		else
 			std::cout << "Warning! " << idx << " parameter don't have Bind Member!" << std::endl;
-
 		};
 	(lambda(args), ...);
-
 }
-
-
-
-
-
 
 /*
  * Copyright (c) 2025 
