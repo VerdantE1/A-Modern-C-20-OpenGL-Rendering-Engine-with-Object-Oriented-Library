@@ -169,6 +169,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\BaseScene.cpp" />
     <ClCompile Include="src\DrawShadowMapping.cpp" />
     <ClCompile Include="src\include\Utils.cpp" />
     <ClCompile Include="src\include\Texture.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="src\DrawDemo.h" />
     <ClInclude Include="src\include\BaseScene.h" />
     <ClInclude Include="src\include\DrawDemoUtils.h" />
+    <ClInclude Include="src\include\Engine.h" />
     <ClInclude Include="src\include\Light\GlobalLight.h" />
     <ClInclude Include="src\include\Light\Utils.h" />
     <ClInclude Include="src\include\3D\ImportedModel.h" />
@@ -199,6 +201,7 @@
     <ClInclude Include="src\include\Ds\TransformStack.h" />
     <ClInclude Include="src\include\Globals.h" />
     <ClInclude Include="src\include\Logger.h" />
+    <ClInclude Include="src\include\SceneManager.h" />
     <ClInclude Include="src\include\Scene\Component.h" />
     <ClInclude Include="src\include\Scene\Components\LightComponent.h" />
     <ClInclude Include="src\include\Scene\Components\MaterialComponent.h" />

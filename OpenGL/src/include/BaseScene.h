@@ -5,6 +5,8 @@
 #include "LightComponent.h"
 #include <unordered_map>
 #include <functional>
+#include "Globals.h"
+#include "RenderComponent.h"
 
 class BaseScene : public Scene {
 public:
