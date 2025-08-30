@@ -171,6 +171,7 @@
   <ItemGroup>
     <ClCompile Include="src\BaseScene.cpp" />
     <ClCompile Include="src\DrawShadowMapping.cpp" />
+    <ClCompile Include="src\include\Scene\Components\ShadowComponent.cpp" />
     <ClCompile Include="src\include\Utils.cpp" />
     <ClCompile Include="src\include\Texture.cpp" />
     <ClCompile Include="src\include\Texture.h" />
@@ -209,6 +210,7 @@
     <ClInclude Include="src\include\Scene\Components\RenderComponent.h" />
     <ClInclude Include="src\include\Scene\Components\RotationAnimation.h" />
     <ClInclude Include="src\include\Scene\Components\ShaderDataComponent.h" />
+    <ClInclude Include="src\include\Scene\Components\ShadowComponent.h" />
     <ClInclude Include="src\include\Scene\Components\TransformComponent.h" />
     <ClInclude Include="src\include\Scene\Entity.h" />
     <ClInclude Include="src\include\Scene\Scene.h" />

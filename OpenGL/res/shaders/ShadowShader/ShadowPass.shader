@@ -1,15 +1,16 @@
-﻿#shader vertex 
-#version 430
-layout(location = 0) in vec3 vertPos;
-uniform mat4 shadowMVP;
+#shader vertex 
+#version 330 core
+layout (location = 0) in vec3 aPos;
 
-void main()
-{
-	gl_Position = shadowMVP * vec4(vertPos,1.0);
+uniform mat4 lightSpaceMatrix;
+uniform mat4 model;
+
+void main() {
+    gl_Position = lightSpaceMatrix * model * vec4(aPos, 1.0);
 }
 
-
-
 #shader fragment
-#version 430
-void main(){}
+#version 330 core
+void main() {
+    // 深度自动写入，不需要输出颜色
+}

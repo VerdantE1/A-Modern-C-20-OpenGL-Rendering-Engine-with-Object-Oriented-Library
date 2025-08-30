@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "Shader.h"
 #include <glm/glm.hpp>
+#include "Entity.h"
 
 class LightComponent : public Component {
 public:

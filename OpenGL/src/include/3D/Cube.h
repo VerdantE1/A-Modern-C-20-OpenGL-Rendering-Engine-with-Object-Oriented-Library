@@ -1,49 +1,74 @@
 #pragma once
 #include "Shaper.h"
 #include "Renderer.h"
-class Cube :public Shaper {
-	inline static constexpr float vertices[] = {
-		// 位置坐标              // 纹理坐标
-		// 前面
-		-1.0f, -1.0f,  1.0f,    0.0f, 0.0f,  // 左下
-		 1.0f, -1.0f,  1.0f,    1.0f, 0.0f,  // 右下
-		 1.0f,  1.0f,  1.0f,    1.0f, 1.0f,  // 右上
-		-1.0f,  1.0f,  1.0f,    0.0f, 1.0f,  // 左上
-		// 后面
-		-1.0f, -1.0f, -1.0f,    1.0f, 0.0f,  // 右下
-		 1.0f, -1.0f, -1.0f,    0.0f, 0.0f,  // 左下
-		 1.0f,  1.0f, -1.0f,    0.0f, 1.0f,  // 左上
-		-1.0f,  1.0f, -1.0f,    1.0f, 1.0f,  // 右上
-	};
-	inline static constexpr unsigned int indices[] = {
-		// 前面
-		0, 1, 2, 2, 3, 0,
-		// 右面
-		1, 5, 6, 6, 2, 1,
-		// 后面
-		5, 4, 7, 7, 6, 5,
-		// 左面
-		4, 0, 3, 3, 7, 4,
-		// 上面
-		3, 2, 6, 6, 7, 3,
-		// 下面
-		4, 5, 1, 1, 0, 4
-	};
 
+class Cube : public Shaper {
+    inline static constexpr float vertices[] = {
+        // 位置坐标              // 纹理坐标    // 法线坐标
+        // 前面 (Z = 1, 法线: 0, 0, 1)
+        -1.0f, -1.0f,  1.0f,    0.0f, 0.0f,   0.0f, 0.0f, 1.0f,  // 左下
+         1.0f, -1.0f,  1.0f,    1.0f, 0.0f,   0.0f, 0.0f, 1.0f,  // 右下
+         1.0f,  1.0f,  1.0f,    1.0f, 1.0f,   0.0f, 0.0f, 1.0f,  // 右上
+        -1.0f,  1.0f,  1.0f,    0.0f, 1.0f,   0.0f, 0.0f, 1.0f,  // 左上
 
+        // 后面 (Z = -1, 法线: 0, 0, -1)  
+        -1.0f, -1.0f, -1.0f,    1.0f, 0.0f,   0.0f, 0.0f, -1.0f, // 右下
+         1.0f, -1.0f, -1.0f,    0.0f, 0.0f,   0.0f, 0.0f, -1.0f, // 左下
+         1.0f,  1.0f, -1.0f,    0.0f, 1.0f,   0.0f, 0.0f, -1.0f, // 左上
+        -1.0f,  1.0f, -1.0f,    1.0f, 1.0f,   0.0f, 0.0f, -1.0f, // 右上
 
+        // 右面 (X = 1, 法线: 1, 0, 0)
+         1.0f, -1.0f,  1.0f,    0.0f, 0.0f,   1.0f, 0.0f, 0.0f,  // 前下
+         1.0f, -1.0f, -1.0f,    1.0f, 0.0f,   1.0f, 0.0f, 0.0f,  // 后下
+         1.0f,  1.0f, -1.0f,    1.0f, 1.0f,   1.0f, 0.0f, 0.0f,  // 后上
+         1.0f,  1.0f,  1.0f,    0.0f, 1.0f,   1.0f, 0.0f, 0.0f,  // 前上
+
+        // 左面 (X = -1, 法线: -1, 0, 0)
+        -1.0f, -1.0f, -1.0f,    0.0f, 0.0f,   -1.0f, 0.0f, 0.0f, // 后下
+        -1.0f, -1.0f,  1.0f,    1.0f, 0.0f,   -1.0f, 0.0f, 0.0f, // 前下
+        -1.0f,  1.0f,  1.0f,    1.0f, 1.0f,   -1.0f, 0.0f, 0.0f, // 前上
+        -1.0f,  1.0f, -1.0f,    0.0f, 1.0f,   -1.0f, 0.0f, 0.0f, // 后上
+
+        // 上面 (Y = 1, 法线: 0, 1, 0)
+        -1.0f,  1.0f,  1.0f,    0.0f, 0.0f,   0.0f, 1.0f, 0.0f,  // 前左
+         1.0f,  1.0f,  1.0f,    1.0f, 0.0f,   0.0f, 1.0f, 0.0f,  // 前右
+         1.0f,  1.0f, -1.0f,    1.0f, 1.0f,   0.0f, 1.0f, 0.0f,  // 后右
+        -1.0f,  1.0f, -1.0f,    0.0f, 1.0f,   0.0f, 1.0f, 0.0f,  // 后左
+
+        // 下面 (Y = -1, 法线: 0, -1, 0)
+        -1.0f, -1.0f, -1.0f,    0.0f, 0.0f,   0.0f, -1.0f, 0.0f, // 后左
+         1.0f, -1.0f, -1.0f,    1.0f, 0.0f,   0.0f, -1.0f, 0.0f, // 后右
+         1.0f, -1.0f,  1.0f,    1.0f, 1.0f,   0.0f, -1.0f, 0.0f, // 前右
+        -1.0f, -1.0f,  1.0f,    0.0f, 1.0f,   0.0f, -1.0f, 0.0f, // 前左
+    };
+
+    inline static constexpr unsigned int indices[] = {
+        // 前面
+        0, 1, 2, 2, 3, 0,
+        // 后面
+        4, 5, 6, 6, 7, 4,
+        // 右面
+        8, 9, 10, 10, 11, 8,
+        // 左面
+        12, 13, 14, 14, 15, 12,
+        // 上面
+        16, 17, 18, 18, 19, 16,
+        // 下面
+        20, 21, 22, 22, 23, 20
+    };
 
 public:
-	Cube():
-		Shaper(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(unsigned int), {(float)3, (float)2})
-	{
-		va.LinkBufferAndLayout(vb, layout);
-	}
+    Cube():
+        Shaper(vertices, sizeof(vertices), indices, sizeof(indices) / sizeof(unsigned int), {(float)3, (float)2, (float)3})  // 🆕 位置3 + 纹理2 + 法线3
+    {
+        va.LinkBufferAndLayout(vb, layout);
+    }
 
-	void Draw(Shader& shader, const Renderer& renderer) override {
-		renderer.Draw(va, ib, shader);
-	}
+    void Draw(Shader& shader, const Renderer& renderer) override {
+        renderer.Draw(va, ib, shader);
+    }
 };
+
 /*
  * Copyright (c) 2025 
  * Email: 2523877046@qq.com

@@ -20,6 +20,7 @@
 #include "Camera.h"
 #include "Entity.h"
 
+
 #include "Logger.h"
 
 
@@ -64,7 +65,7 @@ inline void InitializeGlobalShaders() {
 		blinnPhongShaderPtr = std::make_shared<Shader>(BLINN_PHONG_SHADER_PATH);
 		phongShaderPtr = std::make_shared<Shader>(PHONG_SHADER_PATH);
 		//shadowMappingShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_SHADER_PATH);
-		//shadowMappingRenderShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_RENDER_SHADER_PATH);
+		shadowMappingRenderShaderPtr = std::make_shared<Shader>(SHADOW_MAPPING_RENDER_SHADER_PATH);
 
 		initialized = true;
 		if (!gouraudShaderPtr)  LOG_ERROR("gouraudShaderPtr is null after initialization!");
@@ -91,6 +92,7 @@ inline void InitializeGlobalShaders() {
 /******************************************* 3D模型全局变量  *************************************************/
 inline std::shared_ptr<Sphere> global_spherePtr = nullptr;
 inline std::shared_ptr<Torus> global_torusPtr = nullptr;
+inline std::shared_ptr<Cube> global_cubePtr = nullptr;	
 
 // ✅ 添加延迟初始化函数
 inline void InitializeGlobalObjects() {
@@ -99,9 +101,11 @@ inline void InitializeGlobalObjects() {
 
 	global_spherePtr = std::make_shared<Sphere>();
 	global_torusPtr = std::make_shared<Torus>();
+	global_cubePtr = std::make_shared<Cube>();
 
 	initialized = true;
 }
+
 
 
 /******************************************* 全局Render变量  *************************************************/
@@ -155,8 +159,9 @@ struct RenderConfig {
 
 
 /******************************************* 全局窗口变量  *************************************************/
-inline int g_WindowWidth = 0;
-inline int g_WindowHeight = 0;
+inline int g_WindowWidth = 2560;   
+inline int g_WindowHeight = 1660;  
+
 
 /******************************************* 光照参数相关变量  *************************************************/
 

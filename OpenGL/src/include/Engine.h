@@ -12,8 +12,16 @@ public:
     WindowConfig windowConfig;
     SceneManager sceneManager;
 
+    // 添加窗口状态管理
+    int GetWindowWidth() const { return m_windowWidth; }
+    int GetWindowHeight() const { return m_windowHeight; }
+
+    static Engine* GetInstance() { return s_instance; }
+
     void Run(GLFWwindow* window) {
 
+        s_instance = this;
+        InitializeWindowState(window);
 
         auto scene = sceneManager.GetActiveScene();
         if (!scene)
@@ -29,6 +37,7 @@ public:
 
             LOG_LEVEL_INFO(1, "Engine: Processing UpdateTime and Input ");
             UpdateTime();
+            UpdateWindowState(window);
             HandleInput(window);
             LOG_INFO("\tEngine: Compelete UpdateTime and Input. DeltaTime = {}", deltaTime);
 
@@ -51,6 +60,7 @@ public:
         }
         // 清理场景
         sceneManager.Cleanup();
+        s_instance = nullptr; 
     }
     void SetKeyboardHandler(KeyboardHandler handler) { globalInputHandler = handler; }
     void SetScene(std::unique_ptr<Scene> scene) { sceneManager.SetActiveScene(std::move(scene)); }
@@ -91,5 +101,33 @@ protected:
             }
         }
     }
+private:
+    int m_windowWidth = 0;
+    int m_windowHeight = 0;
+    static inline Engine* s_instance = nullptr;
+
+    void InitializeWindowState(GLFWwindow* window) {
+        LOG_INFO("Engine: Initializing window state...");
+        UpdateWindowState(window);
+        LOG_INFO("\tWindow state initialized: {}x{}", m_windowWidth, m_windowHeight);
+    }
+    void UpdateWindowState(GLFWwindow* window) {
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+
+        // 只在尺寸变化时更新
+        if (width != m_windowWidth || height != m_windowHeight) {
+            m_windowWidth = width;
+            m_windowHeight = height;
+
+            // 同步更新全局变量（兼容老代码）
+            g_WindowWidth = width;
+            g_WindowHeight = height;
+
+            LOG_DEBUG("Engine: Window size updated to {}x{}", width, height);
+        }
+    }
 };
+
+
 

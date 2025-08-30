@@ -40,4 +40,9 @@ private:
     void UpdateAllEntity(float deltaTime);
     void UpdateDynamicLights(float deltaTime);
     void ApplyGlobalLightToShader(RenderComponent& renderComp);
+
+    // 🆕 阴影系统支持
+    void InitializeShadowSystem();    // 初始化阶段调用
+    void RenderShadowPass(const Renderer& renderer);  // 渲染阶段调用
+    
 };

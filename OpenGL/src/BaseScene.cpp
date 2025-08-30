@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "LightComponent.h"
 #include "RenderComponent.h"
+#include "ShadowComponent.h"
 #include "Camera.h"
 #include "MaterialComponent.h"
 #include "Globals.h"
@@ -23,8 +24,11 @@ void BaseScene::Initialize() {
     // 4. 初始化实体
     InlitializeEntities(enityInitializer);
 
-    // 5. 建立光源索引
+    // 5. 建立局部光源索引
     BuildLightIndex();
+
+	// 6. 阴影贴图相关
+    InitializeShadowSystem();
 
     LOG_INFO("\tEntities initialized: Count={}", m_Entities.size());
     LOG_INFO("\tLights indexed: Count={}", m_lightIndex.size());
@@ -40,7 +44,10 @@ void BaseScene::Update(float delataTime) {
 
 void BaseScene::Render(const Renderer& renderer) {
     LOG_TRACE("BaseScene: Starting render");
+    // Step1: Shadow Pass
+    RenderShadowPass(renderer);
 
+    // Step2: Main Pass
     renderer.Clear();     // 使用传入的 renderer
     glm::mat4 view = GetCamera().GetViewMatrix();
     glm::mat4 projection = GetCamera().GetProjectionMatrix();
@@ -212,4 +219,55 @@ void BaseScene::ApplyGlobalLightToShader(RenderComponent& renderComp) {
         return;
     }
     m_globalLight.ApplyToShader(*shader);
+}
+
+
+void BaseScene::InitializeShadowSystem() {
+    LOG_INFO("BaseScene: Initializing shadow system...");
+
+    int shadowLightCount = 0;
+    for (auto& entity : m_Entities) {
+		// ShadowComponent 默认应只在光源实体里面即一个Enitity要么同时有LightComponent和ShadowComponent，要么仅有LightComponent
+        auto shadowComp = entity->GetComponent<ShadowComponent>();
+        if (shadowComp && shadowComp->IsEnabled()) {
+            LOG_INFO("\tFound shadow light: {}", entity->GetName());
+            shadowLightCount++;
+        }
+        else {
+			LOG_WARNING("\tEntity '{}' has no shadow component or is disabled", entity->GetName());
+        }
+    }
+
+    LOG_INFO("\tShadow system initialized with {} shadow lights", shadowLightCount);
+}
+
+void BaseScene::RenderShadowPass(const Renderer& renderer) {
+    // 寻找启用阴影的光源
+    for (auto& entity : m_Entities) {
+        auto shadowComp = entity->GetComponent<ShadowComponent>();
+        if (!shadowComp || !shadowComp->IsEnabled()) {
+            continue; // 跳过没有阴影组件或未启用的实体
+        }
+
+        // 检查是否有关联的光源组件
+        auto lightComp = entity->GetComponent<LightComponent>();
+        if (!lightComp) {
+            LOG_WARNING("ShadowComponent found on entity '{}' without LightComponent. Skipping.", entity->GetName());
+            continue;
+        }
+
+        LOG_DEBUG("BaseScene: Rendering shadow pass for light '{}'", entity->GetName());
+
+        // 1. 开始阴影Pass
+        shadowComp->BeginShadowPass();
+
+        // 2. ShadowComponent 自己渲染阴影投射者
+        shadowComp->RenderShadowCasters(renderer, m_Entities);
+
+        // 3. 结束阴影Pass
+        shadowComp->EndShadowPass();
+
+        LOG_DEBUG("BaseScene: Shadow pass complete for light '{}'", entity->GetName());
+        break; // 目前只处理一个阴影光源
+    }
 }
